@@ -280,8 +280,8 @@
 
         .toggle-button {
             position: fixed;
-            top: 24px;
-            left: 20px;
+            top: 26px;
+            left: 15px;
             z-index: 1001;
             background: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end));
             color: white;
@@ -304,7 +304,7 @@
         
         /* Perbaikan: Atur posisi tombol agar tidak terpengaruh oleh sidebar */
         .sidebar-collapsed .toggle-button {
-            left: 20px;
+            left: 15px;
         }
 
         .sidebar-hidden .toggle-button {
