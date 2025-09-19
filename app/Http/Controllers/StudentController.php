@@ -11,9 +11,23 @@ use App\Imports\StudentsImport;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with('grade')->paginate(15);
+        // 1. Ambil input pencarian dari URL
+        $search = $request->input('search');
+
+        // 2. Buat query dasar untuk model Student
+        $query = Student::with('grade');
+
+        // 3. Jika ada kata kunci pencarian, terapkan filter
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('nim', 'like', "%{$search}%");
+        }
+
+        // 4. Ambil data dengan pagination dan kirim ke view
+        $students = $query->paginate(15);
+        
         return view('students.index', compact('students'));
     }
 

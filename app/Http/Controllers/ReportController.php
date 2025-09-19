@@ -14,10 +14,21 @@ class ReportController extends Controller
 {
     public function index()
     {
+        // Ambil semua data mahasiswa beserta grade
         $students = Student::with('grade')->get();
-        $weights = GradeWeight::getCurrentWeights();
         
-        return view('reports.index', compact('students', 'weights'));
+        // Ambil bobot nilai saat ini
+        $weights = GradeWeight::getCurrentWeights();
+
+        // Hitung variabel statistik yang dibutuhkan di view
+        // Pastikan variabel ini ada untuk menghindari error
+        $completedGrades = $students->filter(fn($s) => $s->grade && $s->grade->final_grade);
+        $average = $completedGrades->avg(fn($s) => $s->grade->final_grade);
+        $highest = $completedGrades->max(fn($s) => $s->grade->final_grade);
+        $lowest = $completedGrades->min(fn($s) => $s->grade->final_grade);
+
+        // Kirim semua variabel yang dibutuhkan ke view
+        return view('reports.index', compact('students', 'weights', 'average', 'highest', 'lowest'));
     }
 
     public function exportPdf()
