@@ -161,7 +161,6 @@
             padding: 0;
         }
 
-
         .main-nav ul {
             list-style: none;
             padding: 0;
@@ -225,7 +224,6 @@
             width: 0;
             overflow: hidden;
         }
-
 
         .nav-arrow {
             margin-left: auto;
@@ -352,11 +350,9 @@
             gap: 8px;
         }
         
-        .page-header p {
-            font-size: 14px;
-            line-height: 20px;
-            color: #6b7280;
-            margin: 0;
+        .page-header img {
+            max-height: 57px; /* Mengatur tinggi maksimum gambar */
+            vertical-align: middle; /* Memastikan gambar sejajar dengan teks */
         }
 
         .main-content-body {
@@ -584,7 +580,7 @@
                 <i class="fa-solid fa-graduation-cap"></i>
                 Sistem Penilaian Mahasiswa
             </h1>
-            <p>Welcome back!</p>
+            <img src="{{ asset('images/logo0pkumi.png') }}" alt="Logo PKUMI">
         </header>
 
         <div class="main-content-body">
