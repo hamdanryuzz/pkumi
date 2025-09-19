@@ -68,7 +68,7 @@
         
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h6 class="text-lg font-bold text-gray-800">Distribusi Nilai Huruf</h6>
+                <h6 class="text-lg font-bold text-gray-800">Distribusi Nilai Semester Ini</h6>
             </div>
             <div class="p-6">
                 @if($gradeDistribution->count() > 0)

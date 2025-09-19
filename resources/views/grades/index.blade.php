@@ -120,17 +120,6 @@
                     <button type="submit" 
                             class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 ease-in-out transform hover:scale-105 shadow-lg">
                         <i class="fas fa-save mr-2"></i>Simpan Semua Nilai
-                    </button>
-                    <button type="button" 
-                            class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition duration-200 ease-in-out transform hover:scale-105 shadow-lg" 
-                            onclick="calculatePreview()">
-                        <i class="fas fa-calculator mr-2"></i>Preview Perhitungan
-                    </button>
-                    <button type="button" 
-                            class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 ease-in-out transform hover:scale-105 shadow-lg" 
-                            onclick="autoCalculateAll()">
-                        <i class="fas fa-magic mr-2"></i>Auto Calculate
-                    </button>
                 </div>
             </form>
         </div>
