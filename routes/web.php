@@ -42,5 +42,5 @@ Route::get('reports/export-excel', [ReportController::class, 'exportExcel'])->na
 Route::get('reports/student-card/{id}', [ReportController::class, 'studentCard'])->name('reports.studentCard');
 
 // Log
-Router::get('log', [LogController::class, 'index'])->name('log.index');
+Route::get('log', [LogController::class, 'index'])->name('log.index');
 });
