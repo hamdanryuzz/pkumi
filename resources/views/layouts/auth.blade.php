@@ -12,8 +12,20 @@
 
     {{-- Masukkan CSS Kustom di sini jika ada --}}
     @yield('styles')
+
+    <style>
+        body {
+            background-image: url('{{ asset('images/istiqlal.jpg') }}');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            /* Tambahkan overlay gelap untuk visibilitas teks */
+            background-color: rgba(0, 0, 0, 0.5);
+            background-blend-mode: darken;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body>
 
     <div class="min-h-screen flex items-center justify-center">
         @yield('content')

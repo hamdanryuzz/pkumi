@@ -9,38 +9,66 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Login Admin
+    /**
+     * Tampilkan halaman login.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+    
+    /**
+     * Tampilkan halaman registrasi.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRegistrationForm()
+    {
+        return view('register');
+    }
+
+    /**
+     * Tangani proses login.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email'    => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required'],
         ]);
 
-        if (Auth::guard('admin')->attempt($credentials, $request->remember)) {
+        if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
-
-            return response()->json([
-                'message' => 'Login berhasil',
-                'user'    => Auth::guard('admin')->user()
-            ]);
+            
+            // Arahkan ke dashboard jika login berhasil.
+            return redirect()->intended(route('dashboard'));
         }
-
-        return response()->json([
-            'message' => 'Email atau password salah'
-        ], 401);
+        
+        // Kembali dengan error jika kredensial tidak cocok.
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 
-    // Logout Admin
+    /**
+     * Tangani proses logout.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function logout(Request $request)
     {
-        Auth::guard('admin')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json([
-            'message' => 'Logout berhasil'
-        ]);
+        // Arahkan kembali ke halaman login.
+        return redirect()->route('login');
     }
 }

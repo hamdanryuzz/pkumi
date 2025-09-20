@@ -7,6 +7,7 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GradeWeightController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,22 +15,25 @@ use App\Http\Controllers\ReportController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+// Rute untuk autentikasi (login dan registrasi)
+// Gunakan middleware 'guest' untuk rute yang hanya bisa diakses saat belum login
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [AuthController::class, 'login']);
+    Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
+});
 
-// Students Management
-Route::resource('students', StudentController::class);
-Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
-Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
+// Rute untuk logout (harus bisa diakses oleh pengguna yang sudah login)
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-// Grades Management
-Route::get('grades', [GradeController::class, 'index'])->name('grades.index');
-Route::put('grades/{grade}', [GradeController::class, 'update'])->name('grades.update');
-Route::post('grades/bulk-update', [GradeController::class, 'bulkUpdate'])->name('grades.bulkUpdate');
+// Gunakan middleware 'auth' untuk rute yang hanya bisa diakses setelah login
+Route::middleware('auth')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-// Grade Weights Management
-Route::get('grade-weights', [GradeWeightController::class, 'index'])->name('grade-weights.index');
-Route::put('grade-weights', [GradeWeightController::class, 'update'])->name('grade-weights.update');
-Route::post('grade-weights/reset', [GradeWeightController::class, 'reset'])->name('grade-weights.reset');
+    // Students Management
+    Route::resource('students', StudentController::class);
+    Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
+    Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
 
 // Reports
 Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
@@ -39,3 +43,4 @@ Route::get('reports/student-card/{id}', [ReportController::class, 'studentCard']
 
 // Log
 Router::get('log', [LogController::class, 'index'])->name('log.index');
+});

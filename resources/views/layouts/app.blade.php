@@ -270,6 +270,10 @@
             border-radius: 6px;
             transition: background-color 0.2s ease;
             flex-shrink: 0;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: inherit;
         }
 
         .logout-button:hover {
@@ -484,16 +488,16 @@
 }">
 
     <div class="sidebar-overlay" 
-         :class="{ 'show': showOverlay }"
-         @click="closeSidebar()"></div>
+        :class="{ 'show': showOverlay }"
+        @click="closeSidebar()"></div>
 
     <button class="toggle-button" @click="toggleSidebar()">
         <i class="fas" :class="sidebarCollapsed || sidebarHidden ? 'fa-bars' : 'fa-times'"></i>
     </button>
 
     <nav class="sidebar-container" 
-         :class="{ 'show': !sidebarHidden }"
-         @click.away="window.innerWidth < 768 && closeSidebar()">
+        :class="{ 'show': !sidebarHidden }"
+        @click.away="window.innerWidth < 768 && closeSidebar()">
         <header class="sidebar-header">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-crown"></i>
@@ -568,9 +572,12 @@
                 <p class="user-name">Admin User</p>
                 <p class="user-role">Administrator</p>
             </div>
-            <a href="#" class="logout-button" aria-label="Logout dari akun" title="Logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-            </a>
+            <form action="{{ route('logout') }}" method="POST" class="ml-auto">
+                @csrf <!-- Tambahkan baris ini -->
+                <button type="submit" class="logout-button" aria-label="Logout dari akun" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
         </footer>
     </nav>
 
