@@ -104,22 +104,22 @@
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <a href="{{ route('students.create') }}" 
-                       class="flex flex-col items-center justify-center p-4 bg-blue-50 text-blue-600 rounded-lg transition-colors duration-200 hover:bg-blue-100">
+                        class="flex flex-col items-center justify-center p-4 bg-blue-50 text-blue-600 rounded-lg transition-colors duration-200 hover:bg-blue-100">
                         <i class="fas fa-user-plus text-xl mb-2"></i>
                         <span class="text-sm font-medium">Tambah Mahasiswa</span>
                     </a>
                     <a href="{{ route('grades.index') }}" 
-                       class="flex flex-col items-center justify-center p-4 bg-green-50 text-green-600 rounded-lg transition-colors duration-200 hover:bg-green-100">
+                        class="flex flex-col items-center justify-center p-4 bg-green-50 text-green-600 rounded-lg transition-colors duration-200 hover:bg-green-100">
                         <i class="fas fa-edit text-xl mb-2"></i>
                         <span class="text-sm font-medium">Input Nilai</span>
                     </a>
                     <a href="{{ route('reports.exportPdf') }}" 
-                       class="flex flex-col items-center justify-center p-4 bg-red-50 text-red-600 rounded-lg transition-colors duration-200 hover:bg-red-100">
+                        class="flex flex-col items-center justify-center p-4 bg-red-50 text-red-600 rounded-lg transition-colors duration-200 hover:bg-red-100">
                         <i class="fas fa-file-pdf text-xl mb-2"></i>
                         <span class="text-sm font-medium">Cetak PDF</span>
                     </a>
                     <a href="{{ route('reports.exportExcel') }}" 
-                       class="flex flex-col items-center justify-center p-4 bg-yellow-50 text-yellow-600 rounded-lg transition-colors duration-200 hover:bg-yellow-100">
+                        class="flex flex-col items-center justify-center p-4 bg-yellow-50 text-yellow-600 rounded-lg transition-colors duration-200 hover:bg-yellow-100">
                         <i class="fas fa-file-excel text-xl mb-2"></i>
                         <span class="text-sm font-medium">Export Excel</span>
                     </a>
