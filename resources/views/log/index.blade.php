@@ -1,192 +1,89 @@
 @extends('layouts.app')
 
+@section('title', 'Log History')
+
 @section('content')
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f9fafb;
-        color: #333;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 20px auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    p.subtext {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 20px;
-    }
-
-    .filter-box {
-        background: #f1f5f9;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-
-    .filter-row {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .filter-row input,
-    .filter-row select {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 14px;
-        flex: 1;
-    }
-
-    .export-buttons {
-        margin-bottom: 15px;
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-    }
-
-    .btn {
-        padding: 8px 14px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .btn-danger {
-        background: #ef4444;
-        color: #fff;
-    }
-
-    .btn-success {
-        background: #22c55e;
-        color: #fff;
-    }
-
-    .btn:hover {
-        opacity: 0.9;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-    }
-
-    thead {
-        background: #f1f5f9;
-    }
-
-    th, td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-    }
-
-    .badge {
-        font-size: 12px;
-        font-weight: bold;
-        padding: 4px 10px;
-        border-radius: 20px;
-        display: inline-block;
-    }
-
-    .badge-update {
-        background: #fef3c7;
-        color: #d97706;
-    }
-
-    .badge-create {
-        background: #d1fae5;
-        color: #059669;
-    }
-
-    .badge-delete {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-</style>
-
-<div class="container">
-    <h2>Log History</h2>
-    <p class="subtext">Audit trail dan riwayat perubahan data</p>
-
-    <div class="export-buttons">
-        <a href="#" class="btn btn-danger">Export PDF</a>
-        <a href="#" class="btn btn-success">Export Excel</a>
+<main class="py-6 px-4 md:px-8">
+    <div class="mb-6">
+        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Log History</h2>
+        <p class="text-base text-gray-500 mt-1">
+            Riwayat aktivitas dan perubahan yang terjadi di sistem.
+        </p>
     </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <!-- Export Buttons -->
+        <div class="flex justify-end gap-2 mb-4">
+            <a href="#" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg transition-colors duration-200 hover:bg-red-700">Export PDF</a>
+            <a href="#" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg transition-colors duration-200 hover:bg-green-700">Export Excel</a>
+        </div>
 
-    <div class="filter-box">
-        <div class="filter-row">
-            <input type="text" placeholder="Cari aksi, modul, atau user...">
-            <select>
-                <option>Semua User</option>
-                <option>Admin</option>
-                <option>Dosen</option>
-                <option>Mahasiswa</option>
-            </select>
-            <input type="date">
-            <input type="text" placeholder="8 dari 8 record" readonly>
+        <!-- Filter Box -->
+        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <input type="text" placeholder="Cari aksi, modul, atau user..." class="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option>Semua User</option>
+                    <option>Admin</option>
+                    <option>Dosen</option>
+                    <option>Mahasiswa</option>
+                </select>
+                <input type="date" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <input type="text" placeholder="8 dari 8 record" readonly class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-gray-100 text-gray-500">
+            </div>
+        </div>
+
+        <!-- Log Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Modul</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Data Lama</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Data Baru</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Waktu</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">IP Address</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Admin</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">UPDATE</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Nilai Mahasiswa</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">UTS: 75</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">UTS: 80</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-15 14:30:25</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">192.168.1.100</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Admin</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">CREATE</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Data Mahasiswa</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">-</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">NIM: 2024006, Nama: Lisa Andriani</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-15 13:20:15</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">192.168.1.100</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Dosen</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">UPDATE</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Bobot Nilai</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">UAS: 25%</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">UAS: 30%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-15 12:15:45</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">192.168.1.101</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Aksi</th>
-                <th>Modul</th>
-                <th>Data Lama</th>
-                <th>Data Baru</th>
-                <th>Waktu</th>
-                <th>IP Address</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Admin</td>
-                <td><span class="badge badge-update">UPDATE</span></td>
-                <td>Nilai Mahasiswa</td>
-                <td>UTS: 75</td>
-                <td>UTS: 80</td>
-                <td>2024-01-15 14:30:25</td>
-                <td>192.168.1.100</td>
-            </tr>
-            <tr>
-                <td>Admin</td>
-                <td><span class="badge badge-create">CREATE</span></td>
-                <td>Data Mahasiswa</td>
-                <td>-</td>
-                <td>NIM: 2024006, Nama: Lisa Andriani</td>
-                <td>2024-01-15 13:20:15</td>
-                <td>192.168.1.100</td>
-            </tr>
-            <tr>
-                <td>Dosen</td>
-                <td><span class="badge badge-update">UPDATE</span></td>
-                <td>Bobot Nilai</td>
-                <td>UAS: 25%</td>
-                <td>UAS: 30%</td>
-                <td>2024-01-15 12:15:45</td>
-                <td>192.168.1.101</td>
-            </tr>
-            <!-- Tambahkan baris lainnya sesuai data -->
-        </tbody>
-    </table>
-</div>
+</main>
 @endsection
