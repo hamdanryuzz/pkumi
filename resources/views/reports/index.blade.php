@@ -72,7 +72,7 @@
     <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-bold text-gray-800">Data Nilai Mahasiswa</h3>
-            <p class="text-sm text-gray-500 mt-1">Pemrograman Web - Kelas A - Angkatan 2024</p>
+            <p class="text-sm text-gray-500 mt-1">Kelas A - Angkatan 2024</p>
         </div>
         <div class="p-6">
             <div class="overflow-x-auto">

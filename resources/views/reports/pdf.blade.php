@@ -245,8 +245,7 @@
         <h1>Laporan Nilai Mahasiswa</h1>
         <h2>Program PKUMI (Pendidikan Kader Ulama Masjid Istiqlal)</h2>
         <div class="meta-info">
-            <strong>Periode:</strong> {{ $period ?? 'Semester Ganjil 2024/2025' }} | 
-            <strong>Tanggal Cetak:</strong> {{ date('d F Y H:i') }} WIB
+            <strong>Periode:</strong> {{ $period ?? 'Semester Ganjil 2024/2025' }} 
         </div>
     </div>
 
