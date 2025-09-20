@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GradeWeightController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ReportController;
 
 /*
@@ -35,3 +36,6 @@ Route::get('reports', [ReportController::class, 'index'])->name('reports.index')
 Route::get('reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
 Route::get('reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.exportExcel');
 Route::get('reports/student-card/{id}', [ReportController::class, 'studentCard'])->name('reports.studentCard');
+
+// Log
+Router::get('log', [LogController::class, 'index'])->name('log.index');
