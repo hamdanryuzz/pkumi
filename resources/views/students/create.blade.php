@@ -1,101 +1,195 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Mahasiswa - Sistem Penilaian PKUMI')
-
 @section('content')
-<main class="py-6 px-4 md:px-8">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Tambah Mahasiswa</h2>
-    </div>
-
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h5 class="text-lg font-bold text-gray-800">Form Tambah Mahasiswa</h5>
-        </div>
-        <div class="p-6">
-            <form action="{{ route('students.store') }}" method="POST">
-                @csrf
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="mb-4">
-                            <label for="nim" class="block text-sm font-medium text-gray-700 mb-1">NIM <span class="text-red-500">*</span></label>
-                            <input type="text" 
-                                   class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('nim') border-red-500 @enderror" 
-                                   id="nim" name="nim" value="{{ old('nim') }}" required>
-                            @error('nim')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                            @enderror
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Generate Student Account</div>
+                <div class="card-body">
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
                         </div>
-                    </div>
-                    <div>
-                        <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                            <input type="text" 
-                                   class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('name') border-red-500 @enderror" 
+                    @endif
+
+                    <form action="{{ route('students.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
                                    id="name" name="name" value="{{ old('name') }}" required>
                             @error('name')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="mb-4">
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" 
-                                   class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('email') border-red-500 @enderror" 
+
+                        <div class="mb-3">
+                            <label for="year_id" class="form-label">Year <span class="text-danger">*</span></label>
+                            <select class="form-select @error('year_id') is-invalid @enderror" 
+                                    id="year_id" name="year_id" required>
+                                <option value="">Select Year</option>
+                                @foreach($years as $year)
+                                    <option value="{{ $year->id }}" {{ old('year_id') == $year->id ? 'selected' : '' }}>
+                                        {{ $year->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('year_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="student_class_id" class="form-label">Student Class <span class="text-danger">*</span></label>
+                            <select class="form-select @error('student_class_id') is-invalid @enderror" 
+                                    id="student_class_id" name="student_class_id" required 
+                                    {{ old('year_id') ? '' : 'disabled' }}>
+                                <option value="">Select Class</option>
+                            </select>
+                            @error('student_class_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email (Optional)</label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
                                    id="email" name="email" value="{{ old('email') }}">
                             @error('email')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
-                    <div>
-                        <div class="mb-4">
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
-                            <input type="text" 
-                                   class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('phone') border-red-500 @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}">
-                            @error('phone')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                            @enderror
+
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <label for="generated_username" class="form-label">Preview Username</label>
+                            <input type="text" class="form-control" id="generated_username" readonly>
+                            <small class="form-text text-muted">Username will be auto-generated from name</small>
                         </div>
-                    </div>
+
+                        <div class="mb-3">
+                            <label for="generated_password" class="form-label">Preview Password</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="generated_password" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="generatePasswordBtn">
+                                    Preview Password
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">8 characters: uppercase, lowercase, number, and symbol</small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Generate Student Account</button>
+                            <a href="{{ route('students.index') }}" class="btn btn-secondary">Back to Students List</a>
+                        </div>
+                    </form>
                 </div>
-                
-                <div class="mb-4">
-                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                    <textarea class="form-textarea block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('address') border-red-500 @enderror" 
-                               id="address" name="address" rows="3">{{ old('address') }}</textarea>
-                    @error('address')
-                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="mb-6">
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('status') border-red-500 @enderror" 
-                            id="status" name="status">
-                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Aktif</option>
-                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
-                    </select>
-                    @error('status')
-                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="flex justify-between items-center">
-                    <a href="{{ route('students.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md transition duration-200">
-                        Kembali
-                    </a>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition duration-200">
-                        Simpan
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-</main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('name');
+    const yearSelect = document.getElementById('year_id');
+    const classSelect = document.getElementById('student_class_id');
+    const usernameInput = document.getElementById('generated_username');
+    const passwordInput = document.getElementById('generated_password');
+    const generatePasswordBtn = document.getElementById('generatePasswordBtn');
+
+    // Auto generate username preview when name changes
+    nameInput.addEventListener('input', function() {
+        const username = this.value.toLowerCase().replace(/\s+/g, '.');
+        usernameInput.value = username;
+    });
+
+    // Load student classes when year changes
+    yearSelect.addEventListener('change', function() {
+        const yearId = this.value;
+        console.log('Year selected:', yearId); // Debug
+        
+        classSelect.innerHTML = '<option value="">Select Class</option>';
+        classSelect.disabled = !yearId;
+
+        if (yearId) {
+            // Gunakan URL yang benar
+            const url = `/api/student-classes/${yearId}`;
+            console.log('Fetching from URL:', url); // Debug
+            
+            fetch(url)
+                .then(response => {
+                    console.log('Response status:', response.status); // Debug
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Student classes data:', data); // Debug
+                    
+                    if (data.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'No classes available for this year';
+                        classSelect.appendChild(option);
+                    } else {
+                        data.forEach(studentClass => {
+                            const option = document.createElement('option');
+                            option.value = studentClass.id;
+                            option.textContent = studentClass.name;
+                            classSelect.appendChild(option);
+                        });
+                    }
+                    
+                    // Restore selected value if exists (for old input)
+                    const oldClassId = '{{ old('student_class_id') }}';
+                    if (oldClassId) {
+                        classSelect.value = oldClassId;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching student classes:', error);
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Error loading classes';
+                    classSelect.appendChild(option);
+                });
+        }
+    });
+
+    // Generate password preview
+    generatePasswordBtn.addEventListener('click', function() {
+        const password = generateRandomPassword();
+        passwordInput.value = password;
+    });
+
+    // Load classes if year is already selected (for old input)
+    if (yearSelect.value) {
+        yearSelect.dispatchEvent(new Event('change'));
+    }
+
+    function generateRandomPassword() {
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        const symbols = '!@#$%^&*';
+        
+        let password = '';
+        password += uppercase.charAt(Math.floor(Math.random() * uppercase.length));
+        password += lowercase.charAt(Math.floor(Math.random() * lowercase.length));
+        password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+        password += symbols.charAt(Math.floor(Math.random() * symbols.length));
+        
+        const allChars = uppercase + lowercase + numbers + symbols;
+        for (let i = 4; i < 8; i++) {
+            password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+        }
+        
+        return password.split('').sort(() => Math.random() - 0.5).join('');
+    }
+});
+</script>
 @endsection

@@ -35,11 +35,11 @@ class DatabaseSeeder extends Seeder
 
         // Create sample students
         $students = [
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2024001', 'name' => 'Ahmad Fauzi', 'email' => 'ahmad.fauzi@email.com'],
-            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2024002', 'name' => 'Siti Nurhaliza', 'email' => 'siti.nurhaliza@email.com'],
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2024003', 'name' => 'Muhammad Rizki', 'email' => 'muhammad.rizki@email.com'],
-            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2024004', 'name' => 'Fatimah Azzahra', 'email' => 'fatimah.azzahra@email.com'],
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2024005', 'name' => 'Abdullah Rahman', 'email' => 'abdullah.rahman@email.com'],
+            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2024001', 'name' => 'Ahmad Fauzi', 'username' => 'ahmad.fauzi', 'email' => 'ahmad.fauzi@email.com', 'password' => Hash::make('password')],
+            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2024002', 'name' => 'Siti Nurhaliza', 'username' => 'siti.nurhaliza', 'email' => 'siti.nurhaliza@email.com', 'password' => Hash::make('password')],
+            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2024003', 'name' => 'Muhammad Rizki', 'username' => 'muhammad.rizki', 'email' => 'muhammad.rizki@email.com', 'password' => Hash::make('password')],
+            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2024004', 'name' => 'Fatimah Azzahra', 'username' => 'fatimah.azzahra', 'email' => 'fatimah.azzahra@email.com', 'password' => Hash::make('password')],
+            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2024005', 'name' => 'Abdullah Rahman', 'username' => 'abdullah.rahman', 'email' => 'abdullah.rahman@email.com', 'password' => Hash::make('password')],
         ];
 
         foreach ($students as $studentData) {

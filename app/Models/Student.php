@@ -12,11 +12,13 @@ class Student extends Model
     protected $fillable = [
         'nim',
         'name',
+        'username',
         'email',
+        'password',
         'phone',
         'address',
         'status',
-        'class_id',
+        'student_class_id',
         'year_id'
     ];
 
@@ -30,9 +32,9 @@ class Student extends Model
         return $this->belongsTo(Year::class);
     }
 
-    public function class()
+    public function studentClass()
     {
-        return $this->belongsTo(StudentClass::class, 'class_id');
+        return $this->belongsTo(StudentClass::class);
     }
 
     public function courses()

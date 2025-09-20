@@ -14,7 +14,9 @@ return new class extends Migration
             $table->foreignId('year_id')->constrained('years')->onDelete('cascade');
             $table->string('nim')->unique();
             $table->string('name');
+            $table->string('username')->unique();
             $table->string('email')->nullable();
+            $table->string('password');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
