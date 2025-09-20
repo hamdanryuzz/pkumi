@@ -554,7 +554,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link" @click="window.innerWidth < 768 && closeSidebar()">
+                        <a href="{{ route('log.index') }}" class="nav-link {{ request()->routeIs('log.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-history nav-icon"></i>
                             <span class="nav-text">Log History</span>
                             <div class="nav-tooltip">Log History</div>
@@ -573,7 +573,7 @@
                 <p class="user-role">Administrator</p>
             </div>
             <form action="{{ route('logout') }}" method="POST" class="ml-auto">
-                @csrf <!-- Tambahkan baris ini -->
+                @csrf
                 <button type="submit" class="logout-button" aria-label="Logout dari akun" title="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
