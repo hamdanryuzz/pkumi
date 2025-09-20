@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('student_class_id')->constrained('student_classes')->onDelete('cascade');
+            $table->foreignId('year_id')->constrained('years')->onDelete('cascade');
             $table->string('nim')->unique();
             $table->string('name');
             $table->string('email')->nullable();

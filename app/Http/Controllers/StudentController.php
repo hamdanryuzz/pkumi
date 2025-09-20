@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Grade;
+use App\Models\Year;
+use App\Models\StudentClass;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
@@ -33,7 +35,9 @@ class StudentController extends Controller
 
     public function create()
     {
-        return view('students.create');
+        $years = Year::all(); // untuk dropdown pilihan tahun
+        $classes = StudentClass::all(); // untuk dropdown pilihan kelas
+        return view('students.create', compact('years', 'classes'));
     }
 
     public function store(Request $request)
@@ -44,6 +48,8 @@ class StudentController extends Controller
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'class_id' => 'required|exists:student_classes,id',
+            'year_id' => 'required|exists:years,id'
         ]);
 
         $student = Student::create($request->all());
@@ -60,7 +66,9 @@ class StudentController extends Controller
 
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $years = Year::all(); // untuk dropdown pilihan tahun
+        $classes = StudentClass::all(); // untuk dropdown pilihan kelas
+        return view('students.edit', compact('student', 'years', 'classes'));
     }
 
     public function update(Request $request, Student $student)
@@ -71,6 +79,8 @@ class StudentController extends Controller
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'class_id' => 'required|exists:student_classes,id',
+            'year_id' => 'required|exists:years,id'
         ]);
 
         $student->update($request->all());

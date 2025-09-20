@@ -11,6 +11,7 @@ class Grade extends Model
 
     protected $fillable = [
         'student_id',
+        'course_id',
         'attendance_score',
         'assignment_score',
         'midterm_score',
@@ -22,6 +23,10 @@ class Grade extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+    public function course()
+    {
+        return $this->hasMany(Course::class);
     }
 
     public static function calculateFinalGrade($attendance, $assignment, $midterm, $final, $weights)

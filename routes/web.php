@@ -8,6 +8,9 @@ use App\Http\Controllers\GradeWeightController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\YearController;
+use App\Http\Controllers\StudentClassController;
+use App\Http\Controllers\CourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,4 +55,21 @@ Route::middleware('auth')->group(function () {
 
     // Log
     Route::get('log', [LogController::class, 'index'])->name('log.index');
+
+    // Years Management
+Route::resource('years', YearController::class);
+
+// Student Classes Management
+Route::resource('student_classes', StudentClassController::class);
+
+// Course Management
+Route::resource('course', CourseController::class); 
+
+Route::prefix('grades')->name('grades.')->group(function () {
+    Route::get('/', [GradeController::class, 'index'])->name('index');
+    Route::post('/', [GradeController::class, 'store'])->name('store');
+    Route::put('/{grade}', [GradeController::class, 'update'])->name('update');
+    Route::post('/bulk-update', [GradeController::class, 'bulkUpdate'])->name('bulk-update');
+    Route::get('/{id}', [GradeController::class, 'show'])->name('show');
+});
 });
