@@ -519,10 +519,17 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('years.index') }}" class="nav-link" @click="window.innerWidth < 768 && closeSidebar()">
+                            <i class="fa-solid fa-graduation-cap nav-icon"></i>
+                            <span class="nav-text">Manage Angkatan</span>
+                            <div class="nav-tooltip">Manage Angkatan</div>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" class="nav-link" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-graduation-cap nav-icon"></i>
-                            <span class="nav-text">Manage Angkatan & Kelas</span>
-                            <div class="nav-tooltip">Manage Angkatan & Kelas</div>
+                            <span class="nav-text">Manage Kelas</span>
+                            <div class="nav-tooltip">Manage Kelas</div>
                         </a>
                     </li>
                     <li>
