@@ -19,7 +19,7 @@ class StudentController extends Controller
         $search = $request->input('search');
 
         // 2. Buat query dasar untuk model Student
-        $query = Student::with('grade');
+        $query = Student::with('year', 'studentClass');
 
         // 3. Jika ada kata kunci pencarian, terapkan filter
         if ($search) {

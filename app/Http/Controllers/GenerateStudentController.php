@@ -67,7 +67,7 @@ class GenerateStudentController extends Controller
                 'email' => $student->email,
             ]);
 
-            return redirect()->route('students.success')->with('success', 'Student account generated successfully!');
+            return redirect()->route('students.index')->with('success', 'Student account generated successfully!');
 
         } catch (\Exception $e) {
             \Log::error('Error creating student: ' . $e->getMessage());
@@ -76,21 +76,21 @@ class GenerateStudentController extends Controller
         }
     }
 
-    public function success()
-    {
-        if (!session()->has('student_generated')) {
-            return redirect()->route('students.create')->with('error', 'No student data found.');
-        }
+    // public function success()
+    // {
+    //     if (!session()->has('student_generated')) {
+    //         return redirect()->route('students.create')->with('error', 'No student data found.');
+    //     }
 
-        $studentData = session('student_generated');
-        return view('students.success', compact('studentData'));
-    }
+    //     $studentData = session('student_generated');
+    //     return view('students.success', compact('studentData'));
+    // }
 
-    public function index()
-    {
-        $students = Student::with(['year', 'studentClass'])->get();
-        return view('students.index', compact('students'));
-    }
+    // public function index()
+    // {
+    //     $students = Student::with(['year', 'studentClass'])->get();
+    //     return view('students.index', compact('students'));
+    // }
 
     private function generateUsername($name)
     {

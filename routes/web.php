@@ -75,10 +75,10 @@ Route::middleware('auth')->group(function () {
     });
 
     // generate student
-    Route::get('/students', [GenerateStudentController::class, 'index'])->name('students.index');
+    // Route::get('/students', [GenerateStudentController::class, 'index'])->name('students.index');
     Route::get('/students/create', [GenerateStudentController::class, 'create'])->name('students.create');
     Route::post('/students', [GenerateStudentController::class, 'store'])->name('students.store');
-    Route::get('/students/success', [GenerateStudentController::class, 'success'])->name('students.success');
+    // Route::get('/students/success', [GenerateStudentController::class, 'success'])->name('students.success');
     Route::get('/api/student-classes/{year}', [GenerateStudentController::class, 'getStudentClasses'])->name('api.student-classes');
 
 });
