@@ -11,7 +11,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\GenerateStudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,15 +32,24 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Students Management
-    Route::resource('students', StudentController::class);
+    // Students Management (Unified - Manual + Auto Generate)
+    // IMPORTANT: Custom routes HARUS di atas Route::resource untuk menghindari konflik
     Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
     Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
+    Route::get('students/success', [StudentController::class, 'success'])->name('students.success');
+    Route::get('api/student-classes/{year}', [StudentController::class, 'getStudentClasses'])->name('api.student-classes');
+    
+    // Resource routes (harus di bawah custom routes)
+    Route::resource('students', StudentController::class);
 
     // Grades Management
-    Route::get('grades', [GradeController::class, 'index'])->name('grades.index');
-    Route::put('grades/{grade}', [GradeController::class, 'update'])->name('grades.update');
-    Route::post('grades/bulk-update', [GradeController::class, 'bulkUpdate'])->name('grades.bulkUpdate');
+    Route::prefix('grades')->name('grades.')->group(function () {
+        Route::get('/', [GradeController::class, 'index'])->name('index');
+        Route::post('/', [GradeController::class, 'store'])->name('store');
+        Route::put('/{grade}', [GradeController::class, 'update'])->name('update');
+        Route::post('/bulk-update', [GradeController::class, 'bulkUpdate'])->name('bulk-update');
+        Route::get('/{id}', [GradeController::class, 'show'])->name('show');
+    });
 
     // Grade Weights Management
     Route::get('grade-weights', [GradeWeightController::class, 'index'])->name('grade-weights.index');
@@ -65,20 +73,4 @@ Route::middleware('auth')->group(function () {
 
     // Course Management
     Route::resource('course', CourseController::class); 
-
-    Route::prefix('grades')->name('grades.')->group(function () {
-        Route::get('/', [GradeController::class, 'index'])->name('index');
-        Route::post('/', [GradeController::class, 'store'])->name('store');
-        Route::put('/{grade}', [GradeController::class, 'update'])->name('update');
-        Route::post('/bulk-update', [GradeController::class, 'bulkUpdate'])->name('bulk-update');
-        Route::get('/{id}', [GradeController::class, 'show'])->name('show');
-    });
-
-    // generate student
-    Route::get('/students', [GenerateStudentController::class, 'index'])->name('students.index');
-    Route::get('/students/create', [GenerateStudentController::class, 'create'])->name('students.create');
-    Route::post('/students', [GenerateStudentController::class, 'store'])->name('students.store');
-    Route::get('/students/success', [GenerateStudentController::class, 'success'])->name('students.success');
-    Route::get('/api/student-classes/{year}', [GenerateStudentController::class, 'getStudentClasses'])->name('api.student-classes');
-
 });
