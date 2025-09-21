@@ -11,7 +11,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\GenerateStudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,20 +73,4 @@ Route::middleware('auth')->group(function () {
 
     // Course Management
     Route::resource('course', CourseController::class); 
-
-    Route::prefix('grades')->name('grades.')->group(function () {
-        Route::get('/', [GradeController::class, 'index'])->name('index');
-        Route::post('/', [GradeController::class, 'store'])->name('store');
-        Route::put('/{grade}', [GradeController::class, 'update'])->name('update');
-        Route::post('/bulk-update', [GradeController::class, 'bulkUpdate'])->name('bulk-update');
-        Route::get('/{id}', [GradeController::class, 'show'])->name('show');
-    });
-
-    // generate student
-    // Route::get('/students', [GenerateStudentController::class, 'index'])->name('students.index');
-    Route::get('/students/create', [GenerateStudentController::class, 'create'])->name('students.create');
-    Route::post('/students', [GenerateStudentController::class, 'store'])->name('students.store');
-    // Route::get('/students/success', [GenerateStudentController::class, 'success'])->name('students.success');
-    Route::get('/api/student-classes/{year}', [GenerateStudentController::class, 'getStudentClasses'])->name('api.student-classes');
-
 });
