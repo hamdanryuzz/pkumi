@@ -153,7 +153,6 @@
             text-transform: uppercase;
             transition: opacity 0.2s ease;
         }
-        /* Perbaikan: Atur agar nav-title tidak terlihat saat collapsed */
         .sidebar-collapsed .nav-title {
             opacity: 0;
             height: 0;
@@ -218,11 +217,9 @@
             transition: opacity 0.2s ease;
             flex: 1;
         }
-        /* Perbaikan: Atur agar nav-text tidak terlihat saat collapsed */
+
         .sidebar-collapsed .nav-text {
-            opacity: 0;
-            width: 0;
-            overflow: hidden;
+            display: none;
         }
 
         .nav-arrow {
@@ -303,8 +300,7 @@
             transform: scale(1.05);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Perbaikan: Atur posisi tombol agar tidak terpengaruh oleh sidebar */
+
         .sidebar-collapsed .toggle-button {
             left: 15px;
         }
@@ -355,8 +351,8 @@
         }
         
         .page-header img {
-            max-height: 57px; /* Mengatur tinggi maksimum gambar */
-            vertical-align: middle; /* Memastikan gambar sejajar dengan teks */
+            max-height: 57px;
+            vertical-align: middle;
         }
 
         .main-content-body {
@@ -364,7 +360,6 @@
             padding: 24px;
         }
 
-        /* Tooltip for collapsed sidebar */
         .nav-tooltip {
             position: absolute;
             left: 70px;
@@ -519,15 +514,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('years.index') }}" class="nav-link" @click="window.innerWidth < 768 && closeSidebar()">
+                        <a href="{{ route('years.index') }}" class="nav-link {{ request()->routeIs('years.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-graduation-cap nav-icon"></i>
                             <span class="nav-text">Manage Angkatan</span>
                             <div class="nav-tooltip">Manage Angkatan</div>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link" @click="window.innerWidth < 768 && closeSidebar()">
-                            <i class="fa-solid fa-graduation-cap nav-icon"></i>
+                        <a href="{{ route('student_classes.index') }}" class="nav-link {{ request()->routeIs('student_classes.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
+                            <i class="fa-solid fa-chalkboard-teacher nav-icon"></i>
                             <span class="nav-text">Manage Kelas</span>
                             <div class="nav-tooltip">Manage Kelas</div>
                         </a>

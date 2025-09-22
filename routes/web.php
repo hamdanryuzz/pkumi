@@ -18,28 +18,24 @@ use App\Http\Controllers\CourseController;
 |--------------------------------------------------------------------------
 */
 
-// Rute untuk autentikasi (login dan registrasi)
+// Rute untuk autentikasi (hanya login, tanpa register untuk admin dashboard)
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login']);
-    Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
 });
 
-// Rute untuk logout (harus bisa diakses oleh pengguna yang sudah login)
+// Rute untuk logout
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // Gunakan middleware 'auth' untuk rute yang hanya bisa diakses setelah login
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Students Management (Unified - Manual + Auto Generate)
-    // IMPORTANT: Custom routes HARUS di atas Route::resource untuk menghindari konflik
+    // Students Management (Custom routes di atas resource)
     Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
     Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
     Route::get('students/success', [StudentController::class, 'success'])->name('students.success');
     Route::get('api/student-classes/{year}', [StudentController::class, 'getStudentClasses'])->name('api.student-classes');
-    
-    // Resource routes (harus di bawah custom routes)
     Route::resource('students', StudentController::class);
 
     // Grades Management
@@ -55,7 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::get('grade-weights', [GradeWeightController::class, 'index'])->name('grade-weights.index');
     Route::put('grade-weights', [GradeWeightController::class, 'update'])->name('grade-weights.update');
     Route::post('grade-weights/reset', [GradeWeightController::class, 'reset'])->name('grade-weights.reset');
-    
+
     // Reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
@@ -71,6 +67,6 @@ Route::middleware('auth')->group(function () {
     // Student Classes Management
     Route::resource('student_classes', StudentClassController::class);
 
-    // Course Management
-    Route::resource('course', CourseController::class); 
+    // Course Management (rename ke plural 'courses' untuk konsistensi)
+    Route::resource('courses', CourseController::class);
 });
