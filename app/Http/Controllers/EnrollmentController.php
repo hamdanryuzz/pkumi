@@ -125,7 +125,7 @@ class EnrollmentController extends Controller
         $enrollment->load(['student', 'course', 'period']);
         
         // Get related grade if exists
-        $grade = $enrollment->student->grades()
+        $grade = $enrollment->student->grade()
             ->where('course_id', $enrollment->course_id)
             ->where('period_id', $enrollment->period_id)
             ->first();
@@ -181,7 +181,7 @@ class EnrollmentController extends Controller
     public function destroy(Enrollment $enrollment)
     {
         // Check if enrollment has associated grades
-        $hasGrades = $enrollment->student->grades()
+        $hasGrades = $enrollment->student->grade()
             ->where('course_id', $enrollment->course_id)
             ->where('period_id', $enrollment->period_id)
             ->exists();
