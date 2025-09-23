@@ -1,11 +1,253 @@
 @import 'tailwindcss';
 
+/* @source directives dari kode lo—scan Laravel views/Blade/JS untuk purge */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/* @theme extend dari kode lo—tambah custom vars sidebar dari asli (colors, widths) */
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    /* Custom vars sidebar dari kode asli lo */
+    --color-primary-start: #3c83f6;
+    --color-primary-end: #0a5adb;
+    --color-text-light: #ffffff;
+    --color-text-medium: rgba(255, 255, 255, 0.8);
+    --color-text-muted: rgba(255, 255, 255, 0.7);
+    --color-text-faded: rgba(255, 255, 255, 0.6);
+    --color-bg-accent: rgba(255, 255, 255, 0.2);
+    --color-border-light: rgba(255, 255, 255, 0.1);
+    --color-border-main: #e5e7eb;
+    --sidebar-width: 256px;
+    --sidebar-collapsed-width: 70px;
+    
+    /* Extend colors untuk utilities (e.g., bg-primary-start) */
+    --color-primary-start: var(--color-primary-start);
+    --color-primary-end: var(--color-primary-end);
+    --color-text-light: var(--color-text-light);
+    --color-text-medium: var(--color-text-medium);
+    --color-text-muted: var(--color-text-muted);
+    --color-text-faded: var(--color-text-faded);
+    --color-bg-accent: var(--color-bg-accent);
+    --color-border-light: var(--color-border-light);
+    --color-border-main: var(--color-border-main);
+    
+    /* Animations keyframes untuk sidebar slide */
+    --keyframes-slideIn: {
+        '0%': { transform: 'translateX(-100%)' };
+        '100%': { transform: 'translateX(0)' };
+    };
+    --animation-sidebar-slide: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* @layer base: Global styles sidebar dari asli lo */
+@layer base {
+    .sidebar-container {
+        @apply fixed left-0 top-0 z-[1000] h-screen w-[var(--sidebar-width)] flex flex-col overflow-hidden bg-gradient-to-b from-[var(--color-primary-start)] to-[var(--color-primary-end)] border-r border-[var(--color-border-main)] text-[var(--color-text-light)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)];
+    }
+    .sidebar-collapsed .sidebar-container {
+        width: var(--sidebar-collapsed-width);
+    }
+    .sidebar-hidden .sidebar-container {
+        @apply -translate-x-full;
+    }
+    .content-wrapper {
+        @apply ml-[var(--sidebar-width)] min-h-screen flex flex-col transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)];
+    }
+    .sidebar-collapsed .content-wrapper {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+    .sidebar-hidden .content-wrapper {
+        @apply ml-0;
+    }
+    /* Reduced motion accessibility dari asli */
+    @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+    }
+}
+
+/* @layer components: Semua components sidebar/alerts dari kode asli lo */
+@layer components {
+    .icon-wrapper {
+        @apply flex justify-center items-center w-10 h-10 bg-[var(--color-bg-accent)] rounded-lg shrink-0;
+    }
+    .icon-wrapper .fa-solid {
+        @apply text-xl;
+    }
+    .brand-info, .user-info {
+        @apply opacity-100 transition-opacity duration-200 overflow-hidden;
+    }
+    .sidebar-collapsed .brand-info, .sidebar-collapsed .user-info, .sidebar-collapsed .nav-text, .sidebar-collapsed .nav-title {
+        @apply opacity-0 pointer-events-none;
+    }
+    .brand-name {
+        @apply text-lg font-bold leading-7 text-[var(--color-text-light)] m-0 whitespace-nowrap;
+    }
+    .brand-subtitle {
+        @apply text-sm font-normal leading-5 text-[var(--color-text-muted)] m-0 whitespace-nowrap;
+    }
+    .sidebar-header {
+        @apply flex items-center p-6 border-b border-[var(--color-border-light)] gap-3 shrink-0 min-h-20;
+    }
+    .sidebar-footer {
+        @apply flex items-center p-4.5 border-t border-[var(--color-border-light)] gap-3 shrink-0 min-h-[70px];
+    }
+    .sidebar-content {
+        @apply flex-1 p-8 pb-4 overflow-y-auto overflow-x-hidden;
+    }
+    .sidebar-collapsed .sidebar-content {
+        @apply px-2 pb-4;
+    }
+    .nav-title {
+        @apply text-xs font-normal leading-4 tracking-[0.6px] uppercase text-[var(--color-text-faded)] m-0 mb-6 ml-3 transition-opacity duration-200;
+    }
+    .sidebar-collapsed .nav-title {
+        @apply opacity-0 h-0 m-0 p-0;
+    }
+    .main-nav ul {
+        @apply list-none p-0 m-0;
+    }
+    .main-nav li {
+        @apply mb-2;
+    }
+    .nav-link {
+        @apply relative flex items-center gap-3 p-3 no-underline rounded-lg text-sm font-normal leading-5 text-[var(--color-text-medium)] transition-all duration-200 whitespace-nowrap;
+    }
+    .sidebar-collapsed .nav-link {
+        @apply justify-center px-2;
+    }
+    .nav-link:hover {
+        @apply bg-[var(--color-bg-accent)] text-[var(--color-text-light)] translate-x-1;
+    }
+    .sidebar-collapsed .nav-link:hover {
+        @apply translate-x-0;
+    }
+    .nav-link.active {
+        @apply bg-[var(--color-bg-accent)] text-[var(--color-text-light)] shadow-sm;
+    }
+    .nav-icon {
+        @apply w-4.5 h-4.5 shrink-0;
+    }
+    .nav-text {
+        @apply flex-1 transition-opacity duration-200;
+    }
+    .sidebar-collapsed .nav-text {
+        @apply opacity-0 w-0 overflow-hidden;
+    }
+    .nav-arrow {
+        @apply ml-auto w-4 h-4 transition-all duration-200 opacity-0 -translate-x-2;
+    }
+    .nav-link:hover .nav-arrow {
+        @apply opacity-100 translate-x-0;
+    }
+    .sidebar-collapsed .nav-arrow {
+        @apply hidden;
+    }
+    .user-name {
+        @apply text-sm font-medium leading-5 text-[var(--color-text-light)] m-0 whitespace-nowrap;
+    }
+    .user-role {
+        @apply text-xs font-normal leading-4 text-[var(--color-text-faded)] m-0 whitespace-nowrap;
+    }
+    .logout-button {
+        @apply flex items-center justify-center w-8 h-8 rounded transition-colors shrink-0;
+    }
+    .logout-button:hover {
+        @apply bg-[var(--color-bg-accent)];
+    }
+    .toggle-button {
+        @apply fixed top-6 left-4 z-[1001] bg-gradient-to-br from-[var(--color-primary-start)] to-[var(--color-primary-end)] text-white border-none w-11 h-11 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md hover:scale-105 hover:shadow-lg;
+    }
+    .sidebar-collapsed .toggle-button {
+        left: 15px;
+    }
+    .sidebar-hidden .toggle-button {
+        left: 20px;
+    }
+    .page-header {
+        @apply flex justify-between items-center p-5 bg-white border-b border-gray-200 shadow-sm min-h-20;
+    }
+    .page-header h1 {
+        @apply text-xl font-bold leading-7 text-gray-900 m-0 flex items-center gap-2;
+    }
+    .page-header img {
+        max-height: 57px;
+        vertical-align: middle;
+    }
+    .main-content-body {
+        @apply flex-1 p-6;
+    }
+    /* Tooltip dari asli */
+    .nav-tooltip {
+        @apply absolute left-16 top-1/2 -translate-y-1/2 bg-black/80 text-white px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 invisible transition-all duration-200 z-[1002] pointer-events-none;
+    }
+    .nav-tooltip::before {
+        content: '';
+        @apply absolute left-[-0.25rem] top-1/2 -translate-y-1/2 border-4 border-transparent border-r-black/80;
+    }
+    .sidebar-collapsed .nav-link:hover .nav-tooltip {
+        @apply opacity-100 visible;
+    }
+    /* Media queries responsive dari asli */
+    @media (max-width: 768px) {
+        .sidebar-container {
+            @apply -translate-x-full w-[var(--sidebar-width)];
+        }
+        .sidebar-container.show {
+            @apply translate-x-0;
+        }
+        .content-wrapper {
+            @apply ml-0;
+        }
+        .page-header p {
+            @apply hidden;
+        }
+    }
+    @media (max-width: 640px) {
+        .toggle-button {
+            @apply top-4 left-4 w-10 h-10;
+        }
+        .main-content-body {
+            @apply p-4;
+        }
+    }
+    /* Alerts dari asli */
+    .alert {
+        @apply p-4 rounded-lg mb-4;
+    }
+    .alert-success {
+        @apply bg-green-50 text-green-800 border border-green-200;
+    }
+    .alert-danger {
+        @apply bg-red-50 text-red-800 border border-red-200;
+    }
+    /* Dark mode overrides dari asli (extend @theme) */
+    .dark .sidebar-container {
+        @apply bg-gradient-to-b from-gray-800 to-gray-900 border-gray-600 text-white;
+    }
+    .dark .content-wrapper, .dark .main-content-body {
+        @apply bg-gray-900 text-white;
+    }
+    .dark .page-header {
+        @apply bg-gray-800 border-gray-600;
+    }
+    .dark .alert-success {
+        @apply bg-green-900/20 text-green-300 border-green-600;
+    }
+    .dark .alert-danger {
+        @apply bg-red-900/20 text-red-300 border-red-600;
+    }
+}
+
+/* @layer utilities: Overlay & custom dari asli */
+@layer utilities {
+    .sidebar-overlay {
+        @apply fixed inset-0 bg-black/50 z-[999] opacity-0 invisible transition-all duration-300;
+    }
+    .sidebar-overlay.show {
+        @apply opacity-100 visible;
+    }
 }
