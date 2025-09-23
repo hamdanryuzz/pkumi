@@ -535,6 +535,13 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('courses.index') }}" class="nav-link {{ request()->routeIs('courses.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
+                            <i class="fa-solid fa-book nav-icon"></i>
+                            <span class="nav-text">Manage Mata Kuliah</span>
+                            <div class="nav-tooltip">Manage Mata Kuliah</div>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('grades.index') }}" class="nav-link {{ request()->routeIs('grades.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-clipboard-list nav-icon"></i>
                             <span class="nav-text">Manage Nilai</span>
