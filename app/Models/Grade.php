@@ -24,9 +24,14 @@ class Grade extends Model
     {
         return $this->belongsTo(Student::class);
     }
+
+    public function period()
+    {
+        return $this->belongsTo(Period::class);
+    }
     public function course()
     {
-        return $this->hasMany(Course::class);
+        return $this->belongsTo(Course::class); // bukan hasMany
     }
 
     public static function calculateFinalGrade($attendance, $assignment, $midterm, $final, $weights)

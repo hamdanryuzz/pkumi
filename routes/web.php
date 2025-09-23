@@ -11,6 +11,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\EnrollmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,4 +71,18 @@ Route::middleware('auth')->group(function () {
 
     // Course Management (rename ke plural 'courses' untuk konsistensi)
     Route::resource('courses', CourseController::class);
+
+    // Period Management
+    Route::patch('periods/{period}/activate', [PeriodController::class, 'activate'])->name('periods.activate');
+    Route::get('periods/{period}/courses', [PeriodController::class, 'getCourses'])->name('periods.courses');
+    Route::get('periods/{period}/stats', [PeriodController::class, 'getEnrollmentStats'])->name('periods.stats');
+    Route::resource('periods', PeriodController::class);
+
+    // Enrollment Management
+    Route::post('enrollments/bulk', [EnrollmentController::class, 'bulkStore'])->name('enrollments.bulk');
+    Route::patch('enrollments/{enrollment}/drop', [EnrollmentController::class, 'drop'])->name('enrollments.drop');
+    Route::patch('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
+    Route::get('enrollments/export', [EnrollmentController::class, 'export'])->name('enrollments.export');
+    Route::get('api/enrolled-students', [EnrollmentController::class, 'getEnrolledStudents'])->name('api.enrolled-students');
+    Route::resource('enrollments', EnrollmentController::class);
 });

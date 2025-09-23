@@ -514,6 +514,13 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('periods.index') }}" class="nav-link {{ request()->routeIs('periods.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
+                            <i class="fa-solid fa-graduation-cap nav-icon"></i>
+                            <span class="nav-text">Manage Tahun Ajaran</span>
+                            <div class="nav-tooltip">Manage Tahun Ajaran</div>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('years.index') }}" class="nav-link {{ request()->routeIs('years.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-graduation-cap nav-icon"></i>
                             <span class="nav-text">Manage Angkatan</span>
@@ -525,6 +532,13 @@
                             <i class="fa-solid fa-chalkboard-teacher nav-icon"></i>
                             <span class="nav-text">Manage Kelas</span>
                             <div class="nav-tooltip">Manage Kelas</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('enrollments.index') }}" class="nav-link {{ request()->routeIs('enrollments.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
+                            <i class="fa-solid fa-users nav-icon"></i>
+                            <span class="nav-text">Enrollments</span>
+                            <div class="nav-tooltip">Enrollments</div>
                         </a>
                     </li>
                     <li>

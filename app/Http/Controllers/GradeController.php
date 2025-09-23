@@ -6,6 +6,8 @@ use App\Models\Student;
 use App\Models\Course;
 use App\Models\Grade;
 use App\Models\GradeWeight;
+use App\Models\Period;
+use App\Models\Enrollment;
 use Illuminate\Http\Request;
 
 class GradeController extends Controller
@@ -15,27 +17,38 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil semua courses untuk dropdown
         $courses = Course::all();
+        $periods = Period::active()->get();
         
-        // Ambil course yang dipilih (jika ada)
         $selectedCourseId = $request->get('course_id');
+        $selectedPeriodId = $request->get('period_id');
         
-        // Ambil semua students
-        $students = Student::all();
+        // Hanya ambil students yang terdaftar di course dan period tertentu
+        $students = collect();
+        $grades = collect();
         
-        // Ambil weights untuk perhitungan
-        $weights = GradeWeight::getCurrentWeights();
-        
-        // Ambil grades untuk course yang dipilih
-        $grades = collect(); // empty collection sebagai default
-        if ($selectedCourseId) {
+        if ($selectedCourseId && $selectedPeriodId) {
+            // Ambil students yang terdaftar di course pada period tertentu
+            $students = Student::whereHas('enrollments', function($query) use ($selectedCourseId, $selectedPeriodId) {
+                $query->where('course_id', $selectedCourseId)
+                    ->where('period_id', $selectedPeriodId)
+                    ->where('status', 'enrolled');
+            })->get();
+            
+            // Ambil grades untuk course dan period yang dipilih
             $grades = Grade::where('course_id', $selectedCourseId)
-                          ->get()
-                          ->keyBy('student_id'); // index by student_id untuk akses mudah
+                ->where('period_id', $selectedPeriodId)
+                ->get()
+                ->keyBy('student_id');
         }
         
-        return view('grades.index', compact('students', 'courses', 'selectedCourseId', 'grades', 'weights'));
+        $weights = GradeWeight::getCurrentWeights();
+        
+        return view('grades.index', compact(
+            'students', 'courses', 'periods',
+            'selectedCourseId', 'selectedPeriodId', 
+            'grades', 'weights'
+        ));
     }
 
     /**
@@ -45,6 +58,7 @@ class GradeController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
+            'period_id' => 'required|exists:periods,id',
             'grades' => 'required|array',
             'grades.*.attendance_score' => 'nullable|numeric|min:0|max:100',
             'grades.*.assignment_score' => 'nullable|numeric|min:0|max:100',
@@ -54,28 +68,34 @@ class GradeController extends Controller
 
         $weights = GradeWeight::getCurrentWeights();
         $updatedCount = 0;
-        
+
         foreach ($request->grades as $studentId => $gradeData) {
-            // Filter out null/empty values
+            // Validasi bahwa student terdaftar di course pada period ini
+            $enrollment = Enrollment::where([
+                'student_id' => $studentId,
+                'course_id' => $request->course_id,
+                'period_id' => $request->period_id,
+                'status' => 'enrolled'
+            ])->first();
+
+            if (!$enrollment) {
+                continue; // Skip jika student tidak terdaftar
+            }
+
             $filteredData = array_filter($gradeData, function($value) {
                 return $value !== null && $value !== '';
             });
-            
-            // Skip if no data to save
+
             if (empty($filteredData)) {
                 continue;
             }
-            
-            // Use updateOrCreate for insert or update logic
-            $grade = Grade::updateOrCreate(
-                [
-                    'student_id' => $studentId,
-                    'course_id' => $request->course_id
-                ],
-                $filteredData
-            );
-            
-            // Calculate final grade if all components are present
+
+            $grade = Grade::updateOrCreate([
+                'student_id' => $studentId,
+                'course_id' => $request->course_id,
+                'period_id' => $request->period_id
+            ], $filteredData);
+
             if ($this->allScoresPresent($grade)) {
                 $finalGrade = Grade::calculateFinalGrade(
                     $grade->attendance_score,
@@ -84,18 +104,21 @@ class GradeController extends Controller
                     $grade->final_score,
                     $weights
                 );
-                
+
                 $grade->update([
                     'final_grade' => $finalGrade,
                     'letter_grade' => Grade::getLetterGrade($finalGrade)
                 ]);
             }
-            
+
             $updatedCount++;
         }
-        
+
         return redirect()
-            ->route('grades.index', ['course_id' => $request->course_id])
+            ->route('grades.index', [
+                'course_id' => $request->course_id,
+                'period_id' => $request->period_id
+            ])
             ->with('success', "Successfully updated grades for {$updatedCount} students!");
     }
 
