@@ -10,10 +10,13 @@ class StudentClassSeeder extends Seeder
     public function run(): void
     {
         $classes = [
-            ['year_id' => 1, 'name' => 'A'],
-            ['year_id' => 1, 'name' => 'B'],
-            ['year_id' => 2, 'name' => 'C'],
-            ['year_id' => 2, 'name' => 'D'],
+            ['year_id' => 1, 'name' => 'S2 PKUP'],
+            ['year_id' => 1, 'name' => 'S2 PKU'],
+            ['year_id' => 1, 'name' => 'S3 PKU'],
+
+            ['year_id' => 2, 'name' => 'S2 PKUP'],
+            ['year_id' => 2, 'name' => 'S2 PKU'],
+            ['year_id' => 2, 'name' => 'S3 PKU'],
         ];
 
         foreach ($classes as $class) {
