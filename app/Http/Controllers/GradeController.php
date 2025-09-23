@@ -18,7 +18,8 @@ class GradeController extends Controller
     public function index(Request $request)
     {
         $courses = Course::all();
-        $periods = Period::active()->get();
+        // $periods = Period::active()->get();
+        $periods = Period::all();
         
         $selectedCourseId = $request->get('course_id');
         $selectedPeriodId = $request->get('period_id');
