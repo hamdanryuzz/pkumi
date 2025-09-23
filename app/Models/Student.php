@@ -37,11 +37,32 @@ class Student extends Model
         return $this->belongsTo(StudentClass::class);
     }
 
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function periods()
+    {
+        return $this->belongsToMany(Period::class, 'enrollments')
+            ->withPivot(['course_id', 'enrollment_date', 'status'])
+            ->withTimestamps();
+    }
+
+    public function coursesInPeriod($periodId)
+    {
+        return $this->belongsToMany(Course::class, 'enrollments')
+            ->wherePivot('period_id', $periodId)
+            ->wherePivot('status', 'enrolled')
+            ->withPivot(['enrollment_date', 'status'])
+            ->withTimestamps();
+    }
+
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'grades')
-                    ->withPivot(['attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
-                    ->withTimestamps();
+            ->withPivot(['period_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
+            ->withTimestamps();
     }
 
 }

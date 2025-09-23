@@ -10,9 +10,8 @@ class YearSeeder extends Seeder
     public function run(): void
     {
         $years = [
-            ['name' => '2023/2024'],
-            ['name' => '2024/2025'],
-            ['name' => '2025/2026'],
+            ['name' => '2025-1'],
+            ['name' => '2025-2'],
         ];
 
         foreach ($years as $year) {

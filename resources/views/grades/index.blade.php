@@ -1,16 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Nilai - Sistem Penilaian PKUMI')
+@section('title', 'Kelola Nilai - Sistem Penilaian PKUMI')
 
-@section('page-title', 'Manage Nilai')
+@section('page-title', 'Kelola Nilai')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
+    <!-- Header Section -->
     <div class="mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Manage Nilai</h2>
-        <p class="text-base text-gray-500 mt-1">Input dan kelola nilai mahasiswa per mata kuliah</p>
+        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Kelola Nilai</h2>
+        <p class="text-base text-gray-500 mt-1">Input dan kelola nilai mahasiswa per mata kuliah berdasarkan periode</p>
     </div>
 
+    <!-- Success Alert -->
     @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
             <strong class="font-bold">Berhasil!</strong>
@@ -18,267 +20,417 @@
         </div>
     @endif
 
-    <!-- Course Selection Form -->
+    <!-- Error Alert -->
+    @if($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <ul class="list-disc list-inside mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <!-- Course and Period Selection Form -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h5 class="text-lg font-bold text-gray-800">Pilih Mata Kuliah</h5>
-            <p class="text-sm text-gray-600 mt-1">Pilih mata kuliah untuk mengelola nilai mahasiswa</p>
+        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <h5 class="text-lg font-bold text-gray-800">
+                <i class="fas fa-filter mr-2"></i>Pilih Mata Kuliah dan Period
+            </h5>
+            <p class="text-sm text-gray-600 mt-1">Pilih mata kuliah dan periode untuk mengelola nilai mahasiswa</p>
         </div>
         <div class="p-6">
-            <form method="GET" action="{{ route('grades.index') }}" class="flex gap-4 items-end">
-                <div class="flex-1">
+            <form method="GET" action="{{ route('grades.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                <!-- Period Selection -->
+                <div>
+                    <label for="period_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-calendar mr-1"></i>Period 
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <select name="period_id" id="period_id" 
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                            required>
+                        <option value="">Pilih Period</option>
+                        @foreach($periods as $period)
+                            <option value="{{ $period->id }}" {{ $selectedPeriodId == $period->id ? 'selected' : '' }}>
+                                {{ $period->name }}
+                                @if($period->status === 'active')
+                                    <span class="text-green-600">(Aktif)</span>
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Course Selection -->
+                <div>
                     <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        Mata Kuliah <span class="text-red-500">*</span>
+                        <i class="fas fa-book mr-1"></i>Mata Kuliah 
+                        <span class="text-red-500">*</span>
                     </label>
                     <select name="course_id" id="course_id" 
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            required onchange="this.form.submit()">
-                        <option value="">-- Pilih Mata Kuliah --</option>
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                            required>
+                        <option value="">Pilih Mata Kuliah</option>
                         @foreach($courses as $course)
-                            <option value="{{ $course->id }}" 
-                                    {{ $selectedCourseId == $course->id ? 'selected' : '' }}>
+                            <option value="{{ $course->id }}" {{ $selectedCourseId == $course->id ? 'selected' : '' }}>
                                 {{ $course->name }} ({{ $course->code }})
                             </option>
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" 
-                        class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
-                    <i class="fas fa-search mr-2"></i>Tampilkan
-                </button>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                        <i class="fas fa-search mr-2"></i>Tampilkan Mahasiswa
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
-    @if($selectedCourseId && $courses->find($selectedCourseId))
-        @php
-            $selectedCourse = $courses->find($selectedCourseId);
-        @endphp
-        
-        <!-- Grades Management Form -->
-        <form method="POST" action="{{ route('grades.store') }}" id="gradesForm">
-            @csrf
-            <input type="hidden" name="course_id" value="{{ $selectedCourseId }}">
-            
+    @if($selectedCourseId && $selectedPeriodId)
+        <!-- Selected Course and Period Info -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h5 class="text-lg font-bold text-gray-800">
+                            <i class="fas fa-graduation-cap mr-2"></i>
+                            {{ $courses->find($selectedCourseId)->name ?? 'Unknown Course' }}
+                        </h5>
+                        <p class="text-sm text-gray-600 mt-1">
+                            <i class="fas fa-calendar mr-1"></i>{{ $periods->find($selectedPeriodId)->name ?? 'Unknown Period' }} |
+                            <i class="fas fa-users mr-1"></i>{{ $students->count() }} mahasiswa terdaftar
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="{{ route('enrollments.index', ['course_id' => $selectedCourseId, 'period_id' => $selectedPeriodId]) }}" 
+                           class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-200">
+                            <i class="fas fa-list mr-2"></i>Lihat Enrollment
+                        </a>
+                        @if($students->count() > 0)
+                            <button type="button" onclick="exportGrades()" 
+                                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200">
+                                <i class="fas fa-file-excel mr-2"></i>Export
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if($students->count() > 0)
+            <!-- Grade Weights Info -->
+            @if($weights)
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-weight-hanging text-blue-600 mr-2"></i>
+                        <h6 class="font-bold text-blue-800">Bobot Penilaian</h6>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-blue-700">Kehadiran:</span>
+                            <span class="font-medium">{{ $weights->attendance_weight }}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-700">Tugas:</span>
+                            <span class="font-medium">{{ $weights->assignment_weight }}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-700">UTS:</span>
+                            <span class="font-medium">{{ $weights->midterm_weight }}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-blue-700">UAS:</span>
+                            <span class="font-medium">{{ $weights->final_weight }}%</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Grades Form -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <!-- Header with Course Info and Weights -->
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <div class="flex flex-wrap justify-between items-center">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-amber-50">
+                    <div class="flex justify-between items-center">
                         <div>
                             <h5 class="text-lg font-bold text-gray-800">
-                                Daftar Nilai Mahasiswa
+                                <i class="fas fa-edit mr-2"></i>Input Nilai Mahasiswa
                             </h5>
-                            <p class="text-sm text-gray-600 mt-1">
-                                <i class="fas fa-book mr-1"></i>{{ $selectedCourse->name }} 
-                                <span class="text-gray-400">|</span> 
-                                <i class="fas fa-code mr-1"></i>{{ $selectedCourse->code }}
-                            </p>
+                            <p class="text-sm text-gray-600 mt-1">Masukkan nilai untuk setiap komponen penilaian (0-100)</p>
                         </div>
-                        
-                        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-2 sm:mt-0">
-                            <span class="font-medium mr-1">Bobot Penilaian:</span>
-                            <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                <i class="fas fa-calendar-check mr-1"></i>Presensi {{ $weights->attendance_weight }}%
-                            </span>
-                            <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                                <i class="fas fa-tasks mr-1"></i>Tugas {{ $weights->assignment_weight }}%
-                            </span>
-                            <span class="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-                                <i class="fas fa-clipboard-check mr-1"></i>UTS {{ $weights->midterm_weight }}%
-                            </span>
-                            <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
-                                <i class="fas fa-graduation-cap mr-1"></i>UAS {{ $weights->final_weight }}%
-                            </span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="clearAllGrades()" 
+                                    class="bg-red-600 text-white px-3 py-1 text-sm rounded-md hover:bg-red-700 transition duration-200">
+                                <i class="fas fa-eraser mr-1"></i>Clear All
+                            </button>
+                            <button type="button" onclick="calculateAllGrades()" 
+                                    class="bg-purple-600 text-white px-3 py-1 text-sm rounded-md hover:bg-purple-700 transition duration-200">
+                                <i class="fas fa-calculator mr-1"></i>Hitung Semua
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Grades Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-id-card mr-1"></i>NIM
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-user mr-1"></i>NAMA MAHASISWA
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-calendar-check mr-1"></i>PRESENSI<br>
-                                    <span class="text-xs font-normal">({{ $weights->attendance_weight }}%)</span>
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-tasks mr-1"></i>TUGAS<br>
-                                    <span class="text-xs font-normal">({{ $weights->assignment_weight }}%)</span>
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-clipboard-check mr-1"></i>UTS<br>
-                                    <span class="text-xs font-normal">({{ $weights->midterm_weight }}%)</span>
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-graduation-cap mr-1"></i>UAS<br>
-                                    <span class="text-xs font-normal">({{ $weights->final_weight }}%)</span>
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-calculator mr-1"></i>NILAI AKHIR
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <i class="fas fa-medal mr-1"></i>HURUF
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($students as $student)
-                                @php
-                                    $grade = $grades->get($student->id);
-                                @endphp
-                                <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $student->nim }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                                <span class="text-blue-600 font-semibold text-sm">
-                                                    {{ strtoupper(substr($student->name, 0, 2)) }}
-                                                </span>
-                                            </div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Score Input Fields -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <input type="number" 
-                                               name="grades[{{ $student->id }}][attendance_score]"
-                                               value="{{ $grade?->attendance_score ?? '' }}"
-                                               placeholder="0-100"
-                                               min="0" max="100" step="0.01"
-                                               class="score-input w-20 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                               data-student="{{ $student->id }}" data-type="attendance">
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <input type="number" 
-                                               name="grades[{{ $student->id }}][assignment_score]"
-                                               value="{{ $grade?->assignment_score ?? '' }}"
-                                               placeholder="0-100"
-                                               min="0" max="100" step="0.01"
-                                               class="score-input w-20 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                               data-student="{{ $student->id }}" data-type="assignment">
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <input type="number" 
-                                               name="grades[{{ $student->id }}][midterm_score]"
-                                               value="{{ $grade?->midterm_score ?? '' }}"
-                                               placeholder="0-100"
-                                               min="0" max="100" step="0.01"
-                                               class="score-input w-20 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                               data-student="{{ $student->id }}" data-type="midterm">
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <input type="number" 
-                                               name="grades[{{ $student->id }}][final_score]"
-                                               value="{{ $grade?->final_score ?? '' }}"
-                                               placeholder="0-100"
-                                               min="0" max="100" step="0.01"
-                                               class="score-input w-20 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                               data-student="{{ $student->id }}" data-type="final">
-                                    </td>
-                                    
-                                    <!-- Calculated Results -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="text-sm font-bold" id="final-grade-{{ $student->id }}">
-                                            {{ $grade?->final_grade ? number_format($grade->final_grade, 2) : '-' }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div id="letter-grade-{{ $student->id }}">
-                                            @if($grade?->letter_grade)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                    {{ $grade->letter_grade >= 'A' ? 'bg-green-100 text-green-800' : ($grade->letter_grade >= 'B' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
-                                                    {{ $grade->letter_grade }}
-                                                </span>
-                                            @else
-                                                <span class="text-gray-400">-</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
+                <form action="{{ route('grades.store') }}" method="POST" id="gradesForm">
+                    @csrf
+                    <input type="hidden" name="course_id" value="{{ $selectedCourseId }}">
+                    <input type="hidden" name="period_id" value="{{ $selectedPeriodId }}">
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full" id="gradesTable">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <td colspan="8" class="px-6 py-8 text-center text-gray-500">
-                                        <i class="fas fa-users text-4xl mb-4"></i>
-                                        <p class="text-lg">Tidak ada data mahasiswa</p>
-                                    </td>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10 border-r border-gray-200">
+                                        <i class="fas fa-user mr-1"></i>Mahasiswa
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                        <i class="fas fa-calendar-check mr-1 text-blue-600"></i>
+                                        Kehadiran<br>
+                                        <span class="text-xs font-normal">({{ $weights->attendance_weight ?? 0 }}%)</span>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                        <i class="fas fa-tasks mr-1 text-green-600"></i>
+                                        Tugas<br>
+                                        <span class="text-xs font-normal">({{ $weights->assignment_weight ?? 0 }}%)</span>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                        <i class="fas fa-book-open mr-1 text-yellow-600"></i>
+                                        UTS<br>
+                                        <span class="text-xs font-normal">({{ $weights->midterm_weight ?? 0 }}%)</span>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                        <i class="fas fa-medal mr-1 text-red-600"></i>
+                                        UAS<br>
+                                        <span class="text-xs font-normal">({{ $weights->final_weight ?? 0 }}%)</span>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                                        <i class="fas fa-calculator mr-1 text-purple-600"></i>
+                                        Nilai Akhir
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                                        <i class="fas fa-trophy mr-1 text-orange-600"></i>
+                                        Grade
+                                    </th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($students as $student)
+                                    @php
+                                        $grade = $grades->get($student->id);
+                                    @endphp
+                                    <tr class="hover:bg-gray-50 transition-colors duration-150" data-student-id="{{ $student->id }}">
+                                        <!-- Student Info -->
+                                        <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white z-10 border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                                    <span class="text-blue-600 font-semibold text-sm">
+                                                        {{ strtoupper(substr($student->name, 0, 2)) }}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
+                                                    <div class="text-sm text-gray-500">{{ $student->nim }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
 
-                @if($students->count() > 0)
-                <!-- Footer with Actions -->
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-                    <div class="text-sm text-gray-600">
-                        Total {{ $students->count() }} mahasiswa
+                                        <!-- Attendance Score -->
+                                        <td class="px-4 py-4 text-center">
+                                            <input type="number" 
+                                                   name="grades[{{ $student->id }}][attendance_score]" 
+                                                   value="{{ old("grades.{$student->id}.attendance_score", $grade->attendance_score ?? '') }}"
+                                                   min="0" max="100" step="0.01"
+                                                   class="w-20 text-center border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 grade-input"
+                                                   data-field="attendance_score"
+                                                   placeholder="0-100">
+                                        </td>
+
+                                        <!-- Assignment Score -->
+                                        <td class="px-4 py-4 text-center">
+                                            <input type="number" 
+                                                   name="grades[{{ $student->id }}][assignment_score]" 
+                                                   value="{{ old("grades.{$student->id}.assignment_score", $grade->assignment_score ?? '') }}"
+                                                   min="0" max="100" step="0.01"
+                                                   class="w-20 text-center border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500 grade-input"
+                                                   data-field="assignment_score"
+                                                   placeholder="0-100">
+                                        </td>
+
+                                        <!-- Midterm Score -->
+                                        <td class="px-4 py-4 text-center">
+                                            <input type="number" 
+                                                   name="grades[{{ $student->id }}][midterm_score]" 
+                                                   value="{{ old("grades.{$student->id}.midterm_score", $grade->midterm_score ?? '') }}"
+                                                   min="0" max="100" step="0.01"
+                                                   class="w-20 text-center border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-yellow-500 grade-input"
+                                                   data-field="midterm_score"
+                                                   placeholder="0-100">
+                                        </td>
+
+                                        <!-- Final Score -->
+                                        <td class="px-4 py-4 text-center">
+                                            <input type="number" 
+                                                   name="grades[{{ $student->id }}][final_score]" 
+                                                   value="{{ old("grades.{$student->id}.final_score", $grade->final_score ?? '') }}"
+                                                   min="0" max="100" step="0.01"
+                                                   class="w-20 text-center border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-red-500 grade-input"
+                                                   data-field="final_score"
+                                                   placeholder="0-100">
+                                        </td>
+
+                                        <!-- Final Grade (Calculated) -->
+                                        <td class="px-4 py-4 text-center">
+                                            <div class="final-grade font-bold text-lg {{ $grade && $grade->final_grade ? 'text-purple-600' : 'text-gray-400' }}">
+                                                {{ $grade && $grade->final_grade ? number_format($grade->final_grade, 2) : '-' }}
+                                            </div>
+                                        </td>
+
+                                        <!-- Letter Grade -->
+                                        <td class="px-4 py-4 text-center">
+                                            <div class="letter-grade">
+                                                @if($grade && $grade->letter_grade)
+                                                    @php
+                                                        $gradeColors = [
+                                                            'A+' => 'bg-green-100 text-green-800',
+                                                            'A' => 'bg-green-100 text-green-800',
+                                                            'A-' => 'bg-blue-100 text-blue-800',
+                                                            'B+' => 'bg-blue-100 text-blue-800',
+                                                            'B' => 'bg-yellow-100 text-yellow-800',
+                                                            'B-' => 'bg-yellow-100 text-yellow-800',
+                                                            'C' => 'bg-red-100 text-red-800'
+                                                        ];
+                                                        $colorClass = $gradeColors[$grade->letter_grade] ?? 'bg-gray-100 text-gray-800';
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $colorClass }}">
+                                                        {{ $grade->letter_grade }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="flex gap-3">
-                        <button type="button" id="calculateAll" 
-                                class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200">
-                            <i class="fas fa-calculator mr-2"></i>Preview Perhitungan
-                        </button>
-                        <button type="submit" 
-                                class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200">
-                            <i class="fas fa-save mr-2"></i>Simpan Semua Nilai
-                        </button>
+
+                    <!-- Form Actions -->
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-600">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Nilai akan otomatis dihitung berdasarkan bobot yang telah ditentukan
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="button" onclick="resetForm()" 
+                                        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                                    <i class="fas fa-undo mr-2"></i>Reset
+                                </button>
+                                <button type="submit" 
+                                        class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                                    <i class="fas fa-save mr-2"></i>Simpan Nilai
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                @endif
+                </form>
             </div>
-        </form>
-    @elseif($selectedCourseId)
+        @else
+            <!-- No Students Enrolled -->
+            <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                <i class="fas fa-user-slash text-4xl text-gray-400 mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Tidak Ada Mahasiswa Terdaftar</h3>
+                <p class="text-gray-600 mb-4">
+                    Belum ada mahasiswa yang terdaftar pada mata kuliah ini di period yang dipilih.
+                </p>
+                <a href="{{ route('enrollments.create', ['course_id' => $selectedCourseId, 'period_id' => $selectedPeriodId]) }}" 
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-user-plus mr-2"></i>Tambah Enrollment
+                </a>
+            </div>
+        @endif
+    @else
+        <!-- Initial State - No Selection -->
         <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-            <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Mata Kuliah Tidak Ditemukan</h3>
-            <p class="text-gray-600">Mata kuliah yang dipilih tidak tersedia. Silakan pilih mata kuliah lain.</p>
+            <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Pilih Period dan Mata Kuliah</h3>
+            <p class="text-gray-600">
+                Pilih period dan mata kuliah di atas untuk mulai mengelola nilai mahasiswa.
+            </p>
         </div>
     @endif
 </main>
-@endsection
 
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-calculate preview functionality
-    const calculateButton = document.getElementById('calculateAll');
-    const scoreInputs = document.querySelectorAll('.score-input');
-    
-    // Weights from server
+    // Grade weights from backend
     const weights = {
-        attendance: {{ $weights->attendance_weight }},
-        assignment: {{ $weights->assignment_weight }},
-        midterm: {{ $weights->midterm_weight }},
-        final: {{ $weights->final_weight }}
+        attendance: {{ $weights->attendance_weight ?? 0 }} / 100,
+        assignment: {{ $weights->assignment_weight ?? 0 }} / 100,
+        midterm: {{ $weights->midterm_weight ?? 0 }} / 100,
+        final: {{ $weights->final_weight ?? 0 }} / 100
     };
-    
-    // Calculate final grade
-    function calculateFinalGrade(attendance, assignment, midterm, final) {
-        if (!attendance || !assignment || !midterm || !final) {
-            return null;
+
+    // Add event listeners to all grade inputs
+    document.querySelectorAll('.grade-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const row = this.closest('tr');
+            calculateRowGrade(row);
+        });
+
+        input.addEventListener('blur', function() {
+            // Validate input value
+            const value = parseFloat(this.value);
+            if (value > 100) {
+                this.value = 100;
+                this.classList.add('border-red-500');
+                setTimeout(() => this.classList.remove('border-red-500'), 2000);
+            } else if (value < 0) {
+                this.value = 0;
+                this.classList.add('border-red-500');
+                setTimeout(() => this.classList.remove('border-red-500'), 2000);
+            }
+        });
+    });
+
+    function calculateRowGrade(row) {
+        const attendanceInput = row.querySelector('[data-field="attendance_score"]');
+        const assignmentInput = row.querySelector('[data-field="assignment_score"]');
+        const midtermInput = row.querySelector('[data-field="midterm_score"]');
+        const finalInput = row.querySelector('[data-field="final_score"]');
+        
+        const attendance = parseFloat(attendanceInput.value) || 0;
+        const assignment = parseFloat(assignmentInput.value) || 0;
+        const midterm = parseFloat(midtermInput.value) || 0;
+        const final = parseFloat(finalInput.value) || 0;
+
+        // Calculate final grade only if all scores are entered
+        if (attendance > 0 || assignment > 0 || midterm > 0 || final > 0) {
+            const finalGrade = (
+                attendance * weights.attendance +
+                assignment * weights.assignment +
+                midterm * weights.midterm +
+                final * weights.final
+            );
+
+            // Update final grade display
+            const finalGradeElement = row.querySelector('.final-grade');
+            finalGradeElement.textContent = finalGrade.toFixed(2);
+            finalGradeElement.classList.remove('text-gray-400');
+            finalGradeElement.classList.add('text-purple-600');
+
+            // Update letter grade
+            const letterGrade = getLetterGrade(finalGrade);
+            const letterGradeElement = row.querySelector('.letter-grade');
+            letterGradeElement.innerHTML = `<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getGradeColor(letterGrade)}">${letterGrade}</span>`;
         }
-        
-        const finalGrade = (
-            (attendance * weights.attendance / 100) +
-            (assignment * weights.assignment / 100) +
-            (midterm * weights.midterm / 100) +
-            (final * weights.final / 100)
-        );
-        
-        return Math.round(finalGrade * 100) / 100;
     }
-    
-    // Get letter grade
+
     function getLetterGrade(score) {
         if (score >= 95) return 'A+';
         if (score >= 90) return 'A';
@@ -288,78 +440,108 @@ document.addEventListener('DOMContentLoaded', function() {
         if (score >= 70) return 'B-';
         return 'C';
     }
-    
-    // Preview calculation for a student
-    function previewCalculation(studentId) {
-        const attendance = parseFloat(document.querySelector(`input[name="grades[${studentId}][attendance_score]"]`).value) || null;
-        const assignment = parseFloat(document.querySelector(`input[name="grades[${studentId}][assignment_score]"]`).value) || null;
-        const midterm = parseFloat(document.querySelector(`input[name="grades[${studentId}][midterm_score]"]`).value) || null;
-        const finalScore = parseFloat(document.querySelector(`input[name="grades[${studentId}][final_score]"]`).value) || null;
-        
-        const finalGrade = calculateFinalGrade(attendance, assignment, midterm, finalScore);
-        const letterGrade = finalGrade ? getLetterGrade(finalGrade) : null;
-        
-        // Update preview display
-        const finalGradeElement = document.getElementById(`final-grade-${studentId}`);
-        const letterGradeElement = document.getElementById(`letter-grade-${studentId}`);
-        
-        if (finalGrade) {
-            finalGradeElement.innerHTML = `<span class="text-blue-600">${finalGrade.toFixed(2)} *</span>`;
-            
-            const badgeColor = letterGrade >= 'A' ? 'bg-green-100 text-green-800' : 
-                              letterGrade >= 'B' ? 'bg-blue-100 text-blue-800' : 
-                              'bg-gray-100 text-gray-800';
-                              
-            letterGradeElement.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeColor}">${letterGrade} *</span>`;
-        } else {
-            finalGradeElement.innerHTML = '<span class="text-gray-400">-</span>';
-            letterGradeElement.innerHTML = '<span class="text-gray-400">-</span>';
-        }
+
+    function getGradeColor(grade) {
+        const gradeColors = {
+            'A+': 'bg-green-100 text-green-800',
+            'A': 'bg-green-100 text-green-800',
+            'A-': 'bg-blue-100 text-blue-800',
+            'B+': 'bg-blue-100 text-blue-800',
+            'B': 'bg-yellow-100 text-yellow-800',
+            'B-': 'bg-yellow-100 text-yellow-800',
+            'C': 'bg-red-100 text-red-800'
+        };
+        return gradeColors[grade] || 'bg-gray-100 text-gray-800';
     }
-    
-    // Calculate all students preview
-    if (calculateButton) {
-        calculateButton.addEventListener('click', function() {
-            scoreInputs.forEach(input => {
-                const studentId = input.getAttribute('data-student');
-                previewCalculation(studentId);
+
+    // Global functions
+    window.calculateAllGrades = function() {
+        document.querySelectorAll('tbody tr').forEach(row => {
+            calculateRowGrade(row);
+        });
+    };
+
+    window.clearAllGrades = function() {
+        if (confirm('Yakin ingin menghapus semua nilai yang sudah diinput?')) {
+            document.querySelectorAll('.grade-input').forEach(input => {
+                input.value = '';
             });
-            
-            // Show info message
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6';
-            infoDiv.innerHTML = '<strong class="font-bold">Preview Perhitungan!</strong> <span class="block sm:inline">Nilai yang ditampilkan dengan tanda (*) adalah hasil perhitungan sementara. Klik "Simpan" untuk menyimpan ke database.</span>';
-            
-            const existingInfo = document.querySelector('.bg-blue-100');
-            if (existingInfo) existingInfo.remove();
-            
-            document.querySelector('main').insertBefore(infoDiv, document.querySelector('.bg-white'));
-            
-            setTimeout(() => infoDiv.remove(), 5000);
-        });
-    }
-    
-    // Auto-preview on input change
-    scoreInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            const studentId = this.getAttribute('data-student');
-            setTimeout(() => previewCalculation(studentId), 300);
-        });
+            document.querySelectorAll('.final-grade').forEach(element => {
+                element.textContent = '-';
+                element.classList.remove('text-purple-600');
+                element.classList.add('text-gray-400');
+            });
+            document.querySelectorAll('.letter-grade').forEach(element => {
+                element.innerHTML = '<span class="text-gray-400">-</span>';
+            });
+        }
+    };
+
+    window.resetForm = function() {
+        if (confirm('Yakin ingin mereset form ke kondisi awal?')) {
+            document.getElementById('gradesForm').reset();
+            calculateAllGrades();
+        }
+    };
+
+    window.exportGrades = function() {
+        const courseId = {{ $selectedCourseId ?? 'null' }};
+        const periodId = {{ $selectedPeriodId ?? 'null' }};
+        
+        if (courseId && periodId) {
+            window.location.href = `/grades/export?course_id=${courseId}&period_id=${periodId}`;
+        }
+    };
+
+    // Form submission handler
+    document.getElementById('gradesForm').addEventListener('submit', function(e) {
+        const hasData = Array.from(document.querySelectorAll('.grade-input')).some(input => input.value.trim() !== '');
+        
+        if (!hasData) {
+            e.preventDefault();
+            alert('Masukkan setidaknya satu nilai sebelum menyimpan.');
+            return false;
+        }
+
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
     });
-    
-    // Form validation
-    const form = document.getElementById('gradesForm');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const hasAnyInput = Array.from(scoreInputs).some(input => input.value.trim() !== '');
-            
-            if (!hasAnyInput) {
-                e.preventDefault();
-                alert('Silakan masukkan minimal satu nilai sebelum menyimpan.');
-                return false;
-            }
-        });
-    }
 });
 </script>
+@endsection
+
+<style>
+/* Custom scrollbar for horizontal table scroll */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Sticky column styling */
+.sticky {
+    position: sticky;
+    z-index: 10;
+}
+
+/* Input focus styles */
+.grade-input:focus {
+    transform: scale(1.02);
+    transition: transform 0.1s ease-in-out;
+}
+</style>
 @endsection
