@@ -18,7 +18,7 @@ class PeriodSeeder extends Seeder
             'end_date' => '2025-06-30',
             'enrollment_start_date' => '2025-01-01',
             'enrollment_end_date' => '2025-01-31',
-            'status' => 'active'
+            'status' => 'draft'
         ]);
 
         // Semester Ganjil 2025/2026 (akan datang setelah Juni 2025)
@@ -27,9 +27,9 @@ class PeriodSeeder extends Seeder
             'code' => '2025-2',
             'start_date' => '2025-08-01',
             'end_date' => '2025-12-31',
-            'enrollment_start_date' => '2025-07-01',
-            'enrollment_end_date' => '2025-07-31',
-            'status' => 'draft'
+            'enrollment_start_date' => '2025-09-01',
+            'enrollment_end_date' => '2025-09-30',
+            'status' => 'active'
         ]);
     }
 }
