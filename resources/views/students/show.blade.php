@@ -1,208 +1,406 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Mahasiswa - Sistem Penilaian PKUMI')
+@section('title', 'Detail Mahasiswa - ' . $student->name)
 
 @section('content')
-<main class="py-6 px-4 md:px-8">
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Detail Mahasiswa</h2>
-            <p class="text-base text-gray-500 mt-1">Informasi lengkap mahasiswa dan nilai akademik.</p>
-        </div>
-        <div class="flex gap-2">
-            <a href="{{ route('students.edit', $student) }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-md transition duration-200">
-                <i class="fas fa-edit mr-2"></i>
-                Edit Data
-            </a>
-            <a href="{{ route('students.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md transition duration-200">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Kembali
-            </a>
+<div class="p-6">
+    <!-- Header Section yang sama seperti sebelumnya -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Detail Mahasiswa</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Informasi lengkap dan nilai akademik mahasiswa
+                </p>
+            </div>
+            <div class="flex space-x-2">
+                <a href="{{ route('students.index') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Kembali
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Student Profile Card -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8 text-center text-white">
-                    <div class="w-20 h-20 rounded-full bg-white bg-opacity-20 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                        {{ substr($student->name, 0, 1) }}
-                    </div>
-                    <h3 class="text-xl font-bold">{{ $student->name }}</h3>
-                    <p class="text-blue-100 mt-1">{{ $student->nim }}</p>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium mt-3 {{ $student->status == 'active' ? 'bg-green-500 text-white' : 'bg-gray-500 text-white' }}">
-                        {{ ucfirst($student->status) }}
-                    </span>
-                </div>
-                
-                <div class="p-6">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Informasi Dasar</h4>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">NIM:</span>
-                            <code class="bg-gray-100 px-2 py-1 rounded text-sm">{{ $student->nim }}</code>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Username:</span>
-                            @if($student->username)
-                                <code class="bg-blue-50 px-2 py-1 rounded text-sm text-blue-700">{{ $student->username }}</code>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Email:</span>
-                            <span class="text-gray-900">{{ $student->email ?? '-' }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Telepon:</span>
-                            <span class="text-gray-900">{{ $student->phone ?? '-' }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Tahun:</span>
-                            <span class="text-gray-900">{{ $student->year->name ?? '-' }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Kelas:</span>
-                            <span class="text-gray-900">{{ $student->studentClass->name ?? '-' }}</span>
-                        </div>
-                    </div>
-                    
-                    @if($student->address)
-                    <div class="mt-6">
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Alamat</h5>
-                        <p class="text-gray-600 text-sm bg-gray-50 p-3 rounded">{{ $student->address }}</p>
-                    </div>
-                    @endif
-                    
-                    <div class="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500">
-                        <p>Dibuat: {{ $student->created_at->format('d M Y H:i') }}</p>
-                        @if($student->updated_at != $student->created_at)
-                            <p>Diubah: {{ $student->updated_at->format('d M Y H:i') }}</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
+    <!-- Student Information Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Informasi Mahasiswa
+            </h2>
         </div>
-
-        <!-- Academic Info & Grades -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Grade Overview Card -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h4 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-chart-line text-blue-500 mr-2"></i>
-                        Nilai Akademik
-                    </h4>
-                </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Existing fields... -->
                 
-                <div class="p-6">
-                    @if($student->grade)
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                            <div class="bg-blue-50 p-4 rounded-lg text-center">
-                                <div class="text-2xl font-bold text-blue-600">
-                                    {{ $student->grade->attendance_score ?? '0' }}
-                                </div>
-                                <div class="text-sm text-gray-600">Kehadiran</div>
-                            </div>
-                            <div class="bg-green-50 p-4 rounded-lg text-center">
-                                <div class="text-2xl font-bold text-green-600">
-                                    {{ $student->grade->assignment_score ?? '0' }}
-                                </div>
-                                <div class="text-sm text-gray-600">Tugas</div>
-                            </div>
-                            <div class="bg-yellow-50 p-4 rounded-lg text-center">
-                                <div class="text-2xl font-bold text-yellow-600">
-                                    {{ $student->grade->exam_score ?? '0' }}
-                                </div>
-                                <div class="text-sm text-gray-600">Ujian</div>
-                            </div>
-                            <div class="bg-purple-50 p-4 rounded-lg text-center">
-                                <div class="text-2xl font-bold text-purple-600">
-                                    {{ $student->grade->final_grade ? number_format($student->grade->final_grade, 2) : '0' }}
-                                </div>
-                                <div class="text-sm text-gray-600">Nilai Akhir</div>
-                            </div>
-                        </div>
+                <!-- NIM -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Nomor Induk Mahasiswa (NIM)</label>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-2 text-sm font-mono bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-gray-600">
+                            <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            {{ $student->nim }}
+                        </span>
+                    </div>
+                </div>
 
-                        @if($student->grade->final_grade)
-                            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg text-center">
-                                <div class="text-4xl font-bold text-indigo-600 mb-2">
-                                    {{ $student->grade->letter_grade ?? 'N/A' }}
-                                </div>
-                                <div class="text-lg text-gray-700">Grade Huruf</div>
-                                <div class="text-sm text-gray-500 mt-2">
-                                    Nilai Akhir: {{ number_format($student->grade->final_grade, 2) }}
-                                </div>
-                            </div>
-                        @else
-                            <div class="bg-gray-50 p-6 rounded-lg text-center">
-                                <i class="fas fa-exclamation-triangle text-gray-400 text-3xl mb-3"></i>
-                                <p class="text-gray-600">Belum ada nilai yang diinput</p>
-                                <p class="text-sm text-gray-500">Hubungi admin untuk input nilai</p>
-                            </div>
-                        @endif
+                <!-- Username -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Username</label>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-2 text-sm font-mono bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-gray-600">
+                            <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            {{ $student->username }}
+                        </span>
+                    </div>
+                </div>
 
-                        <div class="mt-6 pt-4 border-t border-gray-200">
-                            <h5 class="text-sm font-semibold text-gray-700 mb-3">Detail Penilaian</h5>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Kehadiran:</span>
-                                    <span class="font-medium">{{ $student->grade->attendance_score ?? '0' }}/100</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Tugas:</span>
-                                    <span class="font-medium">{{ $student->grade->assignment_score ?? '0' }}/100</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Ujian:</span>
-                                    <span class="font-medium">{{ $student->grade->exam_score ?? '0' }}/100</span>
-                                </div>
-                            </div>
-                            @if($student->grade->updated_at)
-                                <p class="text-xs text-gray-500 mt-3">
-                                    Terakhir diubah: {{ $student->grade->updated_at->format('d M Y H:i') }}
-                                </p>
-                            @endif
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email</label>
+                    @if($student->email)
+                        <div class="flex items-center">
+                            <a href="mailto:{{ $student->email }}" class="inline-flex items-center px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                {{ $student->email }}
+                            </a>
                         </div>
                     @else
-                        <div class="text-center py-8">
-                            <i class="fas fa-clipboard-list text-gray-300 text-4xl mb-4"></i>
-                            <p class="text-gray-600">Belum ada data nilai untuk mahasiswa ini</p>
-                            <p class="text-sm text-gray-500">Data nilai akan muncul setelah diinput oleh admin</p>
-                        </div>
+                        <div class="text-sm text-gray-400 dark:text-gray-500 italic py-2">Belum diatur</div>
                     @endif
                 </div>
-            </div>
 
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h4 class="text-lg font-bold text-gray-800">Aksi Cepat</h4>
+                <!-- Nomor Telepon -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Nomor Telepon</label>
+                    @if($student->phone)
+                        <div class="flex items-center">
+                            <a href="tel:{{ $student->phone }}" class="inline-flex items-center px-3 py-2 text-sm text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                {{ $student->phone }}
+                            </a>
+                        </div>
+                    @else
+                        <div class="text-sm text-gray-400 dark:text-gray-500 italic py-2">Belum diatur</div>
+                    @endif
                 </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <a href="{{ route('students.edit', $student) }}" class="flex items-center justify-center px-4 py-3 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-lg transition duration-200">
-                            <i class="fas fa-edit mr-2"></i>
-                            Edit Data
-                        </a>
-                        <a href="{{ route('grades.index') }}?student={{ $student->id }}" class="flex items-center justify-center px-4 py-3 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition duration-200">
-                            <i class="fas fa-chart-bar mr-2"></i>
-                            Kelola Nilai
-                        </a>
-                        <form action="{{ route('students.destroy', $student) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus mahasiswa ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-full flex items-center justify-center px-4 py-3 bg-red-100 hover:bg-red-200 text-red-800 rounded-lg transition duration-200">
-                                <i class="fas fa-trash mr-2"></i>
-                                Hapus
-                            </button>
-                        </form>
+
+                <!-- Kelas -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Kelas</label>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-2 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            {{ $student->studentClass->name ?? '-' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Tahun Angkatan -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Tahun Angkatan</label>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-2 text-sm bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg border border-purple-200 dark:border-purple-800">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-6 0h6m-6 0l6 0m6 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2V11a2 2 0 012-2h12a2 2 0 012 2z"/>
+                            </svg>
+                            {{ $student->year->name ?? '-' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Alamat -->
+                @if($student->address)
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Alamat Lengkap</label>
+                        <div class="flex items-start p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <address class="text-sm text-gray-900 dark:text-white not-italic leading-relaxed">
+                                    {{ $student->address }}
+                                </address>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Alamat Lengkap</label>
+                        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <div class="text-sm text-gray-400 dark:text-gray-500 italic">Alamat belum diatur</div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Informasi Tambahan (timestamp) -->
+                <div class="md:col-span-2 lg:col-span-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tanggal Dibuat</label>
+                            <div class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-6 0h6m-6 0l6 0m6 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2V11a2 2 0 012-2h12a2 2 0 012 2z"/>
+                                </svg>
+                                {{ $student->created_at->format('d M Y, H:i') }} WIB
+                            </div>
+                        </div>
+                        @if($student->updated_at && $student->updated_at != $student->created_at)
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Terakhir Diubah</label>
+                                <div class="flex items-center text-gray-600 dark:text-gray-300">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    {{ $student->updated_at->format('d M Y, H:i') }} WIB
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</main>
+
+    <!-- Course Enrollments Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Mata Kuliah & Nilai</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Total: {{ $enrollments->total() }} mata kuliah
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter (sama seperti sebelumnya) -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <form method="GET" action="{{ route('students.show', $student->id) }}" class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <input type="text" 
+                           name="search" 
+                           value="{{ $search }}"
+                           placeholder="Cari mata kuliah..."
+                           class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                </div>
+                <div class="sm:w-64">
+                    <select name="period_id" 
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <option value="">Semua Tahun Ajaran</option>
+                        @foreach($periods as $period)
+                            <option value="{{ $period->id }}" {{ $periodFilter == $period->id ? 'selected' : '' }}>
+                                {{ $period->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg">
+                        Cari
+                    </button>
+                    @if($search || $periodFilter)
+                        <a href="{{ route('students.show', $student->id) }}" 
+                           class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mata Kuliah</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tahun Ajaran</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SKS</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kehadiran</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tugas</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">UTS</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">UAS</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nilai Akhir</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Grade</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    @forelse($enrollments as $enrollment)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <!-- Method 1: Jika menggunakan Eloquent dengan grade relation -->
+                            @if(method_exists($enrollment, 'course'))
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $enrollment->course->name ?? '-' }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $enrollment->course->code ?? '-' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->period->name ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->course->credits ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->grade->attendance_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->grade->assignment_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->grade->midterm_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->grade->final_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @if($enrollment->grade && $enrollment->grade->final_grade)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ $enrollment->grade->final_grade }}
+                                        </span>
+                                    @else
+                                        <span class="text-sm text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @if($enrollment->grade && $enrollment->grade->letter_grade)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                            @if(in_array($enrollment->grade->letter_grade, ['A', 'A+'])) bg-green-100 text-green-800
+                                            @elseif(in_array($enrollment->grade->letter_grade, ['A-', 'B+'])) bg-blue-100 text-blue-800
+                                            @elseif(in_array($enrollment->grade->letter_grade, ['B', 'B-'])) bg-yellow-100 text-yellow-800
+                                            @else bg-red-100 text-red-800
+                                            @endif">
+                                            {{ $enrollment->grade->letter_grade }}
+                                        </span>
+                                    @else
+                                        <span class="text-sm text-gray-400">-</span>
+                                    @endif
+                                </td>
+                            @else
+                                <!-- Method 2: Jika menggunakan DB query dengan left join -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $enrollment->course_name ?? '-' }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $enrollment->course_code ?? '-' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->period_name ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->credits ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->attendance_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->assignment_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->midterm_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
+                                    {{ $enrollment->final_score ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @if($enrollment->final_grade)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ $enrollment->final_grade }}
+                                        </span>
+                                    @else
+                                        <span class="text-sm text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @if($enrollment->letter_grade)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                            @if(in_array($enrollment->letter_grade, ['A', 'A+'])) bg-green-100 text-green-800
+                                            @elseif(in_array($enrollment->letter_grade, ['A-', 'B+'])) bg-blue-100 text-blue-800
+                                            @elseif(in_array($enrollment->letter_grade, ['B', 'B-'])) bg-yellow-100 text-yellow-800
+                                            @else bg-red-100 text-red-800
+                                            @endif">
+                                            {{ $enrollment->letter_grade }}
+                                        </span>
+                                    @else
+                                        <span class="text-sm text-gray-400">-</span>
+                                    @endif
+                                </td>
+                            @endif
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                @if($enrollment->grade_id ?? $enrollment->grade)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Sudah Dinilai
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Belum Dinilai
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                                        @if($search || $periodFilter)
+                                            Tidak Ada Data Ditemukan
+                                        @else
+                                            Belum Ada Enrollment
+                                        @endif
+                                    </h3>
+                                    <p class="text-gray-500 dark:text-gray-400">
+                                        @if($search || $periodFilter)
+                                            Tidak ada mata kuliah yang sesuai dengan filter yang dipilih.
+                                        @else
+                                            Mahasiswa belum melakukan pendaftaran mata kuliah.
+                                        @endif
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if($enrollments->hasPages())
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                {{ $enrollments->appends(request()->query())->links() }}
+            </div>
+        @endif
+    </div>
+</div>
 @endsection

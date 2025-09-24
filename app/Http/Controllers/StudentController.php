@@ -6,6 +6,8 @@ use App\Models\Student;
 use App\Models\Grade;
 use App\Models\Year;
 use App\Models\StudentClass;
+use App\Models\Period;
+use App\Models\Enrollment;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
@@ -121,9 +123,54 @@ class StudentController extends Controller
         return view('students.success', compact('studentData'));
     }
 
-    public function show(Student $student)
+    public function show(Request $request, Student $student)
     {
-        return view('students.show', compact('student'));
+        // Load relasi yang dibutuhkan
+        $student->load(['studentClass', 'year']);
+        
+        $search = $request->get('search');
+        $periodFilter = $request->get('period_id');
+        
+        // Ambil semua period untuk dropdown filter
+        $periods = Period::all();
+        
+        // Base query untuk enrollments mahasiswa dengan relasi course dan period
+        $enrollmentQuery = Enrollment::where('student_id', $student->id)
+            ->with(['course', 'period'])
+            ->where('status', 'enrolled');
+        
+        // Filter berdasarkan pencarian mata kuliah
+        if ($search) {
+            $enrollmentQuery->whereHas('course', function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filter berdasarkan period/tahun ajaran
+        if ($periodFilter) {
+            $enrollmentQuery->where('period_id', $periodFilter);
+        }
+        
+        // Ambil data enrollments dengan paginasi
+        $enrollments = $enrollmentQuery->paginate(10);
+        
+        // Untuk setiap enrollment, ambil grade yang sesuai jika ada
+        $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) {
+            $grade = Grade::where('student_id', $enrollment->student_id)
+                        ->where('course_id', $enrollment->course_id)
+                        ->where('period_id', $enrollment->period_id)
+                        ->first();
+            
+            // Tambahkan grade data ke enrollment object
+            $enrollment->grade = $grade;
+            return $enrollment;
+        });
+        
+        // Replace collection dengan data yang sudah di-map
+        $enrollments->setCollection($enrollmentWithGrades);
+        
+        return view('students.show', compact('student', 'enrollments', 'periods', 'search', 'periodFilter'));
     }
 
     public function edit(Student $student)
