@@ -3,91 +3,88 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\StudentClass;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
-    /**
-     * Tampilkan daftar course.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // jika mau pagination: Course::latest()->paginate(10)
-        $courses = Course::orderBy('name')->get();
-
-        return view('courses.index', compact('courses'));
+        $query = Course::with(['studentClass.year']);
+        
+        // Filter berdasarkan student_class_id jika ada
+        if ($request->filled('student_class_id')) {
+            $query->where('student_class_id', $request->student_class_id);
+        }
+        
+        // Filter berdasarkan search (nama atau kode course)
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('code', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        $courses = $query->orderBy('name')->paginate(10)->withQueryString();
+        $studentClasses = StudentClass::with('year')->orderBy('name')->get();
+        
+        return view('courses.index', compact('courses', 'studentClasses'));
     }
 
-    /**
-     * Tampilkan form create.
-     */
     public function create()
     {
-        return view('courses.create');
+        $studentClasses = StudentClass::with('year')->get();
+        return view('courses.create', compact('studentClasses'));
     }
 
-    /**
-     * Simpan data baru.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            // unik di tabel courses sesuai migration (unique di kolom code)
             'code' => ['required', 'string', 'max:255', 'unique:courses,code'],
+            'student_class_id' => ['required', 'exists:student_classes,id']
         ]);
 
         Course::create($validated);
-
+        
         return redirect()
             ->route('courses.index')
             ->with('success', 'Course berhasil dibuat.');
     }
 
-    /**
-     * Detail satu course (opsional, jika diperlukan).
-     */
     public function show(Course $course)
     {
+        $course->load('studentClass.year');
         return view('courses.show', compact('course'));
     }
 
-    /**
-     * Tampilkan form edit.
-     */
     public function edit(Course $course)
     {
-        return view('courses.edit', compact('course'));
+        $studentClasses = StudentClass::with('year')->get();
+        return view('courses.edit', compact('course', 'studentClasses'));
     }
 
-    /**
-     * Update data.
-     */
     public function update(Request $request, Course $course)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            // unique tapi ignore id yang sedang diedit
             'code' => [
                 'required', 'string', 'max:255',
                 Rule::unique('courses', 'code')->ignore($course->id),
             ],
+            'student_class_id' => ['required', 'exists:student_classes,id']
         ]);
 
         $course->update($validated);
-
+        
         return redirect()
             ->route('courses.index')
             ->with('success', 'Course berhasil diperbarui.');
     }
 
-    /**
-     * Hapus data.
-     */
     public function destroy(Course $course)
     {
-        // Cegah penghapusan jika masih punya relasi grade
         if ($course->grades()->exists()) {
             return redirect()
                 ->route('courses.index')
@@ -95,7 +92,7 @@ class CourseController extends Controller
         }
 
         $course->delete();
-
+        
         return redirect()
             ->route('courses.index')
             ->with('success', 'Course berhasil dihapus.');

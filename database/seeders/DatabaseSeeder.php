@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PeriodSeeder::class,
             YearSeeder::class,
-            CourseSeeder::class,
             StudentClassSeeder::class, // harus ada sebelum StudentSeeder
+            CourseSeeder::class,
         ]);
 
          User::create([

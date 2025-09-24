@@ -33,6 +33,11 @@ class StudentClass extends Model
         return $this->hasMany(Student::class, 'student_class_id');
     }
 
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'student_class_id');
+    }
+
     /**
      * Accessor untuk nama lengkap (opsional, untuk tampilan).
      */

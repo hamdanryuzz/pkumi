@@ -535,13 +535,6 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('enrollments.index') }}" class="nav-link {{ request()->routeIs('enrollments.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
-                            <i class="fa-solid fa-users nav-icon"></i>
-                            <span class="nav-text">Enrollments</span>
-                            <div class="nav-tooltip">Enrollments</div>
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('students.index') }}" class="nav-link {{ request()->routeIs('students.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-users nav-icon"></i>
                             <span class="nav-text">Manage Mahasiswa</span>
@@ -553,6 +546,13 @@
                             <i class="fa-solid fa-book nav-icon"></i>
                             <span class="nav-text">Manage Mata Kuliah</span>
                             <div class="nav-tooltip">Manage Mata Kuliah</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('enrollments.index') }}" class="nav-link {{ request()->routeIs('enrollments.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
+                            <i class="fa-solid fa-users nav-icon"></i>
+                            <span class="nav-text">Enrollments</span>
+                            <div class="nav-tooltip">Enrollments</div>
                         </a>
                     </li>
                     <li>

@@ -9,7 +9,7 @@ class Course extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'code'];
+    protected $fillable = ['name', 'code', 'student_class_id'];
 
     public function grades()
     {
@@ -42,6 +42,11 @@ class Course extends Model
         return $this->belongsToMany(Student::class, 'grades')
             ->withPivot(['period_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
             ->withTimestamps();
+    }
+
+    public function studentClass()
+    {
+        return $this->belongsTo(StudentClass::class, 'student_class_id');
     }
     
 }
