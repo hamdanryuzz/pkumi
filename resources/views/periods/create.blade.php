@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Period - Sistem Penilaian PKUMI')
+@section('title', 'Tambah Tahun Ajaran - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
@@ -12,8 +12,8 @@
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <div>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Tambah Period Baru</h2>
-                <p class="text-base text-gray-500 mt-1">Buat periode akademik baru dengan pengaturan masa pendaftaran</p>
+                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Tambah Tahun Ajaran Baru</h2>
+                <p class="text-base text-gray-500 mt-1">Buat tahun ajaran baru dengan pengaturan masa pendaftaran</p>
             </div>
         </div>
     </div>
@@ -35,19 +35,19 @@
         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
             <h5 class="text-lg font-bold text-gray-800">
                 <i class="fas fa-plus-circle mr-2"></i>
-                Form Tambah Period
+                Form Tambah Tahun Ajaran
             </h5>
-            <p class="text-sm text-gray-600 mt-1">Lengkapi semua informasi periode akademik</p>
+            <p class="text-sm text-gray-600 mt-1">Lengkapi semua informasi tahun ajaran</p>
         </div>
 
         <form action="{{ route('periods.store') }}" method="POST" class="p-6">
             @csrf
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Nama Period -->
+                <!-- Nama Tahun Ajaran -->
                 <div class="md:col-span-2">
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-tag mr-1"></i>Nama Period 
+                        <i class="fas fa-tag mr-1"></i>Nama Tahun Ajaran
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
@@ -62,10 +62,10 @@
                     @enderror
                 </div>
 
-                <!-- Kode Period -->
+                <!-- Kode Tahun Ajaran -->
                 <div>
                     <label for="code" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-code mr-1"></i>Kode Period 
+                        <i class="fas fa-code mr-1"></i>Kode Tahun Ajaran 
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
@@ -99,10 +99,10 @@
                     @enderror
                 </div>
 
-                <!-- Tanggal Mulai Period -->
+                <!-- Tanggal Mulai Tahun Ajaran -->
                 <div>
                     <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-play mr-1 text-green-600"></i>Tanggal Mulai Period 
+                        <i class="fas fa-play mr-1 text-green-600"></i>Tanggal Mulai Tahun Ajaran 
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="date" 
@@ -116,10 +116,10 @@
                     @enderror
                 </div>
 
-                <!-- Tanggal Berakhir Period -->
+                <!-- Tanggal Berakhir Tahun Ajaran -->
                 <div>
                     <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-stop mr-1 text-red-600"></i>Tanggal Berakhir Period 
+                        <i class="fas fa-stop mr-1 text-red-600"></i>Tanggal Berakhir Tahun Ajaran 
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="date" 
@@ -175,9 +175,9 @@
                     <div class="text-sm text-blue-800">
                         <strong>Catatan Penting:</strong>
                         <ul class="list-disc list-inside mt-1 space-y-1">
-                            <li>Tanggal berakhir period harus setelah tanggal mulai period</li>
-                            <li>Masa pendaftaran harus berada sebelum atau saat periode dimulai</li>
-                            <li>Hanya satu period yang bisa aktif dalam satu waktu</li>
+                            <li>Tanggal berakhir tahun ajaran harus setelah tanggal mulai tahun ajaran</li>
+                            <li>Masa pendaftaran harus berada sebelum atau saat tahun ajaran dimulai</li>
+                            <li>Hanya satu tahun ajaran yang bisa aktif dalam satu waktu</li>
                         </ul>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
                 </a>
                 <button type="submit" 
                         class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
-                    <i class="fas fa-save mr-2"></i>Simpan Period
+                    <i class="fas fa-save mr-2"></i>Simpan Tahun Ajaran
                 </button>
             </div>
         </form>

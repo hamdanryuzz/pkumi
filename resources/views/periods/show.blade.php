@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Period - Sistem Penilaian PKUMI')
+@section('title', 'Detail Tahun Ajaran - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
@@ -15,12 +15,12 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-3xl font-bold text-gray-800 tracking-tight">{{ $period->name }}</h2>
-                        <p class="text-base text-gray-500 mt-1">Detail informasi periode akademik dan statistik enrollment</p>
+                        <p class="text-base text-gray-500 mt-1">Detail informasi tahun ajaran dan statistik enrollment</p>
                     </div>
                     <div class="flex gap-2">
                         <a href="{{ route('periods.edit', $period) }}" 
                            class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200">
-                            <i class="fas fa-edit mr-2"></i>Edit Period
+                            <i class="fas fa-edit mr-2"></i>Edit Tahun Ajaran
                         </a>
                         @if($period->status !== 'active')
                             <form action="{{ route('periods.activate', $period) }}" method="POST" class="inline">
@@ -48,25 +48,25 @@
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Period Information Card -->
+        <!-- Tahun Ajaran Information Card -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <h5 class="text-lg font-bold text-gray-800">
                         <i class="fas fa-info-circle mr-2"></i>
-                        Informasi Period
+                        Informasi Tahun Ajaran
                     </h5>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Period Details -->
+                        <!-- Tahun Ajaran Details -->
                         <div class="space-y-4">
                             <div>
-                                <label class="text-sm font-medium text-gray-500">Nama Period</label>
+                                <label class="text-sm font-medium text-gray-500">Nama Tahun Ajaran</label>
                                 <p class="text-gray-900 font-medium">{{ $period->name }}</p>
                             </div>
                             <div>
-                                <label class="text-sm font-medium text-gray-500">Kode Period</label>
+                                <label class="text-sm font-medium text-gray-500">Kode Tahun Ajaran</label>
                                 <p class="text-gray-900 font-mono">{{ $period->code }}</p>
                             </div>
                             <div>
@@ -287,7 +287,7 @@
         <div class="mt-6 bg-white rounded-lg shadow-lg p-8 text-center">
             <i class="fas fa-user-slash text-4xl text-gray-400 mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-800 mb-2">Belum Ada Enrollment</h3>
-            <p class="text-gray-600">Period ini belum memiliki data enrollment mahasiswa.</p>
+            <p class="text-gray-600">Tahun ajaran ini belum memiliki data enrollment mahasiswa.</p>
             <a href="{{ route('enrollments.create', ['period_id' => $period->id]) }}" 
                class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                 <i class="fas fa-plus mr-2"></i>Tambah Enrollment

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Period - Sistem Penilaian PKUMI')
+@section('title', 'Edit Tahun Ajaran - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
@@ -12,8 +12,8 @@
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <div>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Period</h2>
-                <p class="text-base text-gray-500 mt-1">Ubah informasi periode akademik: {{ $period->name }}</p>
+                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Tahun Ajaran</h2>
+                <p class="text-base text-gray-500 mt-1">Ubah informasi tahun ajaran: {{ $period->name }}</p>
             </div>
         </div>
     </div>
@@ -35,9 +35,9 @@
         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
             <h5 class="text-lg font-bold text-gray-800">
                 <i class="fas fa-edit mr-2"></i>
-                Form Edit Period
+                Form Edit Tahun Ajaran
             </h5>
-            <p class="text-sm text-gray-600 mt-1">Perbarui informasi periode akademik</p>
+            <p class="text-sm text-gray-600 mt-1">Perbarui informasi tahun ajaran</p>
         </div>
 
         <form action="{{ route('periods.update', $period) }}" method="POST" class="p-6">
@@ -45,10 +45,10 @@
             @method('PUT')
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Nama Period -->
+                <!-- Nama Tahun Ajaran -->
                 <div class="md:col-span-2">
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-tag mr-1"></i>Nama Period 
+                        <i class="fas fa-tag mr-1"></i>Nama Tahun Ajaran
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
@@ -63,10 +63,10 @@
                     @enderror
                 </div>
 
-                <!-- Kode Period -->
+                <!-- Kode Tahun Ajaran -->
                 <div>
                     <label for="code" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-code mr-1"></i>Kode Period 
+                        <i class="fas fa-code mr-1"></i>Kode Tahun Ajaran
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
@@ -100,10 +100,10 @@
                     @enderror
                 </div>
 
-                <!-- Tanggal Mulai Period -->
+                <!-- Tanggal Mulai Tahun Ajaran -->
                 <div>
                     <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-play mr-1 text-green-600"></i>Tanggal Mulai Period 
+                        <i class="fas fa-play mr-1 text-green-600"></i>Tanggal Mulai Tahun Ajaran
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="date" 
@@ -117,10 +117,10 @@
                     @enderror
                 </div>
 
-                <!-- Tanggal Berakhir Period -->
+                <!-- Tanggal Berakhir Tahun Ajaran -->
                 <div>
                     <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-stop mr-1 text-red-600"></i>Tanggal Berakhir Period 
+                        <i class="fas fa-stop mr-1 text-red-600"></i>Tanggal Berakhir Tahun Ajaran
                         <span class="text-red-500">*</span>
                     </label>
                     <input type="date" 
@@ -176,7 +176,7 @@
                         <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-2"></i>
                         <div class="text-sm text-yellow-800">
                             <strong>Peringatan:</strong>
-                            Period ini memiliki {{ $period->enrollments()->count() }} enrollment aktif. 
+                            Tahun ajaran ini memiliki {{ $period->enrollments()->count() }} enrollment aktif. 
                             Perubahan tanggal dapat mempengaruhi data yang sudah ada.
                         </div>
                     </div>
@@ -191,7 +191,7 @@
                 </a>
                 <button type="submit" 
                         class="px-6 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200">
-                    <i class="fas fa-save mr-2"></i>Update Period
+                    <i class="fas fa-save mr-2"></i>Update Tahun Ajaran
                 </button>
             </div>
         </form>

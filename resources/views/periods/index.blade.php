@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Period - Sistem Penilaian PKUMI')
+@section('title', 'Kelola Tahun Ajaran - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
     <!-- Header Section -->
     <div class="mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Kelola Period</h2>
-        <p class="text-base text-gray-500 mt-1">Kelola periode akademik dan masa pendaftaran mahasiswa</p>
+        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Kelola Tahun Ajaran</h2>
+        <p class="text-base text-gray-500 mt-1">Kelola tahun ajaran dan masa pendaftaran mahasiswa</p>
     </div>
 
     <!-- Success Alert -->
@@ -40,16 +40,16 @@
         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div class="flex flex-wrap justify-between items-center">
                 <div>
-                    <h5 class="text-lg font-bold text-gray-800">Daftar Period Akademik</h5>
+                    <h5 class="text-lg font-bold text-gray-800">Daftar Tahun Ajaran</h5>
                     <p class="text-sm text-gray-600 mt-1">
                         <i class="fas fa-calendar-alt mr-1"></i>
-                        Kelola semua periode akademik dan pengaturannya
+                        Kelola semua tahun ajaran dan pengaturannya
                     </p>
                 </div>
                 <div class="flex gap-3 mt-2 sm:mt-0">
                     <a href="{{ route('periods.create') }}" 
                        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Tambah Period
+                        <i class="fas fa-plus mr-2"></i>Tambah Tahun Ajaran
                     </a>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-tag mr-1"></i>Period
+                            <i class="fas fa-tag mr-1"></i>Tahun Ajaran
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <i class="fas fa-calendar mr-1"></i>Tanggal Periode
@@ -187,10 +187,10 @@
                         <tr>
                             <td colspan="6" class="px-6 py-8 text-center text-gray-500">
                                 <i class="fas fa-calendar-times text-4xl mb-4"></i>
-                                <p class="text-lg">Belum ada period yang dibuat</p>
+                                <p class="text-lg">Belum ada Tahun Ajaran yang dibuat</p>
                                 <p class="text-sm mt-2">
                                     <a href="{{ route('periods.create') }}" class="text-blue-600 hover:text-blue-800">
-                                        Klik di sini untuk membuat period pertama
+                                        Klik di sini untuk membuat tahun ajaran pertama
                                     </a>
                                 </p>
                             </td>
