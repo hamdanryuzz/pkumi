@@ -14,9 +14,9 @@
                     @csrf
 
                     <div class="mb-4">
-                        <label for="year_id" class="block text-sm font-medium text-gray-700">Tahun Ajaran</label>
+                        <label for="year_id" class="block text-sm font-medium text-gray-700">Angkatan</label>
                         <select id="year_id" name="year_id" class="form-select block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 @error('year_id') border-red-500 @enderror" required>
-                            <option value="">Pilih Tahun</option>
+                            <option value="">Pilih Angkatan</option>
                             @foreach($years as $year)
                                 <option value="{{ $year->id }}" {{ old('year_id') == $year->id ? 'selected' : '' }}>{{ $year->name }}</option>
                             @endforeach

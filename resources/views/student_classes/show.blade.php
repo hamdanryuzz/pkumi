@@ -27,7 +27,7 @@
                     <div class="bg-gray-50 p-4 rounded">
                         <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Informasi Kelas</h4>
                         <p><strong>Nama:</strong> {{ $studentClass->name }}</p>
-                        <p><strong>Tahun Ajaran:</strong> {{ $studentClass->year->name ?? 'N/A' }}</p>
+                        <p><strong>Angkatan:</strong> {{ $studentClass->year->name ?? 'N/A' }}</p>
                         <p><strong>Dibuat:</strong> {{ $studentClass->created_at->format('d/m/Y H:i') }}</p>
                     </div>
                     <div class="bg-gray-50 p-4 rounded">

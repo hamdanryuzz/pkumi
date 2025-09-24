@@ -13,15 +13,41 @@ class StudentClassController extends Controller
     /**
      * Menampilkan semua data kelas siswa.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $studentClasses = StudentClass::with(['year', 'students' => function ($query) {
+        // Ambil parameter dari request
+        $search = $request->input('search');
+        $yearFilter = $request->input('year_id');
+        
+        // Query dasar dengan relasi year dan students
+        $query = StudentClass::with(['year', 'students' => function ($query) {
             $query->select('id', 'student_class_id', 'name', 'nim'); // Limit kolom untuk optimasi
-        }])->withCount('students') // Hitung jumlah siswa tanpa load data lengkap
+        }]);
+        
+        // Terapkan search jika ada
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhereHas('year', function ($yearQuery) use ($search) {
+                      $yearQuery->where('name', 'LIKE', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        // Terapkan filter tahun jika ada
+        if ($yearFilter) {
+            $query->where('year_id', $yearFilter);
+        }
+        
+        // Eksekusi query dengan pagination
+        $studentClasses = $query->withCount('students') // Hitung jumlah siswa tanpa load data lengkap
             ->latest()
             ->paginate(10); // Tambah pagination (10 item per halaman)
-
-        return view('student_classes.index', compact('studentClasses'));
+        
+        // Ambil semua tahun untuk dropdown filter
+        $years = Year::orderBy('name', 'desc')->get();
+        
+        return view('student_classes.index', compact('studentClasses', 'years', 'yearFilter', 'search'));
     }
 
     /**
