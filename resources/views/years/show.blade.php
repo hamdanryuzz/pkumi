@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Tahun - Sistem Penilaian PKUMI')
+@section('title', 'Detail Angkatan - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
     <div class="mb-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Detail Tahun Akademik</h2>
-                <p class="text-base text-gray-500 mt-1">Informasi lengkap tahun akademik "{{ $year->name }}"</p>
+                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Detail Angkatan</h2>
+                <p class="text-base text-gray-500 mt-1">Informasi lengkap angkatan "{{ $year->name }}"</p>
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('years.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200 inline-flex items-center shadow-sm">
@@ -34,7 +34,7 @@
                         <div>
                             <h5 class="text-xl font-bold text-gray-800">{{ $year->name }}</h5>
                             <p class="text-sm text-gray-600 mt-1">
-                                <i class="fas fa-info-circle mr-1"></i>Tahun Akademik
+                                <i class="fas fa-info-circle mr-1"></i>Angkatan
                             </p>
                         </div>
                     </div>
@@ -51,11 +51,11 @@
                                 </h6>
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
-                                        <span class="text-sm text-gray-600">ID Tahun:</span>
+                                        <span class="text-sm text-gray-600">ID Angkatan:</span>
                                         <span class="text-sm font-medium text-gray-900">#{{ $year->id }}</span>
                                     </div>
                                     <div class="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
-                                        <span class="text-sm text-gray-600">Nama Tahun:</span>
+                                        <span class="text-sm text-gray-600">Nama Angkatan:</span>
                                         <span class="text-sm font-medium text-gray-900">{{ $year->name }}</span>
                                     </div>
                                     <div class="flex justify-between items-center py-2">
@@ -112,7 +112,7 @@
                 </div>
                 <div class="p-6 space-y-3">
                     <a href="{{ route('years.edit', $year->id) }}" class="w-full bg-yellow-100 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg hover:bg-yellow-200 transition duration-200 inline-flex items-center shadow-sm">
-                        <i class="fas fa-edit mr-3"></i>Edit Tahun Akademik
+                        <i class="fas fa-edit mr-3"></i>Edit Angkatan
                     </a>
                     
                     <button onclick="copyYearInfo()" class="w-full bg-blue-100 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg hover:bg-blue-200 transition duration-200 inline-flex items-center shadow-sm">
@@ -123,7 +123,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="button" onclick="confirmDelete()" class="w-full bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg hover:bg-red-200 transition duration-200 inline-flex items-center shadow-sm">
-                            <i class="fas fa-trash mr-3"></i>Hapus Tahun
+                            <i class="fas fa-trash mr-3"></i>Hapus Angkatan
                         </button>
                     </form>
                 </div>
@@ -142,26 +142,10 @@
                             <span class="text-blue-600 font-bold text-xl">{{ substr($year->name, -2) }}</span>
                         </div>
                         <h4 class="text-lg font-semibold text-gray-900">{{ $year->name }}</h4>
-                        <p class="text-sm text-gray-500 mt-1">Tahun Akademik</p>
+                        <p class="text-sm text-gray-500 mt-1">Angkatan</p>
                         <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <p class="text-xs text-gray-600">Tampilan tahun ini di sistem</p>
+                            <p class="text-xs text-gray-600">Tampilan angkatan ini di sistem</p>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity (Mock) -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h6 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-history mr-2 text-purple-500"></i>Aktivitas Terkait
-                    </h6>
-                </div>
-                <div class="p-6">
-                    <div class="text-center text-gray-500">
-                        <i class="fas fa-calendar-times text-3xl mb-3"></i>
-                        <p class="text-sm">Belum ada aktivitas</p>
-                        <p class="text-xs mt-1">Data mahasiswa dan nilai akan muncul di sini</p>
                     </div>
                 </div>
             </div>

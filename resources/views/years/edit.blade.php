@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Tahun - Sistem Penilaian PKUMI')
+@section('title', 'Edit Angkatan - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
     <div class="mb-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Tahun Akademik</h2>
-                <p class="text-base text-gray-500 mt-1">Perbarui informasi tahun akademik "{{ $year->name }}"</p>
+                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Angkatan</h2>
+                <p class="text-base text-gray-500 mt-1">Perbarui informasi angkatan "{{ $year->name }}"</p>
             </div>
             <a href="{{ route('years.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200 inline-flex items-center shadow-sm">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
@@ -25,8 +25,8 @@
                     <i class="fas fa-edit text-yellow-600 text-lg"></i>
                 </div>
                 <div>
-                    <h5 class="text-lg font-bold text-gray-800">Form Edit Tahun</h5>
-                    <p class="text-sm text-gray-600 mt-1">Perbarui informasi tahun akademik yang sudah ada</p>
+                    <h5 class="text-lg font-bold text-gray-800">Form Edit Angkatan</h5>
+                    <p class="text-sm text-gray-600 mt-1">Perbarui informasi angkatan yang sudah ada</p>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
                     <!-- Year Name Input -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-calendar-alt mr-1"></i>Nama Tahun Akademik
+                            <i class="fas fa-calendar-alt mr-1"></i>Nama Angkatan
                             <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
@@ -71,7 +71,7 @@
                                 name="name" 
                                 value="{{ old('name', $year->name) }}"
                                 class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-200 @error('name') border-red-500 @enderror"
-                                placeholder="Contoh: 2024/2025, Tahun 2024, etc."
+                                placeholder="Contoh: 2024, Angkatan 2024, etc."
                                 required
                                 autocomplete="off"
                             >
@@ -86,7 +86,7 @@
                         @enderror
                         <p class="mt-2 text-sm text-gray-500 flex items-center">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Pastikan nama tahun akademik unik dan mudah diidentifikasi
+                            Pastikan nama angkatan unik dan mudah diidentifikasi
                         </p>
                     </div>
 
@@ -126,7 +126,7 @@
                         <i class="fas fa-times mr-2"></i>Batal
                     </a>
                     <button type="submit" class="w-full sm:w-auto bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 inline-flex items-center justify-center shadow-sm">
-                        <i class="fas fa-save mr-2"></i>Update Tahun
+                        <i class="fas fa-save mr-2"></i>Update Angkatan
                     </button>
                 </div>
             </form>
@@ -143,9 +143,9 @@
                 <h3 class="text-sm font-medium text-amber-800">Perhatian</h3>
                 <div class="mt-2 text-sm text-amber-700">
                     <ul class="list-disc pl-5 space-y-1">
-                        <li>Perubahan nama tahun akan mempengaruhi semua data yang terkait</li>
-                        <li>Pastikan nama baru tidak duplikat dengan tahun yang sudah ada</li>
-                        <li>Data mahasiswa dan nilai yang sudah ada tetap akan terhubung dengan tahun ini</li>
+                        <li>Perubahan nama angkatan akan mempengaruhi semua data yang terkait</li>
+                        <li>Pastikan nama baru tidak duplikat dengan angkatan yang sudah ada</li>
+                        <li>Data mahasiswa dan nilai yang sudah ada tetap akan terhubung dengan angkatan ini</li>
                     </ul>
                 </div>
             </div>

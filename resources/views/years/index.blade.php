@@ -6,7 +6,7 @@
 <main class="py-6 px-4 md:px-8">
     <div class="mb-6">
         <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Manage Angkatan</h2>
-        <p class="text-base text-gray-500 mt-1">Kelola data tahun akademik sistem</p>
+        <p class="text-base text-gray-500 mt-1">Kelola data angkatan</p>
     </div>
 
     @if(session('success'))
@@ -20,7 +20,7 @@
     <!-- Add New Year Button -->
     <div class="mb-6 flex justify-end">
         <a href="{{ route('years.create') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 inline-flex items-center shadow-md">
-            <i class="fas fa-plus mr-2"></i>Tambah Tahun
+            <i class="fas fa-plus mr-2"></i>Tambah Angkatan
         </a>
     </div>
 
@@ -30,13 +30,13 @@
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <div class="flex justify-between items-center">
                 <div>
-                    <h5 class="text-lg font-bold text-gray-800">Daftar Tahun Akademik</h5>
+                    <h5 class="text-lg font-bold text-gray-800">Daftar Angkatan</h5>
                     <p class="text-sm text-gray-600 mt-1">
-                        <i class="fas fa-calendar-alt mr-1"></i>Data tahun akademik yang tersedia
+                        <i class="fas fa-calendar-alt mr-1"></i>Data angkatan yang tersedia
                     </p>
                 </div>
                 <div class="text-sm text-gray-600">
-                    Total: <span class="font-medium">{{ $years->count() }}</span> tahun
+                    Total: <span class="font-medium">{{ $years->count() }}</span> angkatan
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
                             <i class="fas fa-hashtag mr-1"></i>No
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-calendar-alt mr-1"></i>Nama Tahun
+                            <i class="fas fa-calendar-alt mr-1"></i>Nama Angkatan
                         </th>
                         <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             <i class="fas fa-clock mr-1"></i>Dibuat
@@ -105,9 +105,9 @@
                     <tr>
                         <td colspan="4" class="px-6 py-8 text-center text-gray-500">
                             <i class="fas fa-calendar-times text-4xl mb-4"></i>
-                            <p class="text-lg">Tidak ada data tahun</p>
+                            <p class="text-lg">Tidak ada data angkatan</p>
                             <p class="text-sm mt-2">
-                                <a href="{{ route('years.create') }}" class="text-blue-600 hover:text-blue-800">Tambah tahun pertama</a>
+                                <a href="{{ route('years.create') }}" class="text-blue-600 hover:text-blue-800">Tambah angkatan pertama</a>
                             </p>
                         </td>
                     </tr>
