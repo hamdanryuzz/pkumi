@@ -8,6 +8,7 @@ use App\Models\Year;
 use App\Models\StudentClass;
 use App\Models\Period;
 use App\Models\Enrollment;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
@@ -18,17 +19,46 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $query = Student::with(['grade', 'year', 'studentClass']);
+        $yearFilter = $request->input('year_id');
+        $studentClassFilter = $request->input('student_class_id');
+        $courseFilter = $request->input('course_id');
 
+        $query = Student::with(['enrollments', 'year', 'studentClass']);
+
+        // Search berdasarkan nama, NIM, atau username
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('nim', 'like', "%{$search}%")
+                ->orWhere('username', 'like', "%{$search}%");
+            });
         }
 
-        $students = $query->paginate(15);
-        
-        return view('students.index', compact('students'));
+        // Filter berdasarkan year/angkatan
+        if ($yearFilter) {
+            $query->where('year_id', $yearFilter);
+        }
+
+        // Filter berdasarkan student_class/kelas
+        if ($studentClassFilter) {
+            $query->where('student_class_id', $studentClassFilter);
+        }
+
+        // Filter berdasarkan course/mata kuliah
+        if ($courseFilter) {
+            $query->whereHas('enrollments', function($q) use ($courseFilter) {
+                $q->where('course_id', $courseFilter);
+            });
+        }
+
+        $students = $query->paginate(15)->appends(request()->query());
+
+        // Data untuk dropdown filter
+        $years = Year::all();
+        $studentClasses = StudentClass::with('year')->get();
+        $courses = Course::all();
+
+        return view('students.index', compact('students', 'years', 'studentClasses', 'courses'));
     }
 
     public function create()
