@@ -13,10 +13,10 @@
     
     <div class="bg-white rounded-lg shadow-md p-6">
         <!-- Export Buttons -->
-        <div class="flex justify-end gap-2 mb-4">
+        <!-- <div class="flex justify-end gap-2 mb-4">
             <a href="#" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">Export PDF</a>
             <a href="#" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Export Excel</a>
-        </div>
+        </div> -->
 
         <!-- Log Table -->
         <div class="overflow-x-auto rounded-lg border border-gray-200">
