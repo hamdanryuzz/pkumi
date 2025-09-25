@@ -6,6 +6,8 @@ use App\Models\Enrollment;
 use App\Models\Period;
 use App\Models\Course;
 use App\Models\Student;
+use App\Models\StudentClass;
+use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
@@ -55,22 +57,52 @@ class EnrollmentController extends Controller
      * Show the form for creating a new enrollment
      */
     public function create(Request $request)
-    {
-        $periods = Period::where('status', 'active')
-            ->orWhere('status', 'draft')
-            ->orderBy('start_date', 'desc')
-            ->get();
-            
-        $courses = Course::orderBy('name')->get();
-        $students = Student::where('status', 'active')->orderBy('name')->get();
-
-        // Pre-select period and course if provided
-        $selectedPeriod = $request->get('period_id');
-        $selectedCourse = $request->get('course_id');
-
-        return view('enrollments.create', compact('periods', 'courses', 'students', 'selectedPeriod', 'selectedCourse'));
+{
+    $periods = Period::where('status', 'active')
+        ->orWhere('status', 'draft')
+        ->orderBy('start_date', 'desc')
+        ->get();
+        
+    $courses = Course::orderBy('name')->get();
+    
+    // Tambahkan data untuk filter
+    $years = Year::orderBy('name', 'desc')->get();
+    $studentClasses = StudentClass::orderBy('name')->get();
+    
+    // Query students dengan filter
+    $studentsQuery = Student::where('status', 'active');
+    
+    // Filter berdasarkan angkatan jika ada
+    if ($request->has('year_id') && $request->year_id) {
+        $studentsQuery->where('year_id', $request->year_id);
     }
+    
+    // Filter berdasarkan kelas jika ada
+    if ($request->has('student_class_id') && $request->student_class_id) {
+        $studentsQuery->where('student_class_id', $request->student_class_id);
+    }
+    
+    $students = $studentsQuery->orderBy('name')->get();
 
+    // Pre-select values
+    $selectedPeriod = $request->get('period_id');
+    $selectedCourse = $request->get('course_id');
+    $selectedYear = $request->get('year_id');
+    $selectedClass = $request->get('student_class_id');
+
+    return view('enrollments.create', compact(
+        'periods', 
+        'courses', 
+        'students', 
+        'years',
+        'studentClasses',
+        'selectedPeriod', 
+        'selectedCourse',
+        'selectedYear',
+        'selectedClass'
+    ));
+}
+ 
     /**
      * Store a newly created enrollment
      */
