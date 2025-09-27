@@ -13,6 +13,7 @@ use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\Api\Auth\RegistrationPasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,3 +87,8 @@ Route::middleware('auth')->group(function () {
     Route::get('api/enrolled-students', [EnrollmentController::class, 'getEnrolledStudents'])->name('api.enrolled-students');
     Route::resource('enrollments', EnrollmentController::class);
 });
+
+Route::get('/reset-password', [RegistrationPasswordResetController::class, 'showResetForm'])->name('password.reset');
+
+Route::view('/reset-password-success', 'pmb.auth.reset-success')
+    ->name('password.reset.success');
