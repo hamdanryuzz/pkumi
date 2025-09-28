@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Registration;
+use App\Helpers\ResponseFormatter;
 
 class RegistrationController extends Controller
 {
@@ -17,35 +18,29 @@ class RegistrationController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        // Jika username/email sudah ada → otomatis gagal validasi
-        // Kita bisa tangkap manual untuk memberi pesan custom
+        // Validasi manual untuk pesan custom
         if (Registration::where('username', $request->username)->exists()) {
-            return response()->json([
-                'message' => 'Username sudah digunakan, silakan pilih yang lain'
-            ], 422);
+            return ResponseFormatter::error(null, 'Username sudah digunakan, silakan pilih yang lain', 422);
         }
 
         if (Registration::where('email', $request->email)->exists()) {
-            return response()->json([
-                'message' => 'Email sudah digunakan, silakan gunakan email lain'
-            ], 422);
+            return ResponseFormatter::error(null, 'Email sudah digunakan, silakan gunakan email lain', 422);
         }
 
         $reg = Registration::create([
             'username' => $request->username,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'status'   => 'pending', // default calon mahasiswa
+            'status'   => 'pending',
         ]);
 
         // Generate token Sanctum
         $token = $reg->createToken('registration_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Pendaftaran berhasil, menunggu verifikasi',
-            'data'    => $reg,
-            'token'   => $token,
-        ]);
+        return ResponseFormatter::success([
+            'user'  => $reg,
+            'token' => $token,
+        ], 'Pendaftaran berhasil, menunggu verifikasi');
     }
 
     public function login(Request $request)
@@ -60,7 +55,7 @@ class RegistrationController extends Controller
             ->first();
 
         if (!$reg || !Hash::check($request->password, $reg->password)) {
-            return response()->json(['message' => 'Username atau password salah'], 401);
+            return ResponseFormatter::error(null, 'Username atau password salah', 401);
         }
 
         // Hapus token lama biar tidak numpuk
@@ -69,10 +64,10 @@ class RegistrationController extends Controller
         // Generate token baru
         $token = $reg->createToken('registration_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login berhasil',
-            'status'  => $reg->status,
-            'token'   => $token,
-        ]);
+        return ResponseFormatter::success([
+            'user'   => $reg,
+            'token'  => $token,
+            'status' => $reg->status,
+        ], 'Login berhasil');
     }
 }
