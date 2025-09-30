@@ -47,7 +47,7 @@
             <p class="font-sans text-xl text-brand-slate leading-8">Today is a new day. It's your day. You shape it. Sign in to start managing your projects.</p>
           </div>
 
-          <form class="mt-12 flex flex-col gap-6" action="{{ route('login') }}" method="POST">
+          <form class="mt-12 flex flex-col gap-6" action="{{ route('mahasiswa.login') }}" method="POST">
             {{-- Token CSRF untuk keamanan, wajib ada di form Laravel --}}
             @csrf
 

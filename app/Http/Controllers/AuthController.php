@@ -18,6 +18,11 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
+
+    public function showStudentLoginForm()
+    {
+        return view('mahasiswa.login');
+    }
     
     /**
      * Tampilkan halaman registrasi.
@@ -42,12 +47,42 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
+        if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
-            
-            // Arahkan ke dashboard jika login berhasil.
-            return redirect()->intended(route('dashboard'));
+            return redirect('/');
         }
+
+        // if (Auth::attempt($credentials, $request->remember)) {
+        //     $request->session()->regenerate();
+            
+        //     // Arahkan ke dashboard jika login berhasil.
+        //     return redirect()->intended(route('dashboard'));
+        // }
+        
+        // Kembali dengan error jika kredensial tidak cocok.
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
+    }
+
+    public function StudentLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::guard('student')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect('/mahasiswa/grades');
+        }
+
+        // if (Auth::attempt($credentials, $request->remember)) {
+        //     $request->session()->regenerate();
+            
+        //     // Arahkan ke dashboard jika login berhasil.
+        //     return redirect()->intended(route('dashboard'));
+        // }
         
         // Kembali dengan error jika kredensial tidak cocok.
         return back()->withErrors([

@@ -41,10 +41,10 @@
                 <div class="flex flex-col items-center text-center gap-[23px]">
                     <img src="{{ asset('images/xaviera.jpeg') }}" alt="Profile Picture" class="w-[120px] h-[120px] rounded-full object-cover">
                     <div class="flex flex-col">
-                        <h1 class="font-poppins font-semibold text-[25px] leading-tight text-black">Xaviera</h1>
+                        <h1 class="font-poppins font-semibold text-[25px] leading-tight text-black">{{ Auth::user()->name }}</h1>
                         <div class="flex flex-col mt-2">
                             <p class="font-poppins text-base text-black/65">NIM : {{ Auth::user()->nim ?? '123456789' }}</p>
-                            <p class="font-poppins text-base text-black/65">Program Studi : {{ Auth::user()->study_program ?? 'Teknik Informatika' }}</p>
+                            <p class="font-poppins text-base text-black/65">Program Studi : {{ Auth::user()->studentClass->name }}</p>
                         </div>
                     </div>
                 </div>
