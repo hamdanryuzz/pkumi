@@ -18,7 +18,8 @@ class Grade extends Model
         'midterm_score',
         'final_score',
         'final_grade',
-        'letter_grade'
+        'letter_grade',
+        'bobot'
     ];
 
     public function student()
@@ -32,7 +33,7 @@ class Grade extends Model
     }
     public function course()
     {
-        return $this->belongsTo(Course::class); // bukan hasMany
+        return $this->belongsTo(Course::class); // bukan hasManyA
     }
 
     public static function calculateFinalGrade($attendance, $assignment, $midterm, $final, $weights)
@@ -56,5 +57,16 @@ class Grade extends Model
         if ($score >= 75) return 'B';
         if ($score >= 70) return 'B-';
         return 'C';
+    }
+
+    public static function getBobot($score)
+    {
+        if ($score >= 95) return '4.00';
+        if ($score >= 90) return '3.90';
+        if ($score >= 85) return '3.70';
+        if ($score >= 80) return '3.30';
+        if ($score >= 75) return '3.00';
+        if ($score >= 70) return '2.70';
+        if ($score <= 70) return '2.00';
     }
 }

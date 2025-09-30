@@ -108,7 +108,8 @@ class GradeController extends Controller
 
                 $grade->update([
                     'final_grade' => $finalGrade,
-                    'letter_grade' => Grade::getLetterGrade($finalGrade)
+                    'letter_grade' => Grade::getLetterGrade($finalGrade),
+                    'bobot' => Grade::getBobot($finalGrade)
                 ]);
             }
 
@@ -155,7 +156,8 @@ class GradeController extends Controller
 
             $grade->update([
                 'final_grade' => $finalGrade,
-                'letter_grade' => Grade::getLetterGrade($finalGrade)
+                'letter_grade' => Grade::getLetterGrade($finalGrade),
+                'bobot' => Grade::getBobot($finalGrade)
             ]);
         }
 
@@ -191,7 +193,7 @@ class GradeController extends Controller
 
                     $grade->update([
                         'final_grade' => $finalGrade,
-                        'letter_grade' => Grade::getLetterGrade($finalGrade)
+                        'letter_grade' => Grade::getLetterGrade($finalGrade),
                     ]);
                 }
             }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('final_score', 5, 2)->nullable();
             $table->decimal('final_grade', 5, 2)->nullable();
             $table->string('letter_grade', 2)->nullable();
+            $table->decimal('bobot', 5, 2)->nullable();
             $table->unique(['student_id', 'course_id', 'period_id'], 'grades_unique_student_course_period');
             $table->timestamps();
         });

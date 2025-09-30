@@ -199,8 +199,39 @@ class StudentController extends Controller
         
         // Replace collection dengan data yang sudah di-map
         $enrollments->setCollection($enrollmentWithGrades);
+
+        $totalSKS = 0;
+        $totalBobot = 0;
+
+        $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) use (&$totalSKS, &$totalBobot) {
+            $grade = Grade::where('student_id', $enrollment->student_id)
+                ->where('course_id', $enrollment->course_id)
+                ->where('period_id', $enrollment->period_id)
+                ->first();
+
+            if ($grade) {
+                // Ambil SKS
+                $sks = $enrollment->course->sks ?? 0;
+
+                // Ambil bobot
+                $bobot = $grade->bobot ?? 0;
+
+                // Tambahin ke total
+                $totalSKS += $sks;
+                $totalBobot += ($sks * $bobot);
+
+                $enrollment->grade = $grade;
+            }
+
+            return $enrollment;
+        });
+
+        $enrollments->setCollection($enrollmentWithGrades);
+
+        // Hitung IPK
+        $ipk = $totalSKS > 0 ? round($totalBobot / $totalSKS, 2) : 0;
         
-        return view('students.show', compact('student', 'enrollments', 'periods', 'search', 'periodFilter'));
+        return view('students.show', compact('student', 'enrollments', 'periods', 'search', 'periodFilter','totalSKS','ipk'));
     }
 
     public function edit(Student $student)
