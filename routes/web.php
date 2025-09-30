@@ -25,10 +25,10 @@ use App\Http\Controllers\StudentPageController;
 // Rute untuk autentikasi (hanya login, tanpa register untuk admin dashboard)
 Route::middleware('guest')->group(function () {
     //Admin Login
-    Route::get('admin', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::get('admin', [AuthController::class, 'showLoginForm'])->name('admin');
     Route::post('admin', [AuthController::class, 'login']);
     //Student Login
-    Route::get('login', [AuthController::class, 'showStudentLoginForm'])->name('mahasiswa.login');
+    Route::get('login', [AuthController::class, 'showStudentLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'StudentLogin']);
 });
 
@@ -37,7 +37,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // Gunakan middleware 'auth' untuk rute yang hanya bisa diakses setelah login
 Route::middleware('auth:web')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Students Management (Custom routes di atas resource)
     Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
@@ -100,5 +100,5 @@ Route::view('/reset-password-success', 'pmb.auth.reset-success')
 
 // Student Dashboard Routes
 Route::middleware(['auth:student'])->group(function () {
-    Route::get('/mahasiswa/grades', [StudentPageController::class, 'index'])->name('mahasiswa.dashboard');
+    Route::get('/', [StudentPageController::class, 'index'])->name('mahasiswa.dashboard');
 });

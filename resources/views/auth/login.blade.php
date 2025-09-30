@@ -10,7 +10,7 @@
             <h1 class="mb-2 text-2xl">Sistem Penilaian PKUMI</h1>
             <span class="text-gray-300">Masukkan Detail Login</span>
         </div>
-        <form action="{{ route('login') }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin') }}" method="POST" class="space-y-6">
             @csrf
             <div class="text-lg">
                 <input class="rounded-3xl border-none bg-blue-400 bg-opacity-50 px-6 py-2 text-center text-inherit placeholder-slate-200 shadow-lg outline-none backdrop-blur-md w-full @error('email') border-red-500 @enderror" type="email" name="email" placeholder="id@email.com" value="{{ old('email') }}" required />

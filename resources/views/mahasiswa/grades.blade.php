@@ -44,11 +44,15 @@
                     <span class="text-white font-sans font-bold text-[6px]">1</span>
                 </div>
             </div>
-            <button class="focus:outline-none">
-                <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                </svg>
-            </button>
+            <!-- Temporary logout button -->
+            <form action="{{ route('logout') }}" method="POST" class="ml-auto">
+                @csrf
+                <button class="focus:outline-none">
+                    <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                    </svg>
+                </button>
+            </form>
             <div class="w-[50px] h-[50px] rounded-lg border border-blue-primary overflow-hidden">
                 <img src="{{ asset('images/xaviera.jpeg') }}" alt="Profile Picture" class="w-full h-full object-cover">
             </div>
