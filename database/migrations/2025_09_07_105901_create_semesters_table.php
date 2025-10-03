@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('semesters', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('period_id')->constrained('periods')->onDelete('cascade');
             $table->string('name'); // Contoh: "Semester Ganjil 2024/2025"
             $table->string('code')->unique(); // Contoh: "2024-1"
             $table->date('start_date');

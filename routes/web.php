@@ -11,7 +11,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\semesterController;
+use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\Api\Auth\RegistrationPasswordResetController;
 use App\Http\Controllers\StudentPageController;
@@ -78,11 +79,14 @@ Route::middleware('auth:web')->group(function () {
     // Course Management (rename ke plural 'courses' untuk konsistensi)
     Route::resource('courses', CourseController::class);
 
-    // semester Management
-    Route::patch('semester/{semester}/activate', [semesterController::class, 'activate'])->name('semester.activate');
-    Route::get('semester/{semester}/courses', [semesterController::class, 'getCourses'])->name('semester.courses');
-    Route::get('semester/{semester}/stats', [semesterController::class, 'getEnrollmentStats'])->name('semester.stats');
-    Route::resource('semester', semesterController::class);
+    // Period Management
+    Route::resource('periods', PeriodController::class);
+
+    // Semester Management
+    Route::patch('semester/{semester}/activate', [SemesterController::class, 'activate'])->name('semester.activate');
+    Route::get('semester/{semester}/courses', [SemesterController::class, 'getCourses'])->name('semester.courses');
+    Route::get('semester/{semester}/stats', [SemesterController::class, 'getEnrollmentStats'])->name('semester.stats');
+    Route::resource('semester', SemesterController::class);
 
     // Enrollment Management
     Route::post('enrollments/bulk', [EnrollmentController::class, 'bulkStore'])->name('enrollments.bulk');

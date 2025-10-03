@@ -12,7 +12,8 @@ class SemesterSeeder extends Seeder
     {
         // Semester Genap 2024/2025 (sedang berjalan di tahun 2025)
         Semester::create([
-            'name' => 'Semester Genap 2024/2025',
+            'period_id' => 3,
+            'name' => 'Semester Genap 2025/2026',
             'code' => '2025-1',
             'start_date' => '2025-02-01',
             'end_date' => '2025-06-30',
@@ -23,6 +24,7 @@ class SemesterSeeder extends Seeder
 
         // Semester Ganjil 2025/2026 (akan datang setelah Juni 2025)
         Semester::create([
+            'period_id' => 3,
             'name' => 'Semester Ganjil 2025/2026',
             'code' => '2025-2',
             'start_date' => '2025-08-01',
