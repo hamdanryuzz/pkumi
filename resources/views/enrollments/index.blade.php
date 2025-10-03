@@ -7,7 +7,7 @@
     <!-- Header Section -->
     <div class="mb-6">
         <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Kelola Enrollment</h2>
-        <p class="text-base text-gray-500 mt-1">Kelola pendaftaran mahasiswa pada mata kuliah per periode akademik</p>
+        <p class="text-base text-gray-500 mt-1">Kelola pendaftaran mahasiswa pada mata kuliah per semestere akademik</p>
     </div>
 
     <!-- Success/Error Alerts -->
@@ -42,20 +42,20 @@
             <h5 class="text-lg font-bold text-gray-800">
                 <i class="fas fa-filter mr-2"></i>Filter & Pencarian
             </h5>
-            <p class="text-sm text-gray-600 mt-1">Filter enrollment berdasarkan periode, mata kuliah, atau status</p>
+            <p class="text-sm text-gray-600 mt-1">Filter enrollment berdasarkan semestere, mata kuliah, atau status</p>
         </div>
         <div class="p-6">
             <form method="GET" action="{{ route('enrollments.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                <!-- Period Filter -->
+                <!-- semester Filter -->
                 <div>
-                    <label for="period_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-calendar mr-1"></i>Period
+                    <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-calendar mr-1"></i>semester
                     </label>
-                    <select name="period_id" id="period_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua Period</option>
-                        @foreach($periods as $period)
-                            <option value="{{ $period->id }}" {{ request('period_id') == $period->id ? 'selected' : '' }}>
-                                {{ $period->name }}
+                    <select name="semester_id" id="semester_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua semester</option>
+                        @foreach($semester as $semester)
+                            <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
+                                {{ $semester->name }}
                             </option>
                         @endforeach
                     </select>
@@ -101,7 +101,7 @@
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
                             <i class="fas fa-search"></i>
                         </button>
-                        @if(request()->hasAny(['period_id', 'course_id', 'status', 'search']))
+                        @if(request()->hasAny(['semester_id', 'course_id', 'status', 'search']))
                             <a href="{{ route('enrollments.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition duration-200">
                                 <i class="fas fa-times"></i>
                             </a>
@@ -153,7 +153,7 @@
                             <i class="fas fa-book mr-1"></i>Mata Kuliah
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-calendar mr-1"></i>Period
+                            <i class="fas fa-calendar mr-1"></i>semester
                         </th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <i class="fas fa-calendar-plus mr-1"></i>Tgl Daftar
@@ -187,8 +187,8 @@
                                 <div class="text-sm text-gray-500">{{ $enrollment->course->code }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $enrollment->period->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $enrollment->period->code }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $enrollment->semester->name }}</div>
+                                <div class="text-sm text-gray-500">{{ $enrollment->semester->code }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                                 {{ $enrollment->enrollment_date->format('d M Y') }}
@@ -241,7 +241,7 @@
                                             </button>
                                         </form>
                                     @endif
-                                    @if(!$enrollment->student->grade()->where('course_id', $enrollment->course_id)->where('period_id', $enrollment->period_id)->exists())
+                                    @if(!$enrollment->student->grade()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists())
                                         <form action="{{ route('enrollments.destroy', $enrollment) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -262,7 +262,7 @@
                                 <i class="fas fa-user-slash text-4xl mb-4"></i>
                                 <p class="text-lg">Tidak ada enrollment yang ditemukan</p>
                                 <p class="text-sm mt-2">
-                                    @if(request()->hasAny(['period_id', 'course_id', 'status', 'search']))
+                                    @if(request()->hasAny(['semester_id', 'course_id', 'status', 'search']))
                                         <a href="{{ route('enrollments.index') }}" class="text-blue-600 hover:text-blue-800">
                                             Reset filter untuk melihat semua enrollment
                                         </a>

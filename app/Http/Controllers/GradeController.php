@@ -6,7 +6,7 @@ use App\Models\Student;
 use App\Models\Course;
 use App\Models\Grade;
 use App\Models\GradeWeight;
-use App\Models\Period;
+use App\Models\Semester;
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
 
@@ -18,27 +18,27 @@ class GradeController extends Controller
     public function index(Request $request)
     {
         $courses = Course::all();
-        // $periods = Period::active()->get();
-        $periods = Period::all();
+        // $semester = semester::active()->get();
+        $semester = Semester::all();
         
         $selectedCourseId = $request->get('course_id');
-        $selectedPeriodId = $request->get('period_id');
+        $selectedsemesterId = $request->get('semester_id');
         
-        // Hanya ambil students yang terdaftar di course dan period tertentu
+        // Hanya ambil students yang terdaftar di course dan semester tertentu
         $students = collect();
         $grades = collect();
         
-        if ($selectedCourseId && $selectedPeriodId) {
-            // Ambil students yang terdaftar di course pada period tertentu
-            $students = Student::whereHas('enrollments', function($query) use ($selectedCourseId, $selectedPeriodId) {
+        if ($selectedCourseId && $selectedsemesterId) {
+            // Ambil students yang terdaftar di course pada semester tertentu
+            $students = Student::whereHas('enrollments', function($query) use ($selectedCourseId, $selectedsemesterId) {
                 $query->where('course_id', $selectedCourseId)
-                    ->where('period_id', $selectedPeriodId)
+                    ->where('semester_id', $selectedsemesterId)
                     ->where('status', 'enrolled');
             })->get();
             
-            // Ambil grades untuk course dan period yang dipilih
+            // Ambil grades untuk course dan semester yang dipilih
             $grades = Grade::where('course_id', $selectedCourseId)
-                ->where('period_id', $selectedPeriodId)
+                ->where('semester_id', $selectedsemesterId)
                 ->get()
                 ->keyBy('student_id');
         }
@@ -46,8 +46,8 @@ class GradeController extends Controller
         $weights = GradeWeight::getCurrentWeights();
         
         return view('grades.index', compact(
-            'students', 'courses', 'periods',
-            'selectedCourseId', 'selectedPeriodId', 
+            'students', 'courses', 'semester',
+            'selectedCourseId', 'selectedsemesterId', 
             'grades', 'weights'
         ));
     }
@@ -59,7 +59,7 @@ class GradeController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'period_id' => 'required|exists:periods,id',
+            'semester_id' => 'required|exists:semester,id',
             'grades' => 'required|array',
             'grades.*.attendance_score' => 'nullable|numeric|min:0|max:100',
             'grades.*.assignment_score' => 'nullable|numeric|min:0|max:100',
@@ -71,11 +71,11 @@ class GradeController extends Controller
         $updatedCount = 0;
 
         foreach ($request->grades as $studentId => $gradeData) {
-            // Validasi bahwa student terdaftar di course pada period ini
+            // Validasi bahwa student terdaftar di course pada semester ini
             $enrollment = Enrollment::where([
                 'student_id' => $studentId,
                 'course_id' => $request->course_id,
-                'period_id' => $request->period_id,
+                'semester_id' => $request->semester_id,
                 'status' => 'enrolled'
             ])->first();
 
@@ -94,7 +94,7 @@ class GradeController extends Controller
             $grade = Grade::updateOrCreate([
                 'student_id' => $studentId,
                 'course_id' => $request->course_id,
-                'period_id' => $request->period_id
+                'semester_id' => $request->semester_id
             ], $filteredData);
 
             if ($this->allScoresPresent($grade)) {
@@ -119,7 +119,7 @@ class GradeController extends Controller
         return redirect()
             ->route('grades.index', [
                 'course_id' => $request->course_id,
-                'period_id' => $request->period_id
+                'semester_id' => $request->semester_id
             ])
             ->with('success', "Successfully updated grades for {$updatedCount} students!");
     }

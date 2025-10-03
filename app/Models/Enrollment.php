@@ -10,7 +10,7 @@ class Enrollment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id', 'course_id', 'period_id', 
+        'student_id', 'course_id', 'semester_id', 
         'enrollment_date', 'status'
     ];
 
@@ -28,9 +28,9 @@ class Enrollment extends Model
         return $this->belongsTo(Course::class);
     }
 
-    public function period()
+    public function semester()
     {
-        return $this->belongsTo(Period::class);
+        return $this->belongsTo(semester::class);
     }
 
     public function scopeActive($query)

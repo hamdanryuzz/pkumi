@@ -104,7 +104,7 @@
                             </div>
                         </div>
 
-                        <!-- Course and Period Information -->
+                        <!-- Course and semester Information -->
                         <div class="space-y-4">
                             <div>
                                 <label class="text-sm font-medium text-gray-500">
@@ -117,11 +117,11 @@
                             </div>
                             <div>
                                 <label class="text-sm font-medium text-gray-500">
-                                    <i class="fas fa-calendar mr-1"></i>Period
+                                    <i class="fas fa-calendar mr-1"></i>semester
                                 </label>
                                 <div class="mt-1">
-                                    <p class="text-gray-900 font-medium">{{ $enrollment->period->name }}</p>
-                                    <p class="text-sm text-gray-500">{{ $enrollment->period->code }}</p>
+                                    <p class="text-gray-900 font-medium">{{ $enrollment->semester->name }}</p>
+                                    <p class="text-sm text-gray-500">{{ $enrollment->semester->code }}</p>
                                 </div>
                             </div>
                         </div>
@@ -175,59 +175,59 @@
                 </div>
                 <div class="p-6 space-y-3">
                     @if($enrollment->status === 'enrolled')
-                        <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'period_id' => $enrollment->period_id]) }}" 
+                        <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
                            class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                             <i class="fas fa-graduation-cap mr-2"></i>Input Nilai
                         </a>
                     @endif
                     
-                    <a href="{{ route('enrollments.index', ['course_id' => $enrollment->course_id, 'period_id' => $enrollment->period_id]) }}" 
+                    <a href="{{ route('enrollments.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
                        class="w-full flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200">
                         <i class="fas fa-list mr-2"></i>Lihat Enrollment Serupa
                     </a>
                     
-                    <a href="{{ route('periods.show', $enrollment->period) }}" 
+                    <a href="{{ route('semester.show', $enrollment->semester) }}" 
                        class="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-200">
-                        <i class="fas fa-calendar mr-2"></i>Detail Period
+                        <i class="fas fa-calendar mr-2"></i>Detail semester
                     </a>
                 </div>
             </div>
 
-            <!-- Period Information -->
+            <!-- semester Information -->
             <div class="mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
                     <h5 class="text-lg font-bold text-gray-800">
                         <i class="fas fa-calendar-alt mr-2"></i>
-                        Info Period
+                        Info semester
                     </h5>
                 </div>
                 <div class="p-6">
                     <div class="space-y-3">
                         <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600">Periode:</span>
+                            <span class="text-gray-600">semestere:</span>
                             <span class="font-medium">
-                                {{ $enrollment->period->start_date->format('d M') }} - 
-                                {{ $enrollment->period->end_date->format('d M Y') }}
+                                {{ $enrollment->semester->start_date->format('d M') }} - 
+                                {{ $enrollment->semester->end_date->format('d M Y') }}
                             </span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-gray-600">Pendaftaran:</span>
                             <span class="font-medium">
-                                {{ $enrollment->period->enrollment_start_date->format('d M') }} - 
-                                {{ $enrollment->period->enrollment_end_date->format('d M Y') }}
+                                {{ $enrollment->semester->enrollment_start_date->format('d M') }} - 
+                                {{ $enrollment->semester->enrollment_end_date->format('d M Y') }}
                             </span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-gray-600">Status:</span>
                             @php
-                                $periodStatusConfig = [
+                                $semestertatusConfig = [
                                     'active' => ['text-green-600', 'Aktif'],
                                     'draft' => ['text-yellow-600', 'Draft'],
                                     'completed' => ['text-gray-600', 'Selesai']
                                 ];
-                                $periodConfig = $periodStatusConfig[$enrollment->period->status] ?? $periodStatusConfig['draft'];
+                                $semesterConfig = $semestertatusConfig[$enrollment->semester->status] ?? $semestertatusConfig['draft'];
                             @endphp
-                            <span class="font-medium {{ $periodConfig[0] }}">{{ $periodConfig[1] }}</span>
+                            <span class="font-medium {{ $semesterConfig[0] }}">{{ $semesterConfig[1] }}</span>
                         </div>
                     </div>
                 </div>
@@ -283,7 +283,7 @@
                     </div>
                 </div>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'period_id' => $enrollment->period_id]) }}" 
+                    <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                         <i class="fas fa-edit mr-2"></i>Edit Nilai
                     </a>
@@ -294,7 +294,7 @@
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Belum Ada Nilai</h3>
                     <p class="text-gray-600 mb-4">Nilai untuk enrollment ini belum diinput.</p>
                     @if($enrollment->status === 'enrolled')
-                        <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'period_id' => $enrollment->period_id]) }}" 
+                        <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                             <i class="fas fa-plus mr-2"></i>Input Nilai
                         </a>

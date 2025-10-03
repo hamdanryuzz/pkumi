@@ -12,7 +12,7 @@ class Grade extends Model
     protected $fillable = [
         'student_id',
         'course_id',
-        'period_id',
+        'semester_id',
         'attendance_score',
         'assignment_score',
         'midterm_score',
@@ -27,9 +27,9 @@ class Grade extends Model
         return $this->belongsTo(Student::class);
     }
 
-    public function period()
+    public function semester()
     {
-        return $this->belongsTo(Period::class);
+        return $this->belongsTo(semester::class);
     }
     public function course()
     {

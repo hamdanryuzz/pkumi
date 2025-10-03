@@ -1,17 +1,17 @@
 <?php
-// database/seeders/PeriodSeeder.php
+// database/seeders/SemesterSeeder.php
 
 namespace Database\Seeders;
 
-use App\Models\Period;
+use App\Models\Semester;
 use Illuminate\Database\Seeder;
 
-class PeriodSeeder extends Seeder
+class SemesterSeeder extends Seeder
 {
     public function run()
     {
         // Semester Genap 2024/2025 (sedang berjalan di tahun 2025)
-        Period::create([
+        Semester::create([
             'name' => 'Semester Genap 2024/2025',
             'code' => '2025-1',
             'start_date' => '2025-02-01',
@@ -22,7 +22,7 @@ class PeriodSeeder extends Seeder
         ]);
 
         // Semester Ganjil 2025/2026 (akan datang setelah Juni 2025)
-        Period::create([
+        Semester::create([
             'name' => 'Semester Ganjil 2025/2026',
             'code' => '2025-2',
             'start_date' => '2025-08-01',

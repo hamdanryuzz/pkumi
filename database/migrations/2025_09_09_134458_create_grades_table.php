@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->nullable()->constrained('courses')->cascadeOnDelete();
-            $table->foreignId('period_id')->nullable()->constrained('periods')->cascadeOnDelete();
+            $table->foreignId('semester_id')->nullable()->constrained('semesters')->cascadeOnDelete();
             $table->decimal('attendance_score', 5, 2)->nullable();
             $table->decimal('assignment_score', 5, 2)->nullable();
             $table->decimal('midterm_score', 5, 2)->nullable();
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('final_grade', 5, 2)->nullable();
             $table->string('letter_grade', 2)->nullable();
             $table->decimal('bobot', 5, 2)->nullable();
-            $table->unique(['student_id', 'course_id', 'period_id'], 'grades_unique_student_course_period');
+            $table->unique(['student_id', 'course_id', 'semester_id'], 'grades_unique_student_course_semester');
             $table->timestamps();
         });
     }

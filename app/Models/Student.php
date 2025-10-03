@@ -43,17 +43,17 @@ class Student extends Authenticatable
         return $this->hasMany(Enrollment::class);
     }
 
-    public function periods()
+    public function semester()
     {
-        return $this->belongsToMany(Period::class, 'enrollments')
+        return $this->belongsToMany(semester::class, 'enrollments')
             ->withPivot(['course_id', 'enrollment_date', 'status'])
             ->withTimestamps();
     }
 
-    public function coursesInPeriod($periodId)
+    public function coursesInsemester($semesterId)
     {
         return $this->belongsToMany(Course::class, 'enrollments')
-            ->wherePivot('period_id', $periodId)
+            ->wherePivot('semester_id', $semesterId)
             ->wherePivot('status', 'enrolled')
             ->withPivot(['enrollment_date', 'status'])
             ->withTimestamps();
@@ -62,7 +62,7 @@ class Student extends Authenticatable
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'grades')
-            ->withPivot(['period_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
+            ->withPivot(['semester_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
             ->withTimestamps();
     }
 

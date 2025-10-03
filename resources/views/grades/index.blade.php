@@ -9,7 +9,7 @@
     <!-- Header Section -->
     <div class="mb-6">
         <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Kelola Nilai</h2>
-        <p class="text-base text-gray-500 mt-1">Input dan kelola nilai mahasiswa per mata kuliah berdasarkan periode</p>
+        <p class="text-base text-gray-500 mt-1">Input dan kelola nilai mahasiswa per mata kuliah berdasarkan semestere</p>
     </div>
 
     <!-- Success Alert -->
@@ -32,30 +32,30 @@
         </div>
     @endif
 
-    <!-- Course and Period Selection Form -->
+    <!-- Course and semester Selection Form -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
             <h5 class="text-lg font-bold text-gray-800">
-                <i class="fas fa-filter mr-2"></i>Pilih Mata Kuliah dan Period
+                <i class="fas fa-filter mr-2"></i>Pilih Mata Kuliah dan semester
             </h5>
-            <p class="text-sm text-gray-600 mt-1">Pilih mata kuliah dan periode untuk mengelola nilai mahasiswa</p>
+            <p class="text-sm text-gray-600 mt-1">Pilih mata kuliah dan semestere untuk mengelola nilai mahasiswa</p>
         </div>
         <div class="p-6">
             <form method="GET" action="{{ route('grades.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-                <!-- Period Selection -->
+                <!-- semester Selection -->
                 <div>
-                    <label for="period_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-calendar mr-1"></i>Period 
+                    <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-calendar mr-1"></i>semester 
                         <span class="text-red-500">*</span>
                     </label>
-                    <select name="period_id" id="period_id" 
+                    <select name="semester_id" id="semester_id" 
                             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                             required>
-                        <option value="">Pilih Period</option>
-                        @foreach($periods as $period)
-                            <option value="{{ $period->id }}" {{ $selectedPeriodId == $period->id ? 'selected' : '' }}>
-                                {{ $period->name }}
-                                @if($period->status === 'active')
+                        <option value="">Pilih semester</option>
+                        @foreach($semester as $semester)
+                            <option value="{{ $semester->id }}" {{ $selectedsemesterId == $semester->id ? 'selected' : '' }}>
+                                {{ $semester->name }}
+                                @if($semester->status === 'active')
                                     <span class="text-green-600">(Aktif)</span>
                                 @endif
                             </option>
@@ -91,8 +91,8 @@
         </div>
     </div>
 
-    @if($selectedCourseId && $selectedPeriodId)
-        <!-- Selected Course and Period Info -->
+    @if($selectedCourseId && $selectedsemesterId)
+        <!-- Selected Course and semester Info -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
                 <div class="flex justify-between items-center">
@@ -102,12 +102,12 @@
                             {{ $courses->find($selectedCourseId)->name ?? 'Unknown Course' }}
                         </h5>
                         <p class="text-sm text-gray-600 mt-1">
-                            <i class="fas fa-calendar mr-1"></i>{{ $periods->find($selectedPeriodId)->name ?? 'Unknown Period' }} |
+                            <i class="fas fa-calendar mr-1"></i>{{ $semester->find($selectedsemesterId)->name ?? 'Unknown semester' }} |
                             <i class="fas fa-users mr-1"></i>{{ $students->count() }} mahasiswa terdaftar
                         </p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('enrollments.index', ['course_id' => $selectedCourseId, 'period_id' => $selectedPeriodId]) }}" 
+                        <a href="{{ route('enrollments.index', ['course_id' => $selectedCourseId, 'semester_id' => $selectedsemesterId]) }}" 
                            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-200">
                             <i class="fas fa-list mr-2"></i>Lihat Enrollment
                         </a>
@@ -177,7 +177,7 @@
                 <form action="{{ route('grades.store') }}" method="POST" id="gradesForm">
                     @csrf
                     <input type="hidden" name="course_id" value="{{ $selectedCourseId }}">
-                    <input type="hidden" name="period_id" value="{{ $selectedPeriodId }}">
+                    <input type="hidden" name="semester_id" value="{{ $selectedsemesterId }}">
                     
                     <div class="overflow-x-auto">
                         <table class="w-full" id="gradesTable">
@@ -345,9 +345,9 @@
                 <i class="fas fa-user-slash text-4xl text-gray-400 mb-4"></i>
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Tidak Ada Mahasiswa Terdaftar</h3>
                 <p class="text-gray-600 mb-4">
-                    Belum ada mahasiswa yang terdaftar pada mata kuliah ini di period yang dipilih.
+                    Belum ada mahasiswa yang terdaftar pada mata kuliah ini di semester yang dipilih.
                 </p>
-                <a href="{{ route('enrollments.create', ['course_id' => $selectedCourseId, 'period_id' => $selectedPeriodId]) }}" 
+                <a href="{{ route('enrollments.create', ['course_id' => $selectedCourseId, 'semester_id' => $selectedsemesterId]) }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                     <i class="fas fa-user-plus mr-2"></i>Tambah Enrollment
                 </a>
@@ -357,9 +357,9 @@
         <!-- Initial State - No Selection -->
         <div class="bg-white rounded-lg shadow-lg p-8 text-center">
             <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Pilih Period dan Mata Kuliah</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Pilih semester dan Mata Kuliah</h3>
             <p class="text-gray-600">
-                Pilih period dan mata kuliah di atas untuk mulai mengelola nilai mahasiswa.
+                Pilih semester dan mata kuliah di atas untuk mulai mengelola nilai mahasiswa.
             </p>
         </div>
     @endif
@@ -486,10 +486,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.exportGrades = function() {
         const courseId = {{ $selectedCourseId ?? 'null' }};
-        const periodId = {{ $selectedPeriodId ?? 'null' }};
+        const semesterId = {{ $selectedsemesterId ?? 'null' }};
         
-        if (courseId && periodId) {
-            window.location.href = `/grades/export?course_id=${courseId}&period_id=${periodId}`;
+        if (courseId && semesterId) {
+            window.location.href = `/grades/export?course_id=${courseId}&semester_id=${semesterId}`;
         }
     };
 

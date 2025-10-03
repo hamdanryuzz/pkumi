@@ -6,7 +6,7 @@ use App\Models\Student;
 use App\Models\Grade;
 use App\Models\Year;
 use App\Models\StudentClass;
-use App\Models\Period;
+use App\Models\Semester;
 use App\Models\Enrollment;
 use App\Models\Course;
 use Illuminate\Http\Request;
@@ -159,14 +159,14 @@ class StudentController extends Controller
         $student->load(['studentClass', 'year']);
         
         $search = $request->get('search');
-        $periodFilter = $request->get('period_id');
+        $semesterFilter = $request->get('semester_id');
         
-        // Ambil semua period untuk dropdown filter
-        $periods = Period::all();
+        // Ambil semua semester untuk dropdown filter
+        $semester = Semester::all();
         
-        // Base query untuk enrollments mahasiswa dengan relasi course dan period
+        // Base query untuk enrollments mahasiswa dengan relasi course dan semester
         $enrollmentQuery = Enrollment::where('student_id', $student->id)
-            ->with(['course', 'period'])
+            ->with(['course', 'semester'])
             ->where('status', 'enrolled');
         
         // Filter berdasarkan pencarian mata kuliah
@@ -177,9 +177,9 @@ class StudentController extends Controller
             });
         }
         
-        // Filter berdasarkan period/tahun ajaran
-        if ($periodFilter) {
-            $enrollmentQuery->where('period_id', $periodFilter);
+        // Filter berdasarkan semester/Semester
+        if ($semesterFilter) {
+            $enrollmentQuery->where('semester_id', $semesterFilter);
         }
         
         // Ambil data enrollments dengan paginasi
@@ -189,7 +189,7 @@ class StudentController extends Controller
         $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) {
             $grade = Grade::where('student_id', $enrollment->student_id)
                         ->where('course_id', $enrollment->course_id)
-                        ->where('period_id', $enrollment->period_id)
+                        ->where('semester_id', $enrollment->semester_id)
                         ->first();
             
             // Tambahkan grade data ke enrollment object
@@ -206,7 +206,7 @@ class StudentController extends Controller
         $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) use (&$totalSKS, &$totalBobot) {
             $grade = Grade::where('student_id', $enrollment->student_id)
                 ->where('course_id', $enrollment->course_id)
-                ->where('period_id', $enrollment->period_id)
+                ->where('semester_id', $enrollment->semester_id)
                 ->first();
 
             if ($grade) {
@@ -231,7 +231,7 @@ class StudentController extends Controller
         // Hitung IPK
         $ipk = $totalSKS > 0 ? round($totalBobot / $totalSKS, 2) : 0;
         
-        return view('students.show', compact('student', 'enrollments', 'periods', 'search', 'periodFilter','totalSKS','ipk'));
+        return view('students.show', compact('student', 'enrollments', 'semester', 'search', 'semesterFilter','totalSKS','ipk'));
     }
 
     public function edit(Student $student)

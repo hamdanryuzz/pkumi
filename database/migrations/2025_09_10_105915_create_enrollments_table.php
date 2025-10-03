@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
-            $table->foreignId('period_id')->constrained()->onDelete('cascade');
+            $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
             $table->date('enrollment_date');
             $table->enum('status', ['enrolled', 'dropped', 'completed'])->default('enrolled');
-            $table->unique(['student_id', 'course_id', 'period_id']);   // Pastikan satu mahasiswa tidak bisa mendaftar mata kuliah yang sama di periode yang sama
+            $table->unique(['student_id', 'course_id', 'semester_id']);   // Pastikan satu mahasiswa tidak bisa mendaftar mata kuliah yang sama di semestere yang sama
             $table->timestamps();
         });
     }

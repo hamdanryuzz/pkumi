@@ -239,12 +239,12 @@
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                     </div>
                     <div class="sm:w-64">
-                        <select name="period_id"
+                        <select name="semester_id"
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="">Semua Tahun Ajaran</option>
-                            @foreach ($periods as $period)
-                                <option value="{{ $period->id }}" {{ $periodFilter == $period->id ? 'selected' : '' }}>
-                                    {{ $period->name }}
+                            <option value="">Semua Semester</option>
+                            @foreach ($semester as $semester)
+                                <option value="{{ $semester->id }}" {{ $semesterFilter == $semester->id ? 'selected' : '' }}>
+                                    {{ $semester->name }}
                                 </option>
                             @endforeach
                         </select>
@@ -254,7 +254,7 @@
                             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg">
                             Cari
                         </button>
-                        @if ($search || $periodFilter)
+                        @if ($search || $semesterFilter)
                             <a href="{{ route('students.show', $student->id) }}"
                                 class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                                 Reset
@@ -274,7 +274,7 @@
                                 Mata Kuliah</th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Tahun Ajaran</th>
+                                Semester</th>
                             <th
                                 class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 SKS</th>
@@ -315,7 +315,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                        {{ $enrollment->period->name ?? '-' }}
+                                        {{ $enrollment->semester->name ?? '-' }}
                                     </td>
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
@@ -372,7 +372,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                        {{ $enrollment->period_name ?? '-' }}
+                                        {{ $enrollment->semester_name ?? '-' }}
                                     </td>
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
@@ -443,14 +443,14 @@
                                                 d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                                            @if ($search || $periodFilter)
+                                            @if ($search || $semesterFilter)
                                                 Tidak Ada Data Ditemukan
                                             @else
                                                 Belum Ada Enrollment
                                             @endif
                                         </h3>
                                         <p class="text-gray-500 dark:text-gray-400">
-                                            @if ($search || $periodFilter)
+                                            @if ($search || $semesterFilter)
                                                 Tidak ada mata kuliah yang sesuai dengan filter yang dipilih.
                                             @else
                                                 Mahasiswa belum melakukan pendaftaran mata kuliah.

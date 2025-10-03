@@ -1,34 +1,34 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Tahun Ajaran - Sistem Penilaian PKUMI')
+@section('title', 'Detail Semester - Sistem Penilaian PKUMI')
 
 @section('content')
 <main class="py-6 px-4 md:px-8">
     <!-- Header Section -->
     <div class="mb-6">
         <div class="flex items-center gap-4">
-            <a href="{{ route('periods.index') }}" 
+            <a href="{{ route('semester.index') }}" 
                class="text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <div class="flex-1">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">{{ $period->name }}</h2>
-                        <p class="text-base text-gray-500 mt-1">Detail informasi tahun ajaran dan statistik enrollment</p>
+                        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">{{ $semester->name }}</h2>
+                        <p class="text-base text-gray-500 mt-1">Detail informasi Semester dan statistik enrollment</p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('periods.edit', $period) }}" 
+                        <a href="{{ route('semester.edit', $semester) }}" 
                            class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200">
-                            <i class="fas fa-edit mr-2"></i>Edit Tahun Ajaran
+                            <i class="fas fa-edit mr-2"></i>Edit Semester
                         </a>
-                        @if($period->status !== 'active')
-                            <form action="{{ route('periods.activate', $period) }}" method="POST" class="inline">
+                        @if($semester->status !== 'active')
+                            <form action="{{ route('semester.activate', $semester) }}" method="POST" class="inline">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" 
                                         class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
-                                        onclick="return confirm('Yakin ingin mengaktifkan period ini?')">
+                                        onclick="return confirm('Yakin ingin mengaktifkan semester ini?')">
                                     <i class="fas fa-play mr-2"></i>Aktifkan
                                 </button>
                             </form>
@@ -48,26 +48,26 @@
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Tahun Ajaran Information Card -->
+        <!-- Semester Information Card -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <h5 class="text-lg font-bold text-gray-800">
                         <i class="fas fa-info-circle mr-2"></i>
-                        Informasi Tahun Ajaran
+                        Informasi Semester
                     </h5>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Tahun Ajaran Details -->
+                        <!-- Semester Details -->
                         <div class="space-y-4">
                             <div>
-                                <label class="text-sm font-medium text-gray-500">Nama Tahun Ajaran</label>
-                                <p class="text-gray-900 font-medium">{{ $period->name }}</p>
+                                <label class="text-sm font-medium text-gray-500">Nama Semester</label>
+                                <p class="text-gray-900 font-medium">{{ $semester->name }}</p>
                             </div>
                             <div>
-                                <label class="text-sm font-medium text-gray-500">Kode Tahun Ajaran</label>
-                                <p class="text-gray-900 font-mono">{{ $period->code }}</p>
+                                <label class="text-sm font-medium text-gray-500">Kode Semester</label>
+                                <p class="text-gray-900 font-mono">{{ $semester->code }}</p>
                             </div>
                             <div>
                                 <label class="text-sm font-medium text-gray-500">Status</label>
@@ -77,7 +77,7 @@
                                         'draft' => ['bg-yellow-100 text-yellow-800', 'Draft', 'fas fa-edit'],
                                         'completed' => ['bg-gray-100 text-gray-800', 'Selesai', 'fas fa-flag-checkered']
                                     ];
-                                    $config = $statusConfig[$period->status] ?? $statusConfig['draft'];
+                                    $config = $statusConfig[$semester->status] ?? $statusConfig['draft'];
                                 @endphp
                                 <div class="mt-1">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $config[0] }}">
@@ -92,16 +92,16 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="text-sm font-medium text-gray-500">
-                                    <i class="fas fa-calendar-alt mr-1"></i>Periode Akademik
+                                    <i class="fas fa-calendar-alt mr-1"></i>semestere Akademik
                                 </label>
                                 <div class="mt-1 space-y-1">
                                     <p class="text-sm text-green-600">
                                         <i class="fas fa-play mr-1"></i>
-                                        Mulai: {{ $period->start_date->format('d M Y') }}
+                                        Mulai: {{ $semester->start_date->format('d M Y') }}
                                     </p>
                                     <p class="text-sm text-red-600">
                                         <i class="fas fa-stop mr-1"></i>
-                                        Berakhir: {{ $period->end_date->format('d M Y') }}
+                                        Berakhir: {{ $semester->end_date->format('d M Y') }}
                                     </p>
                                 </div>
                             </div>
@@ -112,18 +112,18 @@
                                 <div class="mt-1 space-y-1">
                                     <p class="text-sm text-blue-600">
                                         <i class="fas fa-door-open mr-1"></i>
-                                        Mulai: {{ $period->enrollment_start_date->format('d M Y') }}
+                                        Mulai: {{ $semester->enrollment_start_date->format('d M Y') }}
                                     </p>
                                     <p class="text-sm text-orange-600">
                                         <i class="fas fa-door-closed mr-1"></i>
-                                        Berakhir: {{ $period->enrollment_end_date->format('d M Y') }}
+                                        Berakhir: {{ $semester->enrollment_end_date->format('d M Y') }}
                                     </p>
                                 </div>
                             </div>
                             <div>
                                 @php
                                     $now = now();
-                                    $enrollmentOpen = $now->between($period->enrollment_start_date, $period->enrollment_end_date);
+                                    $enrollmentOpen = $now->between($semester->enrollment_start_date, $semester->enrollment_end_date);
                                 @endphp
                                 <label class="text-sm font-medium text-gray-500">Status Pendaftaran</label>
                                 <div class="mt-1">
@@ -207,15 +207,15 @@
     </div>
 
     <!-- Enrollments Table -->
-    @if($period->enrollments->count() > 0)
+    @if($semester->enrollments->count() > 0)
         <div class="mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50">
                 <div class="flex justify-between items-center">
                     <h5 class="text-lg font-bold text-gray-800">
                         <i class="fas fa-list mr-2"></i>
-                        Daftar Enrollment ({{ $period->enrollments->count() }})
+                        Daftar Enrollment ({{ $semester->enrollments->count() }})
                     </h5>
-                    <a href="{{ route('enrollments.index', ['period_id' => $period->id]) }}" 
+                    <a href="{{ route('enrollments.index', ['semester_id' => $semester->id]) }}" 
                        class="text-blue-600 hover:text-blue-800 text-sm">
                         <i class="fas fa-external-link-alt mr-1"></i>
                         Lihat Semua
@@ -233,7 +233,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($period->enrollments->take(10) as $enrollment)
+                        @foreach($semester->enrollments->take(10) as $enrollment)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -273,11 +273,11 @@
                     </tbody>
                 </table>
             </div>
-            @if($period->enrollments->count() > 10)
+            @if($semester->enrollments->count() > 10)
                 <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 text-center">
-                    <a href="{{ route('enrollments.index', ['period_id' => $period->id]) }}" 
+                    <a href="{{ route('enrollments.index', ['semester_id' => $semester->id]) }}" 
                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        Lihat {{ $period->enrollments->count() - 10 }} enrollment lainnya
+                        Lihat {{ $semester->enrollments->count() - 10 }} enrollment lainnya
                         <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
@@ -287,8 +287,8 @@
         <div class="mt-6 bg-white rounded-lg shadow-lg p-8 text-center">
             <i class="fas fa-user-slash text-4xl text-gray-400 mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-800 mb-2">Belum Ada Enrollment</h3>
-            <p class="text-gray-600">Tahun ajaran ini belum memiliki data enrollment mahasiswa.</p>
-            <a href="{{ route('enrollments.create', ['period_id' => $period->id]) }}" 
+            <p class="text-gray-600">Semester ini belum memiliki data enrollment mahasiswa.</p>
+            <a href="{{ route('enrollments.create', ['semester_id' => $semester->id]) }}" 
                class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                 <i class="fas fa-plus mr-2"></i>Tambah Enrollment
             </a>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
-use App\Models\Period;
+use App\Models\Semester;
 use App\Models\Course;
 use App\Models\Student;
 use App\Models\StudentClass;
@@ -19,11 +19,11 @@ class EnrollmentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Enrollment::with(['student', 'course', 'period']);
+        $query = Enrollment::with(['student', 'course', 'semester']);
 
-        // Filter by period
-        if ($request->filled('period_id')) {
-            $query->where('period_id', $request->period_id);
+        // Filter by semester
+        if ($request->filled('semester_id')) {
+            $query->where('semester_id', $request->semester_id);
         }
 
         // Filter by course
@@ -47,10 +47,10 @@ class EnrollmentController extends Controller
         $enrollments = $query->orderBy('created_at', 'desc')->paginate(15);
         
         // Get filter options
-        $periods = Period::orderBy('start_date', 'desc')->get();
+        $semester = Semester::orderBy('start_date', 'desc')->get();
         $courses = Course::orderBy('name')->get();
 
-        return view('enrollments.index', compact('enrollments', 'periods', 'courses'));
+        return view('enrollments.index', compact('enrollments', 'semester', 'courses'));
     }
 
     /**
@@ -58,7 +58,7 @@ class EnrollmentController extends Controller
      */
     public function create(Request $request)
 {
-    $periods = Period::where('status', 'active')
+    $semester = Semester::where('status', 'active')
         ->orWhere('status', 'draft')
         ->orderBy('start_date', 'desc')
         ->get();
@@ -85,18 +85,18 @@ class EnrollmentController extends Controller
     $students = $studentsQuery->orderBy('name')->get();
 
     // Pre-select values
-    $selectedPeriod = $request->get('period_id');
+    $selectedsemester = $request->get('semester_id');
     $selectedCourse = $request->get('course_id');
     $selectedYear = $request->get('year_id');
     $selectedClass = $request->get('student_class_id');
 
     return view('enrollments.create', compact(
-        'periods', 
+        'semester', 
         'courses', 
         'students', 
         'years',
         'studentClasses',
-        'selectedPeriod', 
+        'selectedsemester', 
         'selectedCourse',
         'selectedYear',
         'selectedClass'
@@ -111,7 +111,7 @@ class EnrollmentController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
-            'period_id' => 'required|exists:periods,id',
+            'semester_id' => 'required|exists:semester,id',
             'enrollment_date' => 'nullable|date',
             'status' => ['nullable', Rule::in(['enrolled', 'dropped', 'completed'])]
         ]);
@@ -122,21 +122,21 @@ class EnrollmentController extends Controller
             return back()->withErrors(['student_id' => 'Mahasiswa tidak aktif.'])->withInput();
         }
 
-        // Check if period allows enrollment
-        $period = Period::find($validated['period_id']);
-        if (!$this->canEnrollInPeriod($period)) {
-            return back()->withErrors(['period_id' => 'Periode tidak dalam masa pendaftaran.'])->withInput();
+        // Check if semester allows enrollment
+        $semester = Semester::find($validated['semester_id']);
+        if (!$this->canEnrollInsemester($semester)) {
+            return back()->withErrors(['semester_id' => 'semestere tidak dalam masa pendaftaran.'])->withInput();
         }
 
         // Check for duplicate enrollment
         $existingEnrollment = Enrollment::where([
             'student_id' => $validated['student_id'],
             'course_id' => $validated['course_id'],
-            'period_id' => $validated['period_id']
+            'semester_id' => $validated['semester_id']
         ])->first();
 
         if ($existingEnrollment) {
-            return back()->withErrors(['duplicate' => 'Mahasiswa sudah terdaftar pada mata kuliah ini di periode yang sama.'])->withInput();
+            return back()->withErrors(['duplicate' => 'Mahasiswa sudah terdaftar pada mata kuliah ini di semestere yang sama.'])->withInput();
         }
 
         // Set default values
@@ -154,12 +154,12 @@ class EnrollmentController extends Controller
      */
     public function show(Enrollment $enrollment)
     {
-        $enrollment->load(['student', 'course', 'period']);
+        $enrollment->load(['student', 'course', 'semester']);
         
         // Get related grade if exists
         $grade = $enrollment->student->grade()
             ->where('course_id', $enrollment->course_id)
-            ->where('period_id', $enrollment->period_id)
+            ->where('semester_id', $enrollment->semester_id)
             ->first();
 
         return view('enrollments.show', compact('enrollment', 'grade'));
@@ -170,11 +170,11 @@ class EnrollmentController extends Controller
      */
     public function edit(Enrollment $enrollment)
     {
-        $periods = Period::orderBy('start_date', 'desc')->get();
+        $semester = Semester::orderBy('start_date', 'desc')->get();
         $courses = Course::orderBy('name')->get();
         $students = Student::where('status', 'active')->orderBy('name')->get();
 
-        return view('enrollments.edit', compact('enrollment', 'periods', 'courses', 'students'));
+        return view('enrollments.edit', compact('enrollment', 'semester', 'courses', 'students'));
     }
 
     /**
@@ -185,7 +185,7 @@ class EnrollmentController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
-            'period_id' => 'required|exists:periods,id',
+            'semester_id' => 'required|exists:semester,id',
             'enrollment_date' => 'required|date',
             'status' => ['required', Rule::in(['enrolled', 'dropped', 'completed'])]
         ]);
@@ -194,11 +194,11 @@ class EnrollmentController extends Controller
         $existingEnrollment = Enrollment::where([
             'student_id' => $validated['student_id'],
             'course_id' => $validated['course_id'],
-            'period_id' => $validated['period_id']
+            'semester_id' => $validated['semester_id']
         ])->where('id', '!=', $enrollment->id)->first();
 
         if ($existingEnrollment) {
-            return back()->withErrors(['duplicate' => 'Mahasiswa sudah terdaftar pada mata kuliah ini di periode yang sama.'])->withInput();
+            return back()->withErrors(['duplicate' => 'Mahasiswa sudah terdaftar pada mata kuliah ini di semestere yang sama.'])->withInput();
         }
 
         $enrollment->update($validated);
@@ -215,7 +215,7 @@ class EnrollmentController extends Controller
         // Check if enrollment has associated grades
         $hasGrades = $enrollment->student->grade()
             ->where('course_id', $enrollment->course_id)
-            ->where('period_id', $enrollment->period_id)
+            ->where('semester_id', $enrollment->semester_id)
             ->exists();
 
         if ($hasGrades) {
@@ -237,12 +237,12 @@ class EnrollmentController extends Controller
             'student_ids' => 'required|array|min:1',
             'student_ids.*' => 'exists:students,id',
             'course_id' => 'required|exists:courses,id',
-            'period_id' => 'required|exists:periods,id',
+            'semester_id' => 'required|exists:semester,id',
         ]);
 
-        $period = Period::find($validated['period_id']);
-        if (!$this->canEnrollInPeriod($period)) {
-            return back()->withErrors(['period_id' => 'Periode tidak dalam masa pendaftaran.']);
+        $semester = Semester::find($validated['semester_id']);
+        if (!$this->canEnrollInsemester($semester)) {
+            return back()->withErrors(['semester_id' => 'semestere tidak dalam masa pendaftaran.']);
         }
 
         $successCount = 0;
@@ -261,7 +261,7 @@ class EnrollmentController extends Controller
             $existingEnrollment = Enrollment::where([
                 'student_id' => $studentId,
                 'course_id' => $validated['course_id'],
-                'period_id' => $validated['period_id']
+                'semester_id' => $validated['semester_id']
             ])->exists();
 
             if ($existingEnrollment) {
@@ -273,7 +273,7 @@ class EnrollmentController extends Controller
             Enrollment::create([
                 'student_id' => $studentId,
                 'course_id' => $validated['course_id'],
-                'period_id' => $validated['period_id'],
+                'semester_id' => $validated['semester_id'],
                 'enrollment_date' => Carbon::now()->toDateString(),
                 'status' => 'enrolled'
             ]);
@@ -295,22 +295,22 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Get students enrolled in a specific course and period
+     * Get students enrolled in a specific course and semester
      */
     public function getEnrolledStudents(Request $request)
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'period_id' => 'required|exists:periods,id'
+            'semester_id' => 'required|exists:semester,id'
         ]);
 
         $students = Student::whereHas('enrollments', function ($query) use ($request) {
             $query->where('course_id', $request->course_id)
-                  ->where('period_id', $request->period_id)
+                  ->where('semester_id', $request->semester_id)
                   ->where('status', 'enrolled');
         })->with(['enrollments' => function ($query) use ($request) {
             $query->where('course_id', $request->course_id)
-                  ->where('period_id', $request->period_id);
+                  ->where('semester_id', $request->semester_id);
         }])->get();
 
         return response()->json([
@@ -340,17 +340,17 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Check if enrollment is allowed for a period
+     * Check if enrollment is allowed for a semester
      */
-    private function canEnrollInPeriod(Period $period): bool
+    private function canEnrollInsemester(Semester $semester): bool
     {
-        if ($period->status === 'completed') {
+        if ($semester->status === 'completed') {
             return false;
         }
 
-        // Check if current date is within enrollment period
+        // Check if current date is within enrollment semester
         $now = Carbon::now()->toDateString();
-        return $now >= $period->enrollment_start_date && $now <= $period->enrollment_end_date;
+        return $now >= $semester->enrollment_start_date && $now <= $semester->enrollment_end_date;
     }
 
     /**
@@ -358,10 +358,10 @@ class EnrollmentController extends Controller
      */
     public function export(Request $request)
     {
-        $query = Enrollment::with(['student', 'course', 'period']);
+        $query = Enrollment::with(['student', 'course', 'semester']);
 
-        if ($request->filled('period_id')) {
-            $query->where('period_id', $request->period_id);
+        if ($request->filled('semester_id')) {
+            $query->where('semester_id', $request->semester_id);
         }
 
         if ($request->filled('course_id')) {
@@ -377,14 +377,14 @@ class EnrollmentController extends Controller
             $file = fopen('php://output', 'w');
             
             // Add CSV headers
-            fputcsv($file, ['NIM', 'Nama Mahasiswa', 'Mata Kuliah', 'Periode', 'Tanggal Daftar', 'Status']);
+            fputcsv($file, ['NIM', 'Nama Mahasiswa', 'Mata Kuliah', 'semestere', 'Tanggal Daftar', 'Status']);
             
             foreach ($enrollments as $enrollment) {
                 fputcsv($file, [
                     $enrollment->student->nim,
                     $enrollment->student->name,
                     $enrollment->course->name,
-                    $enrollment->period->name,
+                    $enrollment->semester->name,
                     $enrollment->enrollment_date->format('d-m-Y'),
                     ucfirst($enrollment->status)
                 ]);

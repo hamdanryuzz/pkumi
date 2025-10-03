@@ -197,7 +197,7 @@
         <div class="meta-info">
             <strong>Nama:</strong> {{ $student->name ?? '-' }} <br>
             <strong>NIM:</strong> {{ $student->nim ?? '-' }} <br>
-            <strong>Periode:</strong> {{ $period ?? 'Semester Ganjil 2024/2025' }}
+            <strong>semestere:</strong> {{ $semester ?? 'Semester Ganjil 2024/2025' }}
         </div>
     </div>
 

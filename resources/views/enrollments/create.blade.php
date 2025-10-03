@@ -12,7 +12,7 @@
                 </a>
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Tambah Enrollment Baru</h2>
-                    <p class="text-base text-gray-500 mt-1">Daftarkan mahasiswa pada mata kuliah di periode tertentu</p>
+                    <p class="text-base text-gray-500 mt-1">Daftarkan mahasiswa pada mata kuliah di semestere tertentu</p>
                 </div>
             </div>
         </div>
@@ -43,31 +43,31 @@
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Period -->
+                    <!-- semester -->
                     <div>
-                        <label for="period_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-calendar mr-1"></i>Period
+                        <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar mr-1"></i>semester
                             <span class="text-red-500">*</span>
                         </label>
-                        <select name="period_id" id="period_id"
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('period_id') border-red-500 @enderror"
+                        <select name="semester_id" id="semester_id"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('semester_id') border-red-500 @enderror"
                             required>
-                            <option value="">Pilih Period</option>
-                            @foreach ($periods as $period)
-                                <option value="{{ $period->id }}"
-                                    {{ old('period_id', $selectedPeriod) == $period->id ? 'selected' : '' }}
-                                    data-enrollment-open="{{ $period->isEnrollmentOpen() ? 'true' : 'false' }}">
-                                    {{ $period->name }}
-                                    @if ($period->status === 'active')
+                            <option value="">Pilih semester</option>
+                            @foreach ($semester as $semester)
+                                <option value="{{ $semester->id }}"
+                                    {{ old('semester_id', $selectedsemester) == $semester->id ? 'selected' : '' }}
+                                    data-enrollment-open="{{ $semester->isEnrollmentOpen() ? 'true' : 'false' }}">
+                                    {{ $semester->name }}
+                                    @if ($semester->status === 'active')
                                         <span class="text-green-600">(Aktif)</span>
                                     @endif
                                 </option>
                             @endforeach
                         </select>
-                        @error('period_id')
+                        @error('semester_id')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                        <p class="text-xs text-gray-500 mt-1" id="periodStatus"></p>
+                        <p class="text-xs text-gray-500 mt-1" id="semestertatus"></p>
                     </div>
 
                     <!-- Course -->
@@ -154,9 +154,9 @@
                         <div class="text-sm text-blue-800">
                             <strong>Catatan Penting:</strong>
                             <ul class="list-disc list-inside mt-1 space-y-1">
-                                <li>Pastikan period sedang dalam masa pendaftaran</li>
+                                <li>Pastikan semester sedang dalam masa pendaftaran</li>
                                 <li>Mahasiswa harus dalam status aktif untuk dapat didaftarkan</li>
-                                <li>Satu mahasiswa tidak dapat didaftarkan dua kali pada mata kuliah yang sama di period
+                                <li>Satu mahasiswa tidak dapat didaftarkan dua kali pada mata kuliah yang sama di semester
                                     yang sama</li>
                             </ul>
                         </div>
@@ -252,15 +252,15 @@
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <label for="bulk_period_id" class="block text-sm font-medium text-gray-700 mb-2">Period <span
+                            <label for="bulk_semester_id" class="block text-sm font-medium text-gray-700 mb-2">semester <span
                                     class="text-red-500">*</span></label>
-                            <select name="period_id" id="bulk_period_id"
+                            <select name="semester_id" id="bulk_semester_id"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2" required>
-                                <option value="">Pilih Period</option>
-                                @foreach ($periods as $period)
-                                    <option value="{{ $period->id }}"
-                                        {{ $selectedPeriod == $period->id ? 'selected' : '' }}>
-                                        {{ $period->name }}
+                                <option value="">Pilih semester</option>
+                                @foreach ($semester as $semester)
+                                    <option value="{{ $semester->id }}"
+                                        {{ $selectedsemester == $semester->id ? 'selected' : '' }}>
+                                        {{ $semester->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -342,30 +342,30 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const periodSelect = document.getElementById('period_id');
-            const periodStatus = document.getElementById('periodStatus');
+            const semesterelect = document.getElementById('semester_id');
+            const semestertatus = document.getElementById('semestertatus');
             const courseSelect = document.getElementById('course_id');
             const studentSelect = document.getElementById('student_id');
             const duplicateWarning = document.getElementById('duplicateWarning');
             const duplicateMessage = document.getElementById('duplicateMessage');
 
-            // Period change handler
-            periodSelect.addEventListener('change', function() {
+            // semester change handler
+            semesterelect.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const isEnrollmentOpen = selectedOption.dataset.enrollmentOpen === 'true';
 
                 if (this.value) {
                     if (isEnrollmentOpen) {
-                        periodStatus.innerHTML =
+                        semestertatus.innerHTML =
                             '<i class="fas fa-check-circle text-green-600 mr-1"></i>Masa pendaftaran masih terbuka';
-                        periodStatus.className = 'text-xs text-green-600 mt-1';
+                        semestertatus.className = 'text-xs text-green-600 mt-1';
                     } else {
-                        periodStatus.innerHTML =
+                        semestertatus.innerHTML =
                             '<i class="fas fa-exclamation-triangle text-yellow-600 mr-1"></i>Masa pendaftaran sudah tutup';
-                        periodStatus.className = 'text-xs text-yellow-600 mt-1';
+                        semestertatus.className = 'text-xs text-yellow-600 mt-1';
                     }
                 } else {
-                    periodStatus.innerHTML = '';
+                    semestertatus.innerHTML = '';
                 }
 
                 checkDuplicateEnrollment();
@@ -376,11 +376,11 @@
             studentSelect.addEventListener('change', checkDuplicateEnrollment);
 
             function checkDuplicateEnrollment() {
-                const periodId = periodSelect.value;
+                const semesterId = semesterelect.value;
                 const courseId = courseSelect.value;
                 const studentId = studentSelect.value;
 
-                if (periodId && courseId && studentId) {
+                if (semesterId && courseId && studentId) {
                     // Here you would typically make an AJAX call to check for duplicates
                     // For now, we'll just show the warning structure
                     duplicateWarning.classList.add('hidden');

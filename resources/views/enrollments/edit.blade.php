@@ -47,27 +47,27 @@
             @method('PUT')
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Period -->
+                <!-- semester -->
                 <div>
-                    <label for="period_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-calendar mr-1"></i>Period 
+                    <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-calendar mr-1"></i>semester 
                         <span class="text-red-500">*</span>
                     </label>
-                    <select name="period_id" id="period_id" 
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('period_id') border-red-500 @enderror" 
+                    <select name="semester_id" id="semester_id" 
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('semester_id') border-red-500 @enderror" 
                             required>
-                        <option value="">Pilih Period</option>
-                        @foreach($periods as $period)
-                            <option value="{{ $period->id }}" 
-                                    {{ (old('period_id', $enrollment->period_id) == $period->id) ? 'selected' : '' }}>
-                                {{ $period->name }}
-                                @if($period->status === 'active')
+                        <option value="">Pilih semester</option>
+                        @foreach($semester as $semester)
+                            <option value="{{ $semester->id }}" 
+                                    {{ (old('semester_id', $enrollment->semester_id) == $semester->id) ? 'selected' : '' }}>
+                                {{ $semester->name }}
+                                @if($semester->status === 'active')
                                     <span class="text-green-600">(Aktif)</span>
                                 @endif
                             </option>
                         @endforeach
                     </select>
-                    @error('period_id')
+                    @error('semester_id')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -152,7 +152,7 @@
 
             <!-- Grade Info -->
             @php
-                $hasGrades = $enrollment->student->grade()->where('course_id', $enrollment->course_id)->where('period_id', $enrollment->period_id)->exists();
+                $hasGrades = $enrollment->student->grade()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists();
             @endphp
             @if($hasGrades)
                 <div class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">

@@ -21,17 +21,17 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
-    public function periods()
+    public function semester()
     {
-        return $this->belongsToMany(Period::class, 'enrollments')
+        return $this->belongsToMany(semester::class, 'enrollments')
             ->withPivot(['student_id', 'enrollment_date', 'status'])
             ->withTimestamps();
     }
 
-    public function studentsInPeriod($periodId)
+    public function studentsInsemester($semesterId)
     {
         return $this->belongsToMany(Student::class, 'enrollments')
-            ->wherePivot('period_id', $periodId)
+            ->wherePivot('semester_id', $semesterId)
             ->wherePivot('status', 'enrolled')
             ->withPivot(['enrollment_date', 'status'])
             ->withTimestamps();
@@ -40,7 +40,7 @@ class Course extends Model
     public function students()
     {
         return $this->belongsToMany(Student::class, 'grades')
-            ->withPivot(['period_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
+            ->withPivot(['semester_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
             ->withTimestamps();
     }
 
