@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Kelola Tahun Ajaran - Sistem Penilaian PKUMI')
+
 @section('content')
 <div class="min-h-screen bg-gradient-to-br py-8">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,8 +16,8 @@
                     Kembali
                 </a>
             </div>
-            <h1 class="mt-4 text-3xl font-bold text-gray-900">Tambah Periode Baru</h1>
-            <p class="mt-2 text-sm text-gray-600">Buat periode akademik baru untuk tahun ajaran</p>
+            <h1 class="mt-4 text-3xl font-bold text-gray-900">Tambah Tahun Ajaran Baru</h1>
+            <p class="mt-2 text-sm text-gray-600">Buat Tahun Ajaran baru untuk Periode Akademik</p>
         </div>
 
         <!-- Error Messages -->
@@ -42,10 +44,10 @@
             <form action="{{ route('periods.store') }}" method="POST" class="p-8 space-y-6">
                 @csrf
 
-                <!-- Nama Periode -->
+                <!-- Nama Tahun Ajaran -->
                 <div>
                     <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
-                        Nama Periode <span class="text-red-500">*</span>
+                        Nama Tahun Ajaran <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
                            name="name" 
@@ -59,10 +61,10 @@
                     @enderror
                 </div>
 
-                <!-- Kode Periode -->
+                <!-- Kode Tahun Ajaran -->
                 <div>
                     <label for="code" class="block text-sm font-semibold text-gray-700 mb-2">
-                        Kode Periode <span class="text-red-500">*</span>
+                        Kode Tahun Ajaran <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
                            name="code" 
@@ -74,7 +76,7 @@
                     @error('code')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-xs text-gray-500">Kode unik untuk mengidentifikasi periode ini</p>
+                    <p class="mt-1 text-xs text-gray-500">Kode unik untuk mengidentifikasi tahun ajaran ini</p>
                 </div>
 
                 <!-- Status -->
@@ -103,7 +105,7 @@
                     </a>
                     <button type="submit" 
                             class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
-                        Simpan Periode
+                        Simpan Tahun Ajaran
                     </button>
                 </div>
             </form>
