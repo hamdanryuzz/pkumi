@@ -83,10 +83,10 @@ Route::middleware('auth:web')->group(function () {
     Route::resource('periods', PeriodController::class);
 
     // Semester Management
-    Route::patch('semester/{semester}/activate', [SemesterController::class, 'activate'])->name('semester.activate');
-    Route::get('semester/{semester}/courses', [SemesterController::class, 'getCourses'])->name('semester.courses');
-    Route::get('semester/{semester}/stats', [SemesterController::class, 'getEnrollmentStats'])->name('semester.stats');
-    Route::resource('semester', SemesterController::class);
+    Route::patch('semesters/{semester}/activate', [SemesterController::class, 'activate'])->name('semesters.activate');
+    Route::get('semesters/{semester}/courses', [SemesterController::class, 'getCourses'])->name('semesters.courses');
+    Route::get('semesters/{semester}/stats', [SemesterController::class, 'getEnrollmentStats'])->name('semesters.stats');
+    Route::resource('semesters', SemesterController::class);
 
     // Enrollment Management
     Route::post('enrollments/bulk', [EnrollmentController::class, 'bulkStore'])->name('enrollments.bulk');

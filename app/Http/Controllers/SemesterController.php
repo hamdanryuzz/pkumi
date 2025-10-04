@@ -3,22 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Semester;
+use App\Models\Period;
 use App\Models\Course;
-use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon;
 
 class SemesterController extends Controller
 {
     /**
-     * Display a listing of semester
+     * Display a listing of semesters
      */
     public function index()
     {
-        $semesters = Semester::orderBy('start_date', 'desc')->paginate(10);
+        $semesters = Semester::with('period')
+            ->latest()
+            ->paginate(10);
         
-        return view('semester.index', compact('semesters'));
+        return view('semesters.index', compact('semesters'));
     }
 
     /**
@@ -26,7 +27,8 @@ class SemesterController extends Controller
      */
     public function create()
     {
-        return view('semester.create');
+        $periods = Period::all();
+        return view('semesters.create', compact('periods'));
     }
 
     /**
@@ -35,6 +37,7 @@ class SemesterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'period_id' => 'required|exists:periods,id',
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:semesters,code',
             'start_date' => 'required|date',
@@ -43,23 +46,25 @@ class SemesterController extends Controller
             'enrollment_end_date' => 'required|date|after:enrollment_start_date|before_or_equal:start_date',
             'status' => ['required', Rule::in(['draft', 'active', 'completed'])]
         ], [
+            'period_id.required' => 'Period harus dipilih.',
+            'period_id.exists' => 'Period yang dipilih tidak valid.',
             'end_date.after' => 'Tanggal berakhir harus setelah tanggal mulai.',
-            'enrollment_start_date.before_or_equal' => 'Tanggal mulai pendaftaran harus sebelum atau sama dengan tanggal mulai semestere.',
+            'enrollment_start_date.before_or_equal' => 'Tanggal mulai pendaftaran harus sebelum atau sama dengan tanggal mulai semester.',
             'enrollment_end_date.after' => 'Tanggal berakhir pendaftaran harus setelah tanggal mulai pendaftaran.',
-            'enrollment_end_date.before_or_equal' => 'Tanggal berakhir pendaftaran harus sebelum atau sama dengan tanggal mulai semestere.'
+            'enrollment_end_date.before_or_equal' => 'Tanggal berakhir pendaftaran harus sebelum atau sama dengan tanggal mulai semester.'
         ]);
 
         // Check if there's already an active semester when trying to create another active semester
         if ($validated['status'] === 'active') {
             $existingActive = Semester::where('status', 'active')->exists();
             if ($existingActive) {
-                return back()->withErrors(['status' => 'Hanya bisa ada satu semestere aktif dalam satu waktu.'])->withInput();
+                return back()->withErrors(['status' => 'Hanya bisa ada satu semester aktif dalam satu waktu.'])->withInput();
             }
         }
 
         Semester::create($validated);
 
-        return redirect()->route('semester.index')
+        return redirect()->route('semesters.index')
             ->with('success', 'Semester berhasil dibuat!');
     }
 
@@ -68,7 +73,7 @@ class SemesterController extends Controller
      */
     public function show(Semester $semester)
     {
-        $semester->load(['enrollments.student', 'enrollments.course']);
+        $semester->load(['period', 'enrollments.student', 'enrollments.course']);
         
         $statistics = [
             'total_enrollments' => $semester->enrollments()->count(),
@@ -77,7 +82,7 @@ class SemesterController extends Controller
             'total_students' => $semester->enrollments()->distinct('student_id')->count()
         ];
 
-        return view('semester.show', compact('semester', 'statistics'));
+        return view('semesters.show', compact('semester', 'statistics'));
     }
 
     /**
@@ -85,7 +90,8 @@ class SemesterController extends Controller
      */
     public function edit(Semester $semester)
     {
-        return view('semester.edit', compact('semester'));
+        $periods = Period::all();
+        return view('semesters.edit', compact('semester', 'periods'));
     }
 
     /**
@@ -94,6 +100,7 @@ class SemesterController extends Controller
     public function update(Request $request, Semester $semester)
     {
         $validated = $request->validate([
+            'period_id' => 'required|exists:periods,id',
             'name' => 'required|string|max:255',
             'code' => ['required', 'string', 'max:50', Rule::unique('semesters', 'code')->ignore($semester->id)],
             'start_date' => 'required|date',
@@ -102,24 +109,26 @@ class SemesterController extends Controller
             'enrollment_end_date' => 'required|date|after:enrollment_start_date|before_or_equal:start_date',
             'status' => ['required', Rule::in(['draft', 'active', 'completed'])]
         ], [
+            'period_id.required' => 'Period harus dipilih.',
+            'period_id.exists' => 'Period yang dipilih tidak valid.',
             'end_date.after' => 'Tanggal berakhir harus setelah tanggal mulai.',
-            'enrollment_start_date.before_or_equal' => 'Tanggal mulai pendaftaran harus sebelum atau sama dengan tanggal mulai semestere.',
+            'enrollment_start_date.before_or_equal' => 'Tanggal mulai pendaftaran harus sebelum atau sama dengan tanggal mulai semester.',
             'enrollment_end_date.after' => 'Tanggal berakhir pendaftaran harus setelah tanggal mulai pendaftaran.',
-            'enrollment_end_date.before_or_equal' => 'Tanggal berakhir pendaftaran harus sebelum atau sama dengan tanggal mulai semestere.'
+            'enrollment_end_date.before_or_equal' => 'Tanggal berakhir pendaftaran harus sebelum atau sama dengan tanggal mulai semester.'
         ]);
 
         // Check if there's already an active semester when trying to update status to active
         if ($validated['status'] === 'active' && $semester->status !== 'active') {
             $existingActive = Semester::where('status', 'active')->where('id', '!=', $semester->id)->exists();
             if ($existingActive) {
-                return back()->withErrors(['status' => 'Hanya bisa ada satu semestere aktif dalam satu waktu.'])->withInput();
+                return back()->withErrors(['status' => 'Hanya bisa ada satu semester aktif dalam satu waktu.'])->withInput();
             }
         }
 
         $semester->update($validated);
 
-        return redirect()->route('semester.index')
-            ->with('success', 'semester berhasil diupdate!');
+        return redirect()->route('semesters.index')
+            ->with('success', 'Semester berhasil diupdate!');
     }
 
     /**
@@ -134,8 +143,8 @@ class SemesterController extends Controller
 
         $semester->delete();
 
-        return redirect()->route('semester.index')
-            ->with('success', 'semester berhasil dihapus!');
+        return redirect()->route('semesters.index')
+            ->with('success', 'Semester berhasil dihapus!');
     }
 
     /**
@@ -143,13 +152,13 @@ class SemesterController extends Controller
      */
     public function activate(Semester $semester)
     {
-        // Deactivate all other semester
+        // Deactivate all other semesters
         Semester::where('status', 'active')->update(['status' => 'draft']);
-        
+
         // Activate current semester
         $semester->update(['status' => 'active']);
 
-        return back()->with('success', "semester {$semester->name} berhasil diaktifkan!");
+        return back()->with('success', "Semester {$semester->name} berhasil diaktifkan!");
     }
 
     /**
@@ -158,7 +167,6 @@ class SemesterController extends Controller
     public function getCourses(Semester $semester)
     {
         $courses = Course::all();
-        
         return response()->json([
             'semester' => $semester,
             'courses' => $courses

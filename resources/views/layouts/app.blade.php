@@ -521,7 +521,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('semester.index') }}" class="nav-link {{ request()->routeIs('semester.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
+                        <a href="{{ route('semesters.index') }}" class="nav-link {{ request()->routeIs('semesters.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-graduation-cap nav-icon"></i>
                             <span class="nav-text">Manage Semester</span>
                             <div class="nav-tooltip">Manage Semester</div>
