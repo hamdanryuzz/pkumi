@@ -47,10 +47,10 @@ class EnrollmentController extends Controller
         $enrollments = $query->orderBy('created_at', 'desc')->paginate(15);
         
         // Get filter options
-        $semester = Semester::orderBy('start_date', 'desc')->get();
+        $semesters = Semester::orderBy('start_date', 'desc')->get();
         $courses = Course::orderBy('name')->get();
 
-        return view('enrollments.index', compact('enrollments', 'semester', 'courses'));
+        return view('enrollments.index', compact('enrollments', 'semesters', 'courses'));
     }
 
     /**
@@ -58,7 +58,7 @@ class EnrollmentController extends Controller
      */
     public function create(Request $request)
 {
-    $semester = Semester::where('status', 'active')
+    $semesters = Semester::where('status', 'active')
         ->orWhere('status', 'draft')
         ->orderBy('start_date', 'desc')
         ->get();
@@ -91,7 +91,7 @@ class EnrollmentController extends Controller
     $selectedClass = $request->get('student_class_id');
 
     return view('enrollments.create', compact(
-        'semester', 
+        'semesters', 
         'courses', 
         'students', 
         'years',
@@ -111,7 +111,7 @@ class EnrollmentController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
-            'semester_id' => 'required|exists:semester,id',
+            'semester_id' => 'required|exists:semesters,id',
             'enrollment_date' => 'nullable|date',
             'status' => ['nullable', Rule::in(['enrolled', 'dropped', 'completed'])]
         ]);
@@ -123,9 +123,9 @@ class EnrollmentController extends Controller
         }
 
         // Check if semester allows enrollment
-        $semester = Semester::find($validated['semester_id']);
-        if (!$this->canEnrollInsemester($semester)) {
-            return back()->withErrors(['semester_id' => 'semestere tidak dalam masa pendaftaran.'])->withInput();
+        $semesters = Semester::find($validated['semester_id']);
+        if (!$this->canEnrollInsemester($semesters)) {
+            return back()->withErrors(['semester_id' => 'Semester tidak dalam masa pendaftaran.'])->withInput();
         }
 
         // Check for duplicate enrollment
@@ -136,7 +136,7 @@ class EnrollmentController extends Controller
         ])->first();
 
         if ($existingEnrollment) {
-            return back()->withErrors(['duplicate' => 'Mahasiswa sudah terdaftar pada mata kuliah ini di semestere yang sama.'])->withInput();
+            return back()->withErrors(['duplicate' => 'Mahasiswa sudah terdaftar pada mata kuliah ini di semester yang sama.'])->withInput();
         }
 
         // Set default values
@@ -170,11 +170,11 @@ class EnrollmentController extends Controller
      */
     public function edit(Enrollment $enrollment)
     {
-        $semester = Semester::orderBy('start_date', 'desc')->get();
+        $semesters = Semester::orderBy('start_date', 'desc')->get();
         $courses = Course::orderBy('name')->get();
         $students = Student::where('status', 'active')->orderBy('name')->get();
 
-        return view('enrollments.edit', compact('enrollment', 'semester', 'courses', 'students'));
+        return view('enrollments.edit', compact('enrollment', 'semesters', 'courses', 'students'));
     }
 
     /**
@@ -185,7 +185,7 @@ class EnrollmentController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'course_id' => 'required|exists:courses,id',
-            'semester_id' => 'required|exists:semester,id',
+            'semester_id' => 'required|exists:semesters,id',
             'enrollment_date' => 'required|date',
             'status' => ['required', Rule::in(['enrolled', 'dropped', 'completed'])]
         ]);
@@ -237,11 +237,11 @@ class EnrollmentController extends Controller
             'student_ids' => 'required|array|min:1',
             'student_ids.*' => 'exists:students,id',
             'course_id' => 'required|exists:courses,id',
-            'semester_id' => 'required|exists:semester,id',
+            'semester_id' => 'required|exists:semesters,id',
         ]);
 
-        $semester = Semester::find($validated['semester_id']);
-        if (!$this->canEnrollInsemester($semester)) {
+        $semesters = Semester::find($validated['semester_id']);
+        if (!$this->canEnrollInsemester($semesters)) {
             return back()->withErrors(['semester_id' => 'semestere tidak dalam masa pendaftaran.']);
         }
 
@@ -342,15 +342,15 @@ class EnrollmentController extends Controller
     /**
      * Check if enrollment is allowed for a semester
      */
-    private function canEnrollInsemester(Semester $semester): bool
+    private function canEnrollInsemester(Semester $semesters): bool
     {
-        if ($semester->status === 'completed') {
+        if ($semesters->status === 'completed') {
             return false;
         }
 
         // Check if current date is within enrollment semester
         $now = Carbon::now()->toDateString();
-        return $now >= $semester->enrollment_start_date && $now <= $semester->enrollment_end_date;
+        return $now >= $semesters->enrollment_start_date && $now <= $semesters->enrollment_end_date;
     }
 
     /**

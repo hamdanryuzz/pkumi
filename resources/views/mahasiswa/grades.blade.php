@@ -85,7 +85,8 @@
 <section id="section-welcome" class="mt-2 mb-8">
     <div class="bg-blue-primary rounded-xl flex items-center justify-between text-white p-10 relative overflow-hidden h-[175px]">
         <div class="z-10">
-            <h1 class="font-sans font-bold text-[35px] leading-tight -tracking-[1.05px] mb-2">Welcome back, {{ explode(' ', Auth::user()->name)[0] }}</h1>
+            @php($student = Auth::guard('student')->user())
+            <h1 class="font-sans font-bold text-[35px] leading-tight -tracking-[1.05px] mb-2">Welcome back, {{ $student ? explode(' ', $student->name)[0] : 'Mahasiswa' }}</h1>
             <p class="font-sans text-[15px] leading-[26px] tracking-[0.3px] max-w-lg">You have 27 new student added to your domain. Please reach out to the Head Teacher if you want them excluded from your domain.</p>
         </div>
         <div class="absolute right-0 bottom-0 h-full">

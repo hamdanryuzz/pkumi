@@ -12,7 +12,7 @@
                 </a>
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Tambah Enrollment Baru</h2>
-                    <p class="text-base text-gray-500 mt-1">Daftarkan mahasiswa pada mata kuliah di semestere tertentu</p>
+                    <p class="text-base text-gray-500 mt-1">Daftarkan mahasiswa pada mata kuliah di semester tertentu</p>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
                             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('semester_id') border-red-500 @enderror"
                             required>
                             <option value="">Pilih semester</option>
-                            @foreach ($semester as $semester)
+                            @foreach ($semesters as $semester)
                                 <option value="{{ $semester->id }}"
                                     {{ old('semester_id', $selectedsemester) == $semester->id ? 'selected' : '' }}
                                     data-enrollment-open="{{ $semester->isEnrollmentOpen() ? 'true' : 'false' }}">
@@ -257,7 +257,7 @@
                             <select name="semester_id" id="bulk_semester_id"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2" required>
                                 <option value="">Pilih semester</option>
-                                @foreach ($semester as $semester)
+                                @foreach ($semesters as $semester)
                                     <option value="{{ $semester->id }}"
                                         {{ $selectedsemester == $semester->id ? 'selected' : '' }}>
                                         {{ $semester->name }}
@@ -342,30 +342,30 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const semesterelect = document.getElementById('semester_id');
-            const semestertatus = document.getElementById('semestertatus');
+            const semesterSelect = document.getElementById('semester_id');
+            const semesterStatus = document.getElementById('semesterStatus');
             const courseSelect = document.getElementById('course_id');
             const studentSelect = document.getElementById('student_id');
             const duplicateWarning = document.getElementById('duplicateWarning');
             const duplicateMessage = document.getElementById('duplicateMessage');
 
             // semester change handler
-            semesterelect.addEventListener('change', function() {
+            semesterSelect.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const isEnrollmentOpen = selectedOption.dataset.enrollmentOpen === 'true';
 
                 if (this.value) {
                     if (isEnrollmentOpen) {
-                        semestertatus.innerHTML =
+                        semesterStatus.innerHTML =
                             '<i class="fas fa-check-circle text-green-600 mr-1"></i>Masa pendaftaran masih terbuka';
-                        semestertatus.className = 'text-xs text-green-600 mt-1';
+                        semesterStatus.className = 'text-xs text-green-600 mt-1';
                     } else {
-                        semestertatus.innerHTML =
+                        semesterStatus.innerHTML =
                             '<i class="fas fa-exclamation-triangle text-yellow-600 mr-1"></i>Masa pendaftaran sudah tutup';
-                        semestertatus.className = 'text-xs text-yellow-600 mt-1';
+                        semesterStatus.className = 'text-xs text-yellow-600 mt-1';
                     }
                 } else {
-                    semestertatus.innerHTML = '';
+                    semesterStatus.innerHTML = '';
                 }
 
                 checkDuplicateEnrollment();
@@ -376,7 +376,7 @@
             studentSelect.addEventListener('change', checkDuplicateEnrollment);
 
             function checkDuplicateEnrollment() {
-                const semesterId = semesterelect.value;
+                const semesterId = semesterSelect.value;
                 const courseId = courseSelect.value;
                 const studentId = studentSelect.value;
 
