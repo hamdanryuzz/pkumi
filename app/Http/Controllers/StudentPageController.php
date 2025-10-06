@@ -38,21 +38,36 @@ class StudentPageController extends Controller
         // Ambil nilai dari tabel grades dan hitung SKS/Bobot
         $courses = $enrollments->map(function($enrollment) use ($student) {
             $grade = Grade::where('student_id', $student->id)
-                ->where('course_id', $enrollment->course_id)
+                // Pastikan menggunakan ID course dari enrollment
+                ->where('course_id', $enrollment->course_id) 
                 ->where('semester_id', $enrollment->semester_id)
                 ->first();
             
             return [
                 'course_name' => $enrollment->course->name,
                 'course_code' => $enrollment->course->code,
-                'sks' => $enrollment->course->sks, // FIXED: Menggunakan 'sks'
+                'sks' => $enrollment->course->sks,
                 'letter_grade' => $grade->letter_grade ?? '-',
                 'final_grade' => $grade->final_grade ?? '-',
                 'semester' => $enrollment->semester->name,
-                'period_name' => $enrollment->semester->period->name, // FIXED: Menggunakan period->name
+                // Menggunakan period->name
+                'period_name' => $enrollment->semester->period->name, 
             ];
         });
 
         return view('mahasiswa.grades', compact('periods', 'semesters', 'courses'));
+    }
+    
+    /**
+     * Menampilkan halaman profil Mahasiswa yang sedang login.
+     * Dibuat untuk memenuhi route 'mahasiswa.profile'.
+     */
+    public function profile()
+    {
+        // Data student sudah di-load oleh middleware 'auth:student'
+        $student = Auth::guard('student')->user();
+        
+        // Menggunakan view 'mahasiswa.profile'
+        return view('mahasiswa.profile', compact('student'));
     }
 }
