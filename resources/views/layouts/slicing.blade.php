@@ -28,34 +28,46 @@
         .text-brand-page-inactive { color: var(--brand-page-inactive); }
         .bg-brand-dark-header { background-color: var(--brand-dark-header); }
     </style>
+    
 </head>
 <body class="bg-gray-100">
 
+    @php
+        // Menggunakan guard 'student' untuk Mahasiswa
+        $student = Auth::guard('student')->user();
+        
+        // Eager load relasi yang dibutuhkan untuk sidebar (studentClass dan grades.course)
+        // Jika user adalah Mahasiswa, kita load data
+        if ($student) {
+            $student->load(['studentClass', 'grades.course']);
+        }
+        // Menghitung IPK (menggunakan accessor ipk yang kita tambahkan)
+        $ipk = $student ? number_format($student->ipk, 2, ',', '.') : '0,00';
+    @endphp
+
     <div class="flex">
-        <!-- PERUBAHAN 2: Sidebar dibuat 'sticky' -->
-        <!-- Menambahkan class 'h-screen', 'sticky', dan 'top-0' pada <aside> -->
         <aside class="h-screen sticky top-0 flex-shrink-0">
-            <!-- Menambahkan class 'h-full' agar div ini mengisi tinggi <aside> -->
             <div class="w-[365px] h-full bg-brand-bg flex flex-col items-center gap-8 pt-[54px] pb-[23px] px-[26px] overflow-y-auto">
-                <!-- Profile Info -->
                 <div class="flex flex-col items-center text-center gap-[23px]">
                     <img src="{{ asset('images/xaviera.jpeg') }}" alt="Profile Picture" class="w-[120px] h-[120px] rounded-full object-cover">
                     <div class="flex flex-col">
-                        <h1 class="font-poppins font-semibold text-[25px] leading-tight text-black">{{ Auth::user()->name }}</h1>
+                        {{-- DATA DINAMIS --}}
+                        <h1 class="font-poppins font-semibold text-[25px] leading-tight text-black">{{ $student->name ?? 'Pengguna' }}</h1>
                         <div class="flex flex-col mt-2">
-                            <p class="font-poppins text-base text-black/65">NIM : {{ Auth::user()->nim ?? '123456789' }}</p>
-                            <p class="font-poppins text-base text-black/65">Program Studi : {{ Auth::user()->studentClass->name }}</p>
+                            <p class="font-poppins text-base text-black/65">NIM : {{ $student->nim ?? 'N/A' }}</p>
+                            <p class="font-poppins text-base text-black/65">Program Studi : {{ $student->studentClass->name ?? 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- GPA Card -->
                 <div class="bg-white border border-black/40 flex flex-col gap-5 rounded-lg shadow-sm w-full">
                     <div class="pl-[29px] pr-[26px] pt-[22px] pb-[6px]">
                         <div class="flex flex-col gap-[7px]">
                             <p class="font-inter font-medium text-[14px] text-brand-gpa-label">Indeks Prestasi Kumulatif</p>
                             <div class="flex items-center gap-[19px]">
-                                <span class="font-inter font-semibold text-[32.5px] leading-none text-brand-gpa-value tracking-[-1.5px]">3,94</span>
+                                {{-- IPK DINAMIS --}}
+                                <span class="font-inter font-semibold text-[32.5px] leading-none text-brand-gpa-value tracking-[-1.5px]">{{ $ipk }}</span>
+                                {{-- Persentase statis --}}
                                 <div class="bg-brand-badge-bg flex items-center gap-1 rounded-md py-1 px-1.5">
                                     <svg class="w-4 h-4 text-brand-badge-text" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
@@ -65,6 +77,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="flex items-center gap-7 px-7 pb-6 -mt-3">
                         <a href="#" class="bg-brand-active-page text-white font-inter text-[13px] rounded-md flex items-center justify-center w-[45px] h-[35px]">1</a>
                         <a href="#" class="text-brand-page-inactive font-inter text-[13px]">2</a>
@@ -77,7 +90,6 @@
                     </div>
                 </div>
 
-                <!-- Verification Table Card -->
                 <div class="bg-white rounded-2xl overflow-hidden w-full shadow-sm">
                     <div class="flex bg-brand-dark-header text-white font-poppins font-semibold text-base text-center">
                         <div class="py-2.5 px-2.5" style="width: 129px;">Jenis</div>
@@ -100,7 +112,6 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="flex-grow p-6">
             @yield('content')
         </main>

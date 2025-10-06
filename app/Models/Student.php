@@ -23,11 +23,9 @@ class Student extends Authenticatable
         'year_id'
     ];
 
-    // PERUBAHAN UTAMA:
-    // 1. Mengubah hasOne(Grade::class) menjadi hasMany(Grade::class)
-    // 2. Mengubah nama relasi dari grade() menjadi grades()
     public function grades()
     {
+        // Relasi Mahasiswa memiliki banyak nilai
         return $this->hasMany(Grade::class);
     }
 
@@ -46,8 +44,6 @@ class Student extends Authenticatable
         return $this->hasMany(Enrollment::class);
     }
 
-    // PERUBAHAN UTAMA:
-    // Mengubah nama relasi dari semester() menjadi semesters() (untuk konsistensi many-to-many)
     public function semesters()
     {
         return $this->belongsToMany(Semester::class, 'enrollments')
@@ -69,5 +65,41 @@ class Student extends Authenticatable
         return $this->belongsToMany(Course::class, 'grades')
             ->withPivot(['semester_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
             ->withTimestamps();
+    }
+
+    /**
+     * ACCESSOR: Menghitung IPK (Indeks Prestasi Kumulatif) Mahasiswa.
+     * Dapat dipanggil sebagai $student->ipk
+     */
+    public function getIpkAttribute()
+    {
+        // Eager load courses untuk mendapatkan SKS (karena grades tidak punya relasi langsung ke course)
+        $grades = $this->grades()->with('course')->get();
+
+        // Total Bobot (Bobot Nilai * SKS)
+        $totalBobotX_Sks = $grades->sum(function($grade) {
+            // Pastikan semua komponen nilai dan SKS tersedia
+            if ($grade->bobot && $grade->course && $grade->course->sks) {
+                // Konversi string bobot nilai (misal '3.70') menjadi float
+                return (float)$grade->bobot * $grade->course->sks;
+            }
+            return 0;
+        });
+
+        // Total SKS yang diperhitungkan (SKS mata kuliah yang sudah memiliki nilai final)
+        $totalSks = $grades->sum(function($grade) {
+            // Hanya hitung SKS jika grade tersebut memiliki nilai bobot (asumsi nilai sudah final)
+            if ($grade->bobot && $grade->course && $grade->course->sks) {
+                return $grade->course->sks;
+            }
+            return 0;
+        });
+
+        // Hitung IPK = Total Bobot x SKS / Total SKS
+        if ($totalSks > 0) {
+            return round($totalBobotX_Sks / $totalSks, 2);
+        }
+
+        return 0.00;
     }
 }
