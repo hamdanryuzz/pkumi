@@ -6,7 +6,7 @@ use App\Models\Student;
 use App\Models\Course;
 use App\Models\Grade;
 use App\Models\GradeWeight;
-use App\Models\Semester;
+use App\Models\Semester; // Huruf 'S' besar sudah benar
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
 
@@ -18,27 +18,25 @@ class GradeController extends Controller
     public function index(Request $request)
     {
         $courses = Course::all();
-        // $semester = semester::active()->get();
-        $semester = Semester::all();
+        $semesters = Semester::all(); // Variabel diganti menjadi 'semesters'
         
         $selectedCourseId = $request->get('course_id');
-        $selectedsemesterId = $request->get('semester_id');
+        $selectedSemesterId = $request->get('semester_id'); // Konsistensi penamaan variabel
         
-        // Hanya ambil students yang terdaftar di course dan semester tertentu
         $students = collect();
         $grades = collect();
         
-        if ($selectedCourseId && $selectedsemesterId) {
+        if ($selectedCourseId && $selectedSemesterId) {
             // Ambil students yang terdaftar di course pada semester tertentu
-            $students = Student::whereHas('enrollments', function($query) use ($selectedCourseId, $selectedsemesterId) {
+            $students = Student::whereHas('enrollments', function($query) use ($selectedCourseId, $selectedSemesterId) {
                 $query->where('course_id', $selectedCourseId)
-                    ->where('semester_id', $selectedsemesterId)
+                    ->where('semester_id', $selectedSemesterId)
                     ->where('status', 'enrolled');
             })->get();
             
             // Ambil grades untuk course dan semester yang dipilih
             $grades = Grade::where('course_id', $selectedCourseId)
-                ->where('semester_id', $selectedsemesterId)
+                ->where('semester_id', $selectedSemesterId)
                 ->get()
                 ->keyBy('student_id');
         }
@@ -46,8 +44,8 @@ class GradeController extends Controller
         $weights = GradeWeight::getCurrentWeights();
         
         return view('grades.index', compact(
-            'students', 'courses', 'semester',
-            'selectedCourseId', 'selectedsemesterId', 
+            'students', 'courses', 'semesters',
+            'selectedCourseId', 'selectedSemesterId', 
             'grades', 'weights'
         ));
     }
@@ -59,7 +57,7 @@ class GradeController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'semester_id' => 'required|exists:semester,id',
+            'semester_id' => 'required|exists:semesters,id',
             'grades' => 'required|array',
             'grades.*.attendance_score' => 'nullable|numeric|min:0|max:100',
             'grades.*.assignment_score' => 'nullable|numeric|min:0|max:100',
@@ -109,7 +107,7 @@ class GradeController extends Controller
                 $grade->update([
                     'final_grade' => $finalGrade,
                     'letter_grade' => Grade::getLetterGrade($finalGrade),
-                    'bobot' => Grade::getBobot($finalGrade)
+                    'bobot' => Grade::getBobot($finalGrade) // ✅ Sudah ada di store()
                 ]);
             }
 
@@ -157,14 +155,15 @@ class GradeController extends Controller
             $grade->update([
                 'final_grade' => $finalGrade,
                 'letter_grade' => Grade::getLetterGrade($finalGrade),
-                'bobot' => Grade::getBobot($finalGrade)
+                'bobot' => Grade::getBobot($finalGrade) // ✅ DITAMBAHKAN bobot
             ]);
         }
 
         return response()->json([
             'success' => true,
             'final_grade' => $grade->final_grade,
-            'letter_grade' => $grade->letter_grade
+            'letter_grade' => $grade->letter_grade,
+            'bobot' => $grade->bobot // DITAMBAHKAN bobot di response
         ]);
     }
 
@@ -194,6 +193,7 @@ class GradeController extends Controller
                     $grade->update([
                         'final_grade' => $finalGrade,
                         'letter_grade' => Grade::getLetterGrade($finalGrade),
+                        'bobot' => Grade::getBobot($finalGrade) // ✅ DITAMBAHKAN bobot
                     ]);
                 }
             }

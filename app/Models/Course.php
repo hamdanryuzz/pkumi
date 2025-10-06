@@ -9,7 +9,7 @@ class Course extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'code', 'student_class_id'];
+    protected $fillable = ['name', 'code', 'student_class_id', 'sks'];
 
     public function grades()
     {
@@ -21,14 +21,16 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
-    public function semester()
+    // PERUBAHAN UTAMA:
+    // Mengubah nama relasi dari semester() menjadi semesters() (untuk konsistensi many-to-many)
+    public function semesters()
     {
-        return $this->belongsToMany(semester::class, 'enrollments')
+        return $this->belongsToMany(Semester::class, 'enrollments')
             ->withPivot(['student_id', 'enrollment_date', 'status'])
             ->withTimestamps();
     }
 
-    public function studentsInsemester($semesterId)
+    public function studentsInSemester($semesterId)
     {
         return $this->belongsToMany(Student::class, 'enrollments')
             ->wherePivot('semester_id', $semesterId)

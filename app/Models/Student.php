@@ -23,9 +23,12 @@ class Student extends Authenticatable
         'year_id'
     ];
 
-    public function grade()
+    // PERUBAHAN UTAMA:
+    // 1. Mengubah hasOne(Grade::class) menjadi hasMany(Grade::class)
+    // 2. Mengubah nama relasi dari grade() menjadi grades()
+    public function grades()
     {
-        return $this->hasOne(Grade::class);
+        return $this->hasMany(Grade::class);
     }
 
     public function year()
@@ -43,14 +46,16 @@ class Student extends Authenticatable
         return $this->hasMany(Enrollment::class);
     }
 
-    public function semester()
+    // PERUBAHAN UTAMA:
+    // Mengubah nama relasi dari semester() menjadi semesters() (untuk konsistensi many-to-many)
+    public function semesters()
     {
-        return $this->belongsToMany(semester::class, 'enrollments')
+        return $this->belongsToMany(Semester::class, 'enrollments')
             ->withPivot(['course_id', 'enrollment_date', 'status'])
             ->withTimestamps();
     }
 
-    public function coursesInsemester($semesterId)
+    public function coursesInSemester($semesterId)
     {
         return $this->belongsToMany(Course::class, 'enrollments')
             ->wherePivot('semester_id', $semesterId)
@@ -65,5 +70,4 @@ class Student extends Authenticatable
             ->withPivot(['semester_id', 'attendance_score', 'assignment_score', 'midterm_score', 'final_score', 'final_grade', 'letter_grade'])
             ->withTimestamps();
     }
-
 }

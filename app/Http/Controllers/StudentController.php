@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
 use App\Imports\StudentsImport;
+use Illuminate\Support\Facades\Hash; // Tambah Hash
 
 class StudentController extends Controller
 {
@@ -106,11 +107,11 @@ class StudentController extends Controller
                     $studentData['nim'] = $this->generateNIM($request->year_id, $request->student_class_id);
                     $studentData['username'] = $this->generateUsername($request->name);
                     $generatedPassword = $this->generatePassword();
-                    $studentData['password'] = bcrypt($generatedPassword);
+                    $studentData['password'] = Hash::make($generatedPassword); // Menggunakan Hash::make()
                     
                     $student = Student::create($studentData);
-                    Grade::create(['student_id' => $student->id]);
-
+                    // Dihapus: Grade::create(['student_id' => $student->id]);
+                    
                     // Redirect ke success page dengan generated credentials
                     session()->flash('student_generated', [
                         'id' => $student->id,
@@ -127,10 +128,10 @@ class StudentController extends Controller
                     // Manual mode
                     $studentData['nim'] = $request->nim;
                     $studentData['username'] = $request->username;
-                    $studentData['password'] = bcrypt($request->password);
+                    $studentData['password'] = Hash::make($request->password); // Menggunakan Hash::make()
                     
                     $student = Student::create($studentData);
-                    Grade::create(['student_id' => $student->id]);
+                    // Dihapus: Grade::create(['student_id' => $student->id]);
 
                     return redirect()->route('students.index')
                         ->with('success', 'Student berhasil ditambahkan dengan kredensial manual.');
@@ -185,53 +186,42 @@ class StudentController extends Controller
         // Ambil data enrollments dengan paginasi
         $enrollments = $enrollmentQuery->paginate(10);
         
-        // Untuk setiap enrollment, ambil grade yang sesuai jika ada
-        $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) {
-            $grade = Grade::where('student_id', $enrollment->student_id)
-                        ->where('course_id', $enrollment->course_id)
-                        ->where('semester_id', $enrollment->semester_id)
-                        ->first();
-            
-            // Tambahkan grade data ke enrollment object
-            $enrollment->grade = $grade;
-            return $enrollment;
-        });
-        
-        // Replace collection dengan data yang sudah di-map
-        $enrollments->setCollection($enrollmentWithGrades);
-
         $totalSKS = 0;
         $totalBobot = 0;
 
-        $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) use (&$totalSKS, &$totalBobot) {
-            $grade = Grade::where('student_id', $enrollment->student_id)
-                ->where('course_id', $enrollment->course_id)
-                ->where('semester_id', $enrollment->semester_id)
-                ->first();
+        // FIXED: Hitung IPK pada SEMUA data nilai, bukan hanya yang di paginate.
+        // Eager load grades secara terpisah untuk efisiensi.
+        $allGrades = Grade::where('student_id', $student->id)
+                          ->with('course')
+                          ->get()
+                          ->keyBy(function($grade) {
+                              return $grade->course_id . '_' . $grade->semester_id;
+                          });
 
-            if ($grade) {
-                // Ambil SKS
-                $sks = $enrollment->course->sks ?? 0;
-
-                // Ambil bobot
-                $bobot = $grade->bobot ?? 0;
-
-                // Tambahin ke total
-                $totalSKS += $sks;
-                $totalBobot += ($sks * $bobot);
-
-                $enrollment->grade = $grade;
-            }
-
+        // Loop melalui collection yang di-paginate untuk menambahkan grade dan menghitung total
+        $enrollmentWithGrades = $enrollments->getCollection()->map(function ($enrollment) use ($allGrades) {
+            $key = $enrollment->course_id . '_' . $enrollment->semester_id;
+            $grade = $allGrades->get($key);
+            $enrollment->grade = $grade;
             return $enrollment;
         });
 
         $enrollments->setCollection($enrollmentWithGrades);
 
+        // Perhitungan IPK (dilakukan pada SEMUA riwayat nilai yang ada di $allGrades)
+        $totalSKS = $allGrades->sum(function($grade) {
+            // Menggunakan (float) untuk konversi bobot dan memastikan perkalian yang benar
+            return ($grade->course->sks ?? 0) * (float)($grade->bobot ?? 0);
+        });
+
+        $totalCredits = $allGrades->sum(function($grade) {
+            return $grade->course->sks ?? 0;
+        });
+
         // Hitung IPK
-        $ipk = $totalSKS > 0 ? round($totalBobot / $totalSKS, 2) : 0;
+        $ipk = $totalCredits > 0 ? round($totalSKS / $totalCredits, 2) : 0;
         
-        return view('students.show', compact('student', 'enrollments', 'semester', 'search', 'semesterFilter','totalSKS','ipk'));
+        return view('students.show', compact('student', 'enrollments', 'semester', 'search', 'semesterFilter','totalCredits','ipk')); // totalCredits diganti totalSKS
     }
 
     public function edit(Student $student)
@@ -259,7 +249,7 @@ class StudentController extends Controller
         
         // Only update password if provided
         if ($request->filled('password')) {
-            $updateData['password'] = bcrypt($request->password);
+            $updateData['password'] = Hash::make($request->password); // Menggunakan Hash::make()
         }
 
         $student->update($updateData);
@@ -270,7 +260,9 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
-        $student->delete();
+        // Perlu dipertimbangkan untuk menghapus Enrollments dan Grades terkait
+        // karena student memiliki relasi hasMany ke keduanya.
+        $student->delete(); 
         return redirect()->route('students.index')
             ->with('success', 'Student berhasil dihapus.');
     }

@@ -8,26 +8,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StudentClass extends Model
 {
-    use HasFactory, SoftDeletes; // Tambah soft delete untuk hapus aman
+    use HasFactory, SoftDeletes;
 
     protected $table = 'student_classes';
 
     protected $fillable = [
-        'year_id', // Tambah year_id untuk mass assignment
+        'year_id',
         'name',
     ];
 
-    /**
-     * Relasi ke Year (untuk dropdown dan query).
-     */
     public function year()
     {
-        return $this->belongsTo(Year::class); // Tambah relasi Year
+        return $this->belongsTo(Year::class);
     }
 
-    /**
-     * Relasi ke Student (sudah ada, tapi optimasi kolom jika perlu).
-     */
     public function students()
     {
         return $this->hasMany(Student::class, 'student_class_id');
@@ -38,9 +32,6 @@ class StudentClass extends Model
         return $this->hasMany(Course::class, 'student_class_id');
     }
 
-    /**
-     * Accessor untuk nama lengkap (opsional, untuk tampilan).
-     */
     public function getFullNameAttribute()
     {
         return $this->name . ' - ' . ($this->year->name ?? 'Tahun tidak diketahui');

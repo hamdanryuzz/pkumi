@@ -30,7 +30,7 @@ class Enrollment extends Model
 
     public function semester()
     {
-        return $this->belongsTo(semester::class);
+        return $this->belongsTo(Semester::class); // Konsistensi: Semester::class
     }
 
     public function scopeActive($query)

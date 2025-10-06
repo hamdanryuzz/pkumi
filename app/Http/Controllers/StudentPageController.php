@@ -35,7 +35,7 @@ class StudentPageController extends Controller
             ->with(['course', 'semester.period'])
             ->get();
         
-        // Ambil nilai dari tabel grades
+        // Ambil nilai dari tabel grades dan hitung SKS/Bobot
         $courses = $enrollments->map(function($enrollment) use ($student) {
             $grade = Grade::where('student_id', $student->id)
                 ->where('course_id', $enrollment->course_id)
@@ -45,14 +45,14 @@ class StudentPageController extends Controller
             return [
                 'course_name' => $enrollment->course->name,
                 'course_code' => $enrollment->course->code,
-                'credits' => $enrollment->course->credits,
+                'sks' => $enrollment->course->sks, // FIXED: Menggunakan 'sks'
                 'letter_grade' => $grade->letter_grade ?? '-',
                 'final_grade' => $grade->final_grade ?? '-',
                 'semester' => $enrollment->semester->name,
-                'period' => $enrollment->semester->period->year,
+                'period_name' => $enrollment->semester->period->name, // FIXED: Menggunakan period->name
             ];
         });
-        
+
         return view('mahasiswa.grades', compact('periods', 'semesters', 'courses'));
     }
 }
