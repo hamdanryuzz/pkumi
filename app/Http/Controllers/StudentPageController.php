@@ -8,6 +8,8 @@ use App\Models\Semester;
 use App\Models\Enrollment;
 use App\Models\Grade;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule; // Ditambahkan untuk validasi unique
 
 class StudentPageController extends Controller
 {
@@ -60,14 +62,44 @@ class StudentPageController extends Controller
     
     /**
      * Menampilkan halaman profil Mahasiswa yang sedang login.
-     * Dibuat untuk memenuhi route 'mahasiswa.profile'.
      */
     public function profile()
     {
-        // Data student sudah di-load oleh middleware 'auth:student'
         $student = Auth::guard('student')->user();
-        
-        // Menggunakan view 'mahasiswa.profile'
         return view('mahasiswa.profile', compact('student'));
+    }
+
+    /**
+     * Memproses update data profil Mahasiswa.
+     */
+    public function updateProfile(Request $request)
+    {
+        $student = Auth::guard('student')->user();
+
+        // Validasi data profil, memastikan username/email unik tidak bentrok dengan diri sendiri
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => ['required', 'string', 'max:50', Rule::unique('students', 'username')->ignore($student->id)],
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            // Opsi untuk mengganti password
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $updateData = [
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+        ];
+
+        // Update password jika diisi
+        if ($request->filled('password')) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
+        
+        $student->update($updateData);
+
+        return back()->with('success', 'Profil Anda berhasil diperbarui!');
     }
 }
