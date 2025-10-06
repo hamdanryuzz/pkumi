@@ -105,4 +105,5 @@ Route::view('/reset-password-success', 'pmb.auth.reset-success')
 // Student Dashboard Routes
 Route::middleware(['auth:student'])->group(function () {
     Route::get('/', [StudentPageController::class, 'index'])->name('mahasiswa.dashboard');
+    Route::get('/profile', [StudentPageController::class, 'profile'])->name('mahasiswa.profile'); 
 });
