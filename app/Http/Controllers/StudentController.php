@@ -221,7 +221,7 @@ class StudentController extends Controller
         // Hitung IPK
         $ipk = $totalCredits > 0 ? round($totalSKS / $totalCredits, 2) : 0;
         
-        return view('students.show', compact('student', 'enrollments', 'semester', 'search', 'semesterFilter','totalCredits','ipk')); // totalCredits diganti totalSKS
+        return view('students.show', compact('student', 'enrollments', 'semester', 'search', 'semesterFilter','totalCredits','ipk', 'totalSKS')); // totalCredits diganti totalSKS
     }
 
     public function edit(Student $student)
