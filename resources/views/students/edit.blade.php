@@ -199,14 +199,6 @@
                             <i class="fas fa-save mr-2"></i>
                             Update Data
                         </button>
-                        <form action="{{ route('students.destroy', $student) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus mahasiswa ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition duration-200">
-                                <i class="fas fa-trash mr-2"></i>
-                                Hapus
-                            </button>
-                        </form>
                     </div>
                 </div>
             </form>
