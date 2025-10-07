@@ -15,7 +15,7 @@ class ReportController extends Controller
     public function index()
     {
         // Ambil semua data mahasiswa beserta grade
-        $students = Student::with('grade')->get();
+        $students = Student::with('grades')->get();
         
         // Ambil bobot nilai saat ini
         $weights = GradeWeight::getCurrentWeights();
