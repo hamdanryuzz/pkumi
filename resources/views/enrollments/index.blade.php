@@ -241,7 +241,7 @@
                                             </button>
                                         </form>
                                     @endif
-                                    @if(!$enrollment->student->grade()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists())
+                                    @if(!$enrollment->student->grades()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists())
                                         <form action="{{ route('enrollments.destroy', $enrollment) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')

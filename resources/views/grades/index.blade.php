@@ -52,8 +52,8 @@
                             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                             required>
                         <option value="">Pilih semester</option>
-                        @foreach($semester as $semester)
-                            <option value="{{ $semester->id }}" {{ $selectedsemesterId == $semester->id ? 'selected' : '' }}>
+                        @foreach($semesters as $semester)
+                            <option value="{{ $semester->id }}" {{ $selectedSemesterId == $semester->id ? 'selected' : '' }}>
                                 {{ $semester->name }}
                                 @if($semester->status === 'active')
                                     <span class="text-green-600">(Aktif)</span>
@@ -91,7 +91,7 @@
         </div>
     </div>
 
-    @if($selectedCourseId && $selectedsemesterId)
+    @if($selectedCourseId && $selectedSemesterId)
         <!-- Selected Course and semester Info -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
@@ -102,12 +102,12 @@
                             {{ $courses->find($selectedCourseId)->name ?? 'Unknown Course' }}
                         </h5>
                         <p class="text-sm text-gray-600 mt-1">
-                            <i class="fas fa-calendar mr-1"></i>{{ $semester->find($selectedsemesterId)->name ?? 'Unknown semester' }} |
+                            <i class="fas fa-calendar mr-1"></i>{{ $semester->find($selectedSemesterId)->name ?? 'Unknown semester' }} |
                             <i class="fas fa-users mr-1"></i>{{ $students->count() }} mahasiswa terdaftar
                         </p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('enrollments.index', ['course_id' => $selectedCourseId, 'semester_id' => $selectedsemesterId]) }}" 
+                        <a href="{{ route('enrollments.index', ['course_id' => $selectedCourseId, 'semester_id' => $selectedSemesterId]) }}" 
                            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-200">
                             <i class="fas fa-list mr-2"></i>Lihat Enrollment
                         </a>
@@ -177,7 +177,7 @@
                 <form action="{{ route('grades.store') }}" method="POST" id="gradesForm">
                     @csrf
                     <input type="hidden" name="course_id" value="{{ $selectedCourseId }}">
-                    <input type="hidden" name="semester_id" value="{{ $selectedsemesterId }}">
+                    <input type="hidden" name="semester_id" value="{{ $selectedSemesterId }}">
                     
                     <div class="overflow-x-auto">
                         <table class="w-full" id="gradesTable">
@@ -347,7 +347,7 @@
                 <p class="text-gray-600 mb-4">
                     Belum ada mahasiswa yang terdaftar pada mata kuliah ini di semester yang dipilih.
                 </p>
-                <a href="{{ route('enrollments.create', ['course_id' => $selectedCourseId, 'semester_id' => $selectedsemesterId]) }}" 
+                <a href="{{ route('enrollments.create', ['course_id' => $selectedCourseId, 'semester_id' => $selectedSemesterId]) }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
                     <i class="fas fa-user-plus mr-2"></i>Tambah Enrollment
                 </a>
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.exportGrades = function() {
         const courseId = {{ $selectedCourseId ?? 'null' }};
-        const semesterId = {{ $selectedsemesterId ?? 'null' }};
+        const semesterId = {{ $selectedSemesterId ?? 'null' }};
         
         if (courseId && semesterId) {
             window.location.href = `/grades/export?course_id=${courseId}&semester_id=${semesterId}`;

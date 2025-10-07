@@ -152,7 +152,7 @@
 
             <!-- Grade Info -->
             @php
-                $hasGrades = $enrollment->student->grade()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists();
+                $hasGrades = $enrollment->student->grades()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists();
             @endphp
             @if($hasGrades)
                 <div class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
