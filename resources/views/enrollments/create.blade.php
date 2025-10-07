@@ -55,7 +55,7 @@
                             <option value="">Pilih semester</option>
                             @foreach ($semesters as $semester)
                                 <option value="{{ $semester->id }}"
-                                    {{ old('semester_id', $selectedsemester) == $semester->id ? 'selected' : '' }}
+                                    {{ old('semester_id', $selectedSemester) == $semester->id ? 'selected' : '' }}
                                     data-enrollment-open="{{ $semester->isEnrollmentOpen() ? 'true' : 'false' }}">
                                     {{ $semester->name }}
                                     @if ($semester->status === 'active')
@@ -259,7 +259,7 @@
                                 <option value="">Pilih semester</option>
                                 @foreach ($semesters as $semester)
                                     <option value="{{ $semester->id }}"
-                                        {{ $selectedsemester == $semester->id ? 'selected' : '' }}>
+                                        {{ $selectedSemester == $semester->id ? 'selected' : '' }}>
                                         {{ $semester->name }}
                                     </option>
                                 @endforeach
