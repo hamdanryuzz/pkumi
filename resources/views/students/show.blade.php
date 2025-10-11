@@ -52,7 +52,7 @@
                 @else
                     <div class="w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl border-4 border-blue-500 shadow-lg ring-4 ring-blue-100 flex items-center justify-center">
                         <span class="text-white text-5xl lg:text-6xl font-bold">
-                            {{ strtoupper(substr($student->name, 0, 1)) }}
+                            {{ strtoupper(substr($student->name, 0, 2)) }}
                         </span>
                     </div>
                 @endif
