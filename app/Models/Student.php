@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
+
 
 class Student extends Authenticatable
 {
@@ -17,6 +19,7 @@ class Student extends Authenticatable
         'email',
         'password',
         'phone',
+        'image',
         'address',
         'status',
         'student_class_id',
@@ -101,5 +104,21 @@ class Student extends Authenticatable
         }
 
         return 0.00;
+    }
+
+    /**
+     * ACCESSOR: Mendapatkan URL lengkap untuk gambar profil mahasiswa.
+     * Dapat dipanggil sebagai $student->image_url
+     */
+    // Penggunaan: $student->image_url di view
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            // Gunakan Storage facade
+            if (\Storage::exists('public/students/' . $this->image)) {
+                return \Storage::url('students/' . $this->image);
+            }
+        }
+        return asset('images/default-avatar.png');
     }
 }

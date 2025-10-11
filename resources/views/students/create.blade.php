@@ -38,7 +38,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('students.store') }}" method="POST" id="studentForm">
+            <form action="{{ route('students.store') }}" method="POST" id="studentForm" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="generation_mode" id="generationMode" value="auto">
                 
@@ -68,13 +68,22 @@
                 </div>
 
                 <!-- Academic Info -->
-                <div class="mb-6">
-                    <h6 class="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Informasi Akademik</h6>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Informasi Akademik
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Angkatan -->
                         <div>
-                            <label for="year_id" class="block text-sm font-medium text-gray-700 mb-1">Angkatan <span class="text-red-500">*</span></label>
-                            <select class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('year_id') border-red-500 @enderror" 
-                                    id="year_id" name="year_id" required>
+                            <label for="year_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Angkatan <span class="text-red-500">*</span>
+                            </label>
+                            <select name="year_id" id="year_id" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                                 <option value="">Pilih Angkatan</option>
                                 @foreach($years as $year)
                                     <option value="{{ $year->id }}" {{ old('year_id') == $year->id ? 'selected' : '' }}>
@@ -83,44 +92,106 @@
                                 @endforeach
                             </select>
                             @error('year_id')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <!-- Kelas -->
                         <div>
-                            <label for="student_class_id" class="block text-sm font-medium text-gray-700 mb-1">Kelas <span class="text-red-500">*</span></label>
-                            <select class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('student_class_id') border-red-500 @enderror" 
-                                    id="student_class_id" name="student_class_id" required disabled>
+                            <label for="student_class_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Kelas <span class="text-red-500">*</span>
+                            </label>
+                            <select name="student_class_id" id="student_class_id" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                                 <option value="">Pilih Kelas</option>
                             </select>
                             @error('student_class_id')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
+                                Status <span class="text-red-500">*</span>
+                            </label>
+                            <select name="status" id="status" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                                <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>
+                                    <span class="flex items-center">
+                                        <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                        Active
+                                    </span>
+                                </option>
+                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                    <span class="flex items-center">
+                                        <span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        Inactive
+                                    </span>
+                                </option>
+                            </select>
+                            @error('status')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-1 text-xs text-gray-500">Status akun mahasiswa (default: Active)</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Contact Info -->
-                <div class="mb-6">
-                    <h6 class="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Informasi Kontak</h6>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                        Informasi Kontak
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Telepon -->
                         <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
-                            <input type="text" 
-                                   class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('phone') border-red-500 @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}">
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+                            <input type="text" name="phone" id="phone" 
+                                value="{{ old('phone') }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                placeholder="Nomor telepon mahasiswa">
                             @error('phone')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <!-- Foto Mahasiswa -->
                         <div>
-                            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                            <input type="text" 
-                                   class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('address') border-red-500 @enderror" 
-                                   id="address" name="address" value="{{ old('address') }}">
-                            @error('address')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+                                Foto Mahasiswa
+                                <span class="text-gray-500 text-xs font-normal">(Optional, Max: 2MB)</span>
+                            </label>
+                            <div class="relative">
+                                <input type="file" name="image" id="image" accept="image/jpeg,image/jpg,image/png"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                    onchange="previewImage(event)">
+                            </div>
+                            @error('image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            
+                            <!-- Image Preview -->
+                            <div id="imagePreviewContainer" class="mt-3 hidden">
+                                <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                                <img id="imagePreview" src="" alt="Preview" class="w-32 h-32 object-cover rounded-lg border-2 border-gray-300">
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Alamat -->
+                    <div class="mt-4">
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                        <textarea name="address" id="address" rows="3"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                placeholder="Alamat lengkap mahasiswa">{{ old('address') }}</textarea>
+                        @error('address')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -407,5 +478,46 @@ function copyToClipboard(elementId) {
         console.error('Could not copy text: ', err);
     });
 }
+</script>
+<script>
+// Preview Image Function
+function previewImage(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+    } else {
+        previewContainer.classList.add('hidden');
+    }
+}
+</script>
+<script>
+// Update status indicator
+document.getElementById('status').addEventListener('change', function() {
+    const statusSelect = this;
+    const statusValue = statusSelect.value;
+    
+    // Update select styling based on status
+    if (statusValue === 'active') {
+        statusSelect.classList.remove('border-red-300');
+        statusSelect.classList.add('border-green-300');
+    } else {
+        statusSelect.classList.remove('border-green-300');
+        statusSelect.classList.add('border-red-300');
+    }
+});
+
+// Trigger on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    statusSelect.dispatchEvent(new Event('change'));
+});
 </script>
 @endsection

@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
 use App\Imports\StudentsImport;
-use Illuminate\Support\Facades\Hash; // Tambah Hash
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -77,8 +78,10 @@ class StudentController extends Controller
                 'year_id' => 'required|exists:years,id',
                 'student_class_id' => 'required|exists:student_classes,id',
                 'email' => 'nullable|email|unique:students,email',
+                'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
+                'status' => 'required|in:active,inactive', // Tambahkan validasi status
                 'generation_mode' => 'required|in:auto,manual',
             ];
 
@@ -99,8 +102,20 @@ class StudentController extends Controller
                     'email' => $request->email,
                     'phone' => $request->phone,
                     'address' => $request->address,
-                    'status' => 'active',
+                    // 'status' => 'active',
+                    'status' => $request->status,
                 ];
+
+                // Handle Image Upload
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    
+                    // Gunakan Storage facade dengan disk 'public'
+                    \Storage::disk('public')->putFileAs('students', $image, $imageName);
+                    
+                    $studentData['image'] = $imageName;
+                }
 
                 // Auto generation atau manual input
                 if ($request->generation_mode === 'auto') {
@@ -163,7 +178,7 @@ class StudentController extends Controller
         $semesterFilter = $request->get('semester_id');
         
         // Ambil semua semester untuk dropdown filter
-        $semester = Semester::all();
+        $semesters = Semester::all();
         
         // Base query untuk enrollments mahasiswa dengan relasi course dan semester
         $enrollmentQuery = Enrollment::where('student_id', $student->id)
@@ -221,7 +236,7 @@ class StudentController extends Controller
         // Hitung IPK
         $ipk = $totalCredits > 0 ? round($totalSKS / $totalCredits, 2) : 0;
         
-        return view('students.show', compact('student', 'enrollments', 'semester', 'search', 'semesterFilter','totalCredits','ipk', 'totalSKS')); // totalCredits diganti totalSKS
+        return view('students.show', compact('student', 'enrollments', 'semesters', 'search', 'semesterFilter','totalCredits','ipk', 'totalSKS')); // totalCredits diganti totalSKS
     }
 
     public function edit(Student $student)
@@ -237,6 +252,7 @@ class StudentController extends Controller
             'nim' => 'required|unique:students,nim,' . $student->id,
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|unique:students,email,' . $student->id,
+            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'username' => 'required|unique:students,username,' . $student->id,
@@ -246,6 +262,23 @@ class StudentController extends Controller
         ]);
 
         $updateData = $request->except(['password']);
+
+        // Handle Image Upload
+        if ($request->hasFile('image')) {
+            // Hapus image lama jika ada
+            if ($student->image && \Storage::disk('public')->exists('students/' . $student->image)) {
+                \Storage::disk('public')->delete('students/' . $student->image);
+            }
+            
+            // Upload image baru
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            
+            // Gunakan Storage facade dengan disk 'public'
+            \Storage::disk('public')->putFileAs('students', $image, $imageName);
+            
+            $updateData['image'] = $imageName;
+        }
         
         // Only update password if provided
         if ($request->filled('password')) {
@@ -260,6 +293,11 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
+        // Hapus image jika ada
+        if ($student->image && \Storage::disk('public')->exists('students/' . $student->image)) {
+            \Storage::disk('public')->delete('students/' . $student->image);
+        }
+
         // Perlu dipertimbangkan untuk menghapus Enrollments dan Grades terkait
         // karena student memiliki relasi hasMany ke keduanya.
         $student->delete(); 
