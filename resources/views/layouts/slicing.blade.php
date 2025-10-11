@@ -68,12 +68,12 @@
                                 {{-- IPK DINAMIS --}}
                                 <span class="font-inter font-semibold text-[32.5px] leading-none text-brand-gpa-value tracking-[-1.5px]">{{ $ipk }}</span>
                                 {{-- Persentase statis --}}
-                                <div class="bg-brand-badge-bg flex items-center gap-1 rounded-md py-1 px-1.5">
+                                <!-- <div class="bg-brand-badge-bg flex items-center gap-1 rounded-md py-1 px-1.5">
                                     <svg class="w-4 h-4 text-brand-badge-text" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
                                     </svg>
                                     <span class="font-inter font-semibold text-[13px] leading-none text-brand-badge-text">9.2%</span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

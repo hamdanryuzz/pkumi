@@ -72,10 +72,10 @@
                     <h6 class="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Informasi Akademik</h6>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="year_id" class="block text-sm font-medium text-gray-700 mb-1">Tahun <span class="text-red-500">*</span></label>
+                            <label for="year_id" class="block text-sm font-medium text-gray-700 mb-1">Angkatan <span class="text-red-500">*</span></label>
                             <select class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('year_id') border-red-500 @enderror" 
                                     id="year_id" name="year_id" required>
-                                <option value="">Pilih Tahun</option>
+                                <option value="">Pilih Angkatan</option>
                                 @foreach($years as $year)
                                     <option value="{{ $year->id }}" {{ old('year_id') == $year->id ? 'selected' : '' }}>
                                         {{ $year->name }}

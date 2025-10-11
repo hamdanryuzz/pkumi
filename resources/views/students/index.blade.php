@@ -140,7 +140,7 @@
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Akhir</th>
+                                <!-- <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Akhir</th> -->
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
@@ -186,14 +186,14 @@
                                             {{ ucfirst($student->status) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         @if($student->grade && $student->grade->final_grade)
                                             <div class="font-semibold text-gray-900">{{ number_format($student->grade->final_grade, 2) }}</div>
                                             <div class="text-xs text-gray-500">{{ $student->grade->letter_grade }}</div>
                                         @else
                                             <span class="text-gray-400 italic">Belum ada nilai</span>
                                         @endif
-                                    </td>
+                                    </td> -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
                                             <a href="{{ route('students.show', $student) }}" 

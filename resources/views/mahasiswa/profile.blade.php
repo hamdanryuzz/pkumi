@@ -127,10 +127,10 @@
                 <p class="text-base font-normal text-black/50">Joined {{ $student->created_at->diffForHumans() ?? 'Tanggal tidak tersedia' }}</p>
             </div>
         </div>
-        <button class="mt-8 bg-custom-blue/10 text-custom-blue text-base font-normal px-6 py-2.5 rounded-lg hover:bg-custom-blue/20 transition-colors flex items-center justify-center gap-2">
+        <!-- <button class="mt-8 bg-custom-blue/10 text-custom-blue text-base font-normal px-6 py-2.5 rounded-lg hover:bg-custom-blue/20 transition-colors flex items-center justify-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
             <span>Add Email Address</span>
-        </button>
+        </button> -->
     </div>
 
 </div>
