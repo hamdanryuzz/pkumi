@@ -74,13 +74,19 @@
             {{-- FULL NAME --}}
             <div class="flex flex-col gap-2">
                 <label for="full-name" class="text-base font-normal text-black/80">Full Name</label>
-                <input type="text" id="full-name" name="name" value="{{ old('name', $student->name ?? '') }}" disabled class="input-field input-disabled bg-gray-50 border border-black/40 rounded-lg px-5 py-[14px] text-base text-black/80 placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:border-transparent">
+                <input type="text" id="full-name" name="name"
+                    value="{{ old('name', $student->name ?? '') }}"
+                    class="input-field input-disabled readonly-field bg-gray-50 border border-black/40 rounded-lg px-5 py-[14px] text-base text-black/80 placeholder:text-black/40 focus:outline-none"
+                    disabled readonly>
             </div>
             
             {{-- USERNAME --}}
             <div class="flex flex-col gap-2">
                 <label for="username" class="text-base font-normal text-black/80">Username</label>
-                <input type="text" id="username" name="username" value="{{ old('username', $student->username ?? '') }}" disabled class="input-field input-disabled bg-gray-50 border border-black/40 rounded-lg px-5 py-[14px] text-base text-black/80 placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:border-transparent">
+                <input type="text" id="username" name="username"
+                    value="{{ old('username', $student->username ?? '') }}"
+                    class="input-field input-disabled readonly-field bg-gray-50 border border-black/40 rounded-lg px-5 py-[14px] text-base text-black/80 placeholder:text-black/40 focus:outline-none"
+                    disabled readonly>
             </div>
             
             {{-- PHONE --}}
