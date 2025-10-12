@@ -1,50 +1,83 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Kelas')
-@section('page-title', 'Tambah Kelas')
 
 @section('content')
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Tambah Kelas Baru</h3>
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Tambah Kelas</h2>
+                    <p class="mt-1 text-sm text-gray-500">Buat kelas baru untuk siswa</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <form action="{{ route('student_classes.store') }}" method="POST">
-                    @csrf
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+        <!-- Form Tambah Kelas -->
+        <form action="{{ route('student_classes.store') }}" method="POST">
+            @csrf
 
-                    <div class="mb-4">
-                        <label for="year_id" class="block text-sm font-medium text-gray-700">Angkatan</label>
-                        <select id="year_id" name="year_id" class="form-select block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 @error('year_id') border-red-500 @enderror" required>
+            <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Form Tambah Kelas</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Angkatan -->
+                    <div>
+                        <label for="year_id" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">
+                            Angkatan <span class="text-red-500">*</span>
+                        </label>
+                        <select name="year_id" id="year_id" required
+                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200 @error('year_id') border-red-500 @enderror">
                             <option value="">Pilih Angkatan</option>
                             @foreach($years as $year)
-                                <option value="{{ $year->id }}" {{ old('year_id') == $year->id ? 'selected' : '' }}>{{ $year->name }}</option>
+                                <option value="{{ $year->id }}" {{ old('year_id') == $year->id ? 'selected' : '' }}>
+                                    {{ $year->name }}
+                                </option>
                             @endforeach
                         </select>
                         @error('year_id')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label for="name" class="block text-sm font-medium text-gray-700">Nama Kelas</label>
-                        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-input block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror" required>
+                    <!-- Nama Kelas -->
+                    <div>
+                        <label for="name" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">
+                            Nama Kelas <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="name" id="name" 
+                               value="{{ old('name') }}" required
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200 @error('name') border-red-500 @enderror"
+                               placeholder="Nama kelas">
                         @error('name')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-
-                    <div class="flex justify-end space-x-2">
-                        <a href="{{ route('student_classes.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:border-gray-500 focus:ring focus:ring-gray-200 active:bg-gray-500 transition">
-                            Batal
-                        </a>
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-900 disabled:opacity-25 transition">
-                            Simpan
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-gray-200 bg-white">
+                <a href="{{ route('student_classes.index') }}" 
+                   class="inline-flex items-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Kembali
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Simpan Kelas
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
