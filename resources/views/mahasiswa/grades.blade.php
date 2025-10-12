@@ -20,6 +20,7 @@
     .bg-green-grade { background-color: #28A745; }
     .bg-yellow-grade { background-color: #FFC107; }
     .bg-red-grade { background-color: #DC3545; }
+    .shadow-card { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 </style>
 
 @php
@@ -167,7 +168,7 @@
     </form>
     {{-- END FILTERS --}}
 
-    <div class="flex flex-col space-y-5">
+    <div class="flex flex-col space-y-4">
         @forelse($courses as $item)
             @php
                 $gradeLetter = $item['letter_grade'];
@@ -177,30 +178,28 @@
                 } elseif (str_contains($gradeLetter, 'B')) {
                     $bgColor = 'bg-yellow-grade';
                 } elseif ($gradeLetter == 'C') {
-                    $bgColor = 'bg-red-grade'; // Jika C masih lulus
+                    $bgColor = 'bg-red-grade';
                 } else {
-                    $bgColor = 'bg-gray-500'; // Default jika nilai belum masuk
+                    $bgColor = 'bg-gray-500';
                 }
             @endphp
             
-            <div class="bg-blue-light border border-[rgba(0,0,0,0.4)] rounded-2xl p-5 flex justify-between items-center transition duration-300 hover:shadow-lg hover:border-blue-primary">
+            <div class="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-card transition duration-300 hover:shadow-md">
                 <div>
-                    <h3 class="font-poppins font-semibold text-3xl mb-1">{{ $item['course_name'] }} ({{ $item['course_code'] }})</h3>
-                    <p class="font-poppins text-xl text-gray-subtext">Semester: {{ $item['semester'] }} ({{ $item['period_name'] }})</p>
-                    {{-- Dosen Name - Dihapus karena tidak ada data dosen di StudentPageController --}}
-                    {{-- <p class="font-poppins text-xl text-gray-subtext">Dosen : [Nama Dosen]</p> --}}
+                    <h3 class="font-poppins font-semibold text-xl">{{ $item['course_name'] }} ({{ $item['course_code'] }})</h3>
+                    <p class="font-poppins text-sm text-gray-subtext mt-1">Semester: {{ $item['semester'] }} | {{ $item['period_name'] }}</p>
                 </div>
-                <div class="flex flex-col items-center space-y-2">
-                    <div class="{{ $bgColor }} w-[90px] h-[90px] rounded-full flex items-center justify-center shadow-md">
-                        <span class="font-poppins font-bold text-3xl text-blue-light">{{ $gradeLetter }}</span>
+                <div class="flex flex-col items-center space-y-1">
+                    <div class="{{ $bgColor }} w-12 h-12 rounded-full flex items-center justify-center shadow-sm">
+                        <span class="font-poppins font-bold text-white">{{ $gradeLetter }}</span>
                     </div>
-                    <p class="font-poppins text-base text-gray-subtext">{{ $item['sks'] }} SKS</p>
+                    <p class="font-poppins text-xs text-gray-subtext">{{ $item['sks'] }} SKS</p>
                 </div>
             </div>
         @empty
-            <div class="text-center py-10 bg-gray-50 rounded-xl border border-dashed">
-                <p class="text-xl font-medium text-gray-500">Tidak ada mata kuliah terdaftar atau nilai yang ditemukan untuk filter ini.</p>
-                <p class="text-base text-gray-400 mt-2">Coba ganti Tahun Ajaran atau Semester.</p>
+            <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed">
+                <p class="text-lg font-medium text-gray-500">Tidak ada mata kuliah terdaftar atau nilai yang ditemukan untuk filter ini.</p>
+                <p class="text-sm text-gray-400 mt-2">Coba ganti Tahun Ajaran atau Semester.</p>
             </div>
         @endforelse
     </div>
