@@ -27,8 +27,136 @@
         .bg-brand-active-page { background-color: var(--brand-active-page); }
         .text-brand-page-inactive { color: var(--brand-page-inactive); }
         .bg-brand-dark-header { background-color: var(--brand-dark-header); }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            /* Tablet: Kurangi lebar sidebar dan sesuaikan elemen */
+            aside .w-[365px] {
+                width: 250px;
+            }
+            aside .w-[120px] {
+                width: 80px;
+                height: 80px;
+            }
+            aside h1 {
+                font-size: 1.25rem;
+            }
+            aside .text-base {
+                font-size: 0.875rem;
+            }
+            aside .text-[32.5px] {
+                font-size: 1.5rem;
+            }
+            aside .gap-[23px] {
+                gap: 1rem;
+            }
+            aside .gap-[19px] {
+                gap: 0.75rem;
+            }
+            aside .gap-7 {
+                gap: 1rem;
+            }
+            aside .w-[45px] {
+                width: 35px;
+                height: 30px;
+            }
+            aside .text-[13px] {
+                font-size: 0.75rem;
+            }
+            aside .w-[129px], aside .w-[101px] {
+                width: 80px;
+            }
+            aside .flex-1.text-sm {
+                font-size: 0.75rem;
+            }
+            aside .py-3.5 {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            /* Mobile: Sidebar menjadi full-width dan collapsable */
+            .flex {
+                flex-direction: column;
+            }
+            aside {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: auto;
+            }
+            aside .w-[365px] {
+                width: 100%;
+                padding: 1rem;
+            }
+            aside .w-[120px] {
+                width: 60px;
+                height: 60px;
+            }
+            aside h1 {
+                font-size: 1rem;
+            }
+            aside .text-base {
+                font-size: 0.75rem;
+            }
+            aside .text-[32.5px] {
+                font-size: 1.25rem;
+            }
+            aside .gap-[23px] {
+                gap: 0.5rem;
+            }
+            aside .gap-5 {
+                gap: 0.75rem;
+            }
+            aside .pl-[29px] {
+                padding-left: 1rem;
+            }
+            aside .pr-[26px] {
+                padding-right: 1rem;
+            }
+            aside .pt-[22px] {
+                padding-top: 1rem;
+            }
+            aside .pb-[6px] {
+                padding-bottom: 0.5rem;
+            }
+            aside .gap-[19px] {
+                gap: 0.5rem;
+            }
+            aside .gap-7 {
+                gap: 0.5rem;
+            }
+            aside .w-[45px] {
+                width: 30px;
+                height: 25px;
+            }
+            aside .text-[13px] {
+                font-size: 0.625rem;
+            }
+            aside .w-6 {
+                width: 1.25rem;
+                height: 1.25rem;
+            }
+            aside .w-[129px], aside .w-[101px] {
+                width: 60px;
+            }
+            aside .flex-1.text-sm {
+                font-size: 0.625rem;
+            }
+            aside .py-2.5 {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            aside .px-2.5 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            main {
+                padding: 1rem;
+            }
+        }
     </style>
-    
 </head>
 <body class="bg-gray-100">
 
