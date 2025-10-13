@@ -86,7 +86,7 @@
                 </div>
 
                 <!-- Course Filter -->
-                <div class="mb-6">
+                <!-- <div class="mb-6">
                     <label for="course_id" class="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wider">Mata Kuliah</label>
                     <select name="course_id" id="course_id" 
                             class="block w-full md:w-1/2 lg:w-1/3 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
@@ -97,7 +97,7 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
+                </div> -->
 
                 <!-- Filter Actions -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-gray-100">

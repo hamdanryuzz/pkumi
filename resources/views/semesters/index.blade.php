@@ -67,6 +67,9 @@
                                 Semester
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                Kode
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
                                 Tahun Ajaran
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
@@ -91,6 +94,8 @@
                         <tr class="hover:bg-gray-50 transition-colors duration-150">
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900">{{ $semester->name }}</div>
+                            </td>
+                            <td class="px-6 py-4">
                                 <div class="text-xs text-gray-500">{{ $semester->code }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">

@@ -122,18 +122,18 @@ class DatabaseSeeder extends Seeder
     {
         $periods = [
             [
-                'name' => 'Tahun Ajaran 2023/2024',
-                'code' => '2023-2024',
+                'name' => 'Tahun Ajaran 2023',
+                'code' => '2023',
                 'status' => 'completed',
             ],
             [
-                'name' => 'Tahun Ajaran 2024/2025',
-                'code' => '2024-2025',
+                'name' => 'Tahun Ajaran 2024',
+                'code' => '2024',
                 'status' => 'completed',
             ],
             [
-                'name' => 'Tahun Ajaran 2025/2026',
-                'code' => '2025-2026',
+                'name' => 'Tahun Ajaran 2025',
+                'code' => '2025',
                 'status' => 'active',
             ],
         ];
@@ -154,7 +154,7 @@ class DatabaseSeeder extends Seeder
             // 2023/2024 - Completed
             [
                 'period_id' => 1,
-                'name' => 'Semester Ganjil 2023/2024',
+                'name' => '2023 Ganjil',
                 'code' => '2023-1',
                 'start_date' => '2023-08-01',
                 'end_date' => '2023-12-31',
@@ -164,7 +164,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'period_id' => 1,
-                'name' => 'Semester Genap 2023/2024',
+                'name' => '2023 Genap',
                 'code' => '2023-2',
                 'start_date' => '2024-02-01',
                 'end_date' => '2024-06-30',
@@ -176,7 +176,7 @@ class DatabaseSeeder extends Seeder
             // 2024/2025 - Completed
             [
                 'period_id' => 2,
-                'name' => 'Semester Ganjil 2024/2025',
+                'name' => '2024 Ganjil',
                 'code' => '2024-1',
                 'start_date' => '2024-08-01',
                 'end_date' => '2024-12-31',
@@ -186,7 +186,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'period_id' => 2,
-                'name' => 'Semester Genap 2024/2025',
+                'name' => '2024 Genap',
                 'code' => '2024-2',
                 'start_date' => '2025-02-01',
                 'end_date' => '2025-06-30',
@@ -198,23 +198,23 @@ class DatabaseSeeder extends Seeder
             // 2025/2026 - Current (October 2025 = Semester Ganjil is ACTIVE)
             [
                 'period_id' => 3,
-                'name' => 'Semester Ganjil 2025/2026',
+                'name' => '2025 Ganjil',
                 'code' => '2025-1',
                 'start_date' => '2025-08-01',
                 'end_date' => '2025-12-31',
                 'enrollment_start_date' => '2025-07-01',
                 'enrollment_end_date' => '2025-07-31',
-                'status' => 'active', // Currently running
+                'status' => 'completed', // Currently running
             ],
             [
                 'period_id' => 3,
-                'name' => 'Semester Genap 2025/2026',
+                'name' => '2025 Genap',
                 'code' => '2025-2',
                 'start_date' => '2026-02-01',
                 'end_date' => '2026-06-30',
                 'enrollment_start_date' => '2026-01-01',
                 'enrollment_end_date' => '2026-01-31',
-                'status' => 'draft', // Future semester
+                'status' => 'active', // Future semester
             ],
         ];
 
