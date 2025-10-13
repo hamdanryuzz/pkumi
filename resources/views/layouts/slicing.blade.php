@@ -134,7 +134,7 @@
             }
             .main-content {
                 width: 100% !important;
-                padding: 1rem !important;
+                padding: 0.75rem !important;
             }
             #sidebar-toggle-mobile {
                 display: block;
@@ -156,33 +156,118 @@
                 display: block;
             }
 
-            /* == FIX HEADER LAYOUT == */
-            #section-header .flex.justify-between.items-center {
-                align-items: center; 
-                flex-wrap: nowrap;
-                padding: 0 0.5rem; 
+            /* == COMPLETE HEADER LAYOUT FIX == */
+            #section-header {
+                padding-bottom: 0.75rem;
             }
+
+            /* Row 1: Hamburger + Search */
+            #section-header > .flex.justify-between.items-center {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0;
+                margin-bottom: 0.75rem;
+                width: 100%;
+            }
+
             #sidebar-toggle-mobile {
-                margin-right: 0.5rem;
+                min-width: 40px;
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 0;
                 flex-shrink: 0;
             }
+
+            #sidebar-toggle-mobile svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* Search Bar - ambil semua space tersedia */
             #section-header .relative.w-\[438px\] {
-                flex-grow: 1;
-                margin-right: 0.5rem; 
+                flex: 1;
+                margin-right: 0;
                 width: auto;
+                min-width: 0;
             }
+
             #section-header input[type="text"] {
-                height: 40px; 
-                font-size: 0.875rem; 
-                padding-left: 3rem; 
+                height: 40px;
+                font-size: 0.875rem;
+                padding-left: 2.5rem;
+                padding-right: 0.75rem;
+                border-radius: 0.5rem;
             }
+
             #section-header .absolute.inset-y-0.left-0.pl-4 {
-                padding-left: 0.75rem;
+                padding-left: 0.5rem;
             }
+
+            #section-header .absolute.inset-y-0.left-0.pl-4 svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            /* Row 2: Notification + Options (Horizontal) */
             #section-header .flex.items-center.space-x-5 {
-                gap: 0.5rem; 
+                display: flex;
+                flex-direction: row;
+                gap: 0.5rem;
                 flex-shrink: 0;
                 margin-right: 0;
+                padding: 0;
+                margin-top: 0;
+            }
+
+            #section-header .flex.items-center.space-x-5 > div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #section-header .flex.items-center.space-x-5 button {
+                padding: 0.375rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 40px;
+                min-height: 40px;
+                width: 40px;
+                height: 40px;
+            }
+
+            #section-header .flex.items-center.space-x-5 svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* Hide profile picture di mobile */
+            #section-header .w-\[50px\] {
+                display: none !important;
+            }
+
+            /* Notification badge tetap relatif */
+            #section-header .absolute.-top-1.-right-1 {
+                width: 12px;
+                height: 12px;
+            }
+
+            /* Dropdown menus responsif */
+            #notifications-menu {
+                width: calc(100vw - 1.5rem) !important;
+                max-width: 320px;
+                right: 0;
+                left: auto;
+            }
+
+            #options-menu {
+                width: 180px;
+                right: 0;
+                left: auto;
             }
             
             /* == FIX INLINE STYLES FOR TABLE IN DRAWER == */
@@ -340,7 +425,7 @@
                                         <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                                                  d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                                         </svg>
                                         <span>Logout</span>
                                     </button>
