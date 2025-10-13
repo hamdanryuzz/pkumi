@@ -21,6 +21,118 @@
     .bg-yellow-grade { background-color: #FFC107; }
     .bg-red-grade { background-color: #DC3545; }
     .shadow-card { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+        /* Adjust header layout for tablets */
+        #section-header .flex {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        #section-header .w-[438px] {
+            width: 100%;
+        }
+        #section-header .space-x-5 {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .dropdown-menu {
+            width: 100%;
+            max-width: 250px;
+        }
+        #section-welcome .h-[175px] {
+            height: auto;
+            min-height: 150px;
+        }
+        #section-welcome h1 {
+            font-size: 1.75rem;
+        }
+        #section-welcome p {
+            font-size: 0.875rem;
+        }
+        #section-grades h2 {
+            font-size: 1.5rem;
+        }
+        #section-grades .flex-col.md\:flex-row {
+            flex-direction: column;
+        }
+        #section-grades select {
+            width: 100%;
+        }
+        .bg-blue-primary.text-blue-light {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        /* Adjust for mobile */
+        #section-header .w-[438px] input {
+            height: 40px;
+            font-size: 0.875rem;
+        }
+        #section-header .w-[50px] {
+            width: 40px;
+            height: 40px;
+        }
+        .dropdown-menu {
+            width: 100%;
+            max-width: 200px;
+            right: 0;
+        }
+        #notifications-menu {
+            width: 100%;
+            max-width: 280px;
+        }
+        #section-welcome .h-[175px] {
+            padding: 1.5rem;
+        }
+        #section-welcome h1 {
+            font-size: 1.25rem;
+        }
+        #section-welcome p {
+            font-size: 0.75rem;
+            max-width: 100%;
+        }
+        #section-welcome img {
+            display: none; /* Hide background image on mobile for better performance */
+        }
+        #section-grades h2 {
+            font-size: 1.25rem;
+            text-align: center;
+        }
+        #section-grades .bg-blue-primary.text-blue-light {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .shadow-card {
+            padding: 0.75rem;
+        }
+        .shadow-card h3 {
+            font-size: 1rem;
+        }
+        .shadow-card p {
+            font-size: 0.75rem;
+        }
+        .shadow-card .w-12 {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+        .shadow-card .font-bold {
+            font-size: 1rem;
+        }
+        .text-center.py-8 {
+            padding: 1rem;
+        }
+        .text-center .text-lg {
+            font-size: 1rem;
+        }
+        .text-center .text-sm {
+            font-size: 0.75rem;
+        }
+    }
 </style>
 
 @php
@@ -37,7 +149,7 @@
         <!-- Search Bar -->
         <div class="relative w-[438px]">
             {{-- Menggunakan form GET untuk Search Mata Kuliah (jika Anda implementasikan logic search di Controller) --}}
-            <!-- <form action="{{ route('mahasiswa.dashboard') }}" method="GET">
+            <form action="{{ route('mahasiswa.dashboard') }}" method="GET">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
@@ -48,13 +160,13 @@
                 {{-- Input filter tersembunyi agar tidak hilang saat search --}}
                 <input type="hidden" name="period_id" value="{{ $selectedPeriodId }}">
                 <input type="hidden" name="semester_id" value="{{ $selectedSemesterId }}">
-            </form> -->
+            </form>
         </div>
 
         <!-- Profile, Settings, and Notifications -->
         <div class="flex items-center space-x-5">
             <!-- Notifications Dropdown -->
-            <!-- <div class="relative">
+            <div class="relative">
                 <button id="notifications-menu-button" class="focus:outline-none p-1 rounded-full">
                     <div class="relative">
                         <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
@@ -75,7 +187,7 @@
                     </a>
                     <a href="#" class="block px-4 py-2 text-sm text-center text-blue-primary hover:underline">Lihat semua notifikasi</a>
                 </div>
-            </div> -->
+            </div>
 
             <!-- Options Dropdown (Mengandung link Profile dan Logout) -->
             <div class="relative">
