@@ -6,7 +6,7 @@
     <title>@yield('title', 'PKUMI Dashboard')</title>
 
     @vite('resources/css/app.css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJqLz0E7V43qC3y1+0i1Lz1x5qF4zWz/gq0m9v5qW5g1z29/I1l7eX0l5y9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css  " integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJqLz0E7V43qC3y1+0i1Lz1x5qF4zWz/gq0m9v5qW5g1z29/I1l7eX0l5y9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
         :root {
@@ -257,17 +257,81 @@
             }
 
             /* Dropdown menus responsif */
+            .dropdown-menu {
+                max-width: 90vw !important;
+                right: 0.5rem !important;
+                left: auto !important;
+                top: 100% !important;
+                margin-top: 0.25rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                padding: 0.5rem 0;
+                background-color: #fff;
+                border: 1px solid #e2e8f0;
+            }
+
             #notifications-menu {
                 width: calc(100vw - 1.5rem) !important;
                 max-width: 320px;
-                right: 0;
-                left: auto;
+                right: 0.5rem !important;
             }
 
             #options-menu {
-                width: 180px;
-                right: 0;
-                left: auto;
+                width: 180px !important;
+                right: 0.5rem !important;
+                padding: 0.75rem 0;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+
+            #options-menu a,
+            #options-menu button {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem !important;
+                font-size: 0.875rem !important;
+                color: #4a5568;
+                transition: background-color 0.2s;
+            }
+
+            #options-menu a:hover,
+            #options-menu button:hover {
+                background-color: #f7fafc;
+            }
+
+            #options-menu svg {
+                width: 18px;
+                height: 18px;
+                color: #718096;
+            }
+
+            /* Perbaikan teks dropdown agar lebih ringkas di mobile */
+            .dropdown-menu a,
+            .dropdown-menu button {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.875rem !important;
+                line-height: 1.25;
+            }
+
+            .dropdown-menu .px-4 {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            .dropdown-menu p.font-semibold {
+                font-size: 0.875rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .dropdown-menu p.text-xs {
+                font-size: 0.75rem;
+            }
+
+            /* Perbaikan badge notifikasi */
+            #section-header .text-\[6px\] {
+                font-size: 5px;
+                line-height: 1;
             }
             
             /* == FIX INLINE STYLES FOR TABLE IN DRAWER == */
@@ -413,11 +477,12 @@
                             <button id="options-menu-button" aria-label="Show options menu" class="focus:outline-none p-1 rounded-full hover:bg-gray-200 transition-colors">
                                 <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
                             </button>
-                            <div id="options-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 ring-1 ring-black ring-opacity-5 dropdown-menu">
+                            <div id="options-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 ring-1 ring-black ring-opacity-5 dropdown-menu" role="menu" aria-labelledby="options-menu-button">
                                 <a href="{{ route('mahasiswa.profile') }}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                                     <span>Profile</span>
                                 </a >
+                                <hr class="my-1 border-gray-200">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
@@ -540,6 +605,17 @@
                         event.preventDefault();
                         searchInput.closest('form').submit();
                     }
+                });
+            }
+
+            // TUTUP DROPDOWN SAAT SCROLL DI MOBILE
+            if (window.innerWidth <= 767) {
+                window.addEventListener('scroll', function() {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        if (!menu.classList.contains('hidden')) {
+                            menu.classList.add('hidden');
+                        }
+                    });
                 });
             }
         });
