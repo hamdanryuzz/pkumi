@@ -3,305 +3,219 @@
 @section('title', 'Detail Enrollment - Sistem Penilaian PKUMI')
 
 @section('content')
-<main class="py-6 px-4 md:px-8">
-    <!-- Header Section -->
-    <div class="mb-6">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('enrollments.index') }}" 
-               class="text-gray-600 hover:text-gray-800 transition duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <div class="flex-1">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Detail Enrollment</h2>
-                        <p class="text-base text-gray-500 mt-1">
-                            Informasi lengkap enrollment {{ $enrollment->student->name }}
-                        </p>
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="{{ route('enrollments.edit', $enrollment) }}" 
-                           class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200">
-                            <i class="fas fa-edit mr-2"></i>Edit
-                        </a>
-                        @if($enrollment->status === 'enrolled')
-                            <form action="{{ route('enrollments.drop', $enrollment) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" 
-                                        class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
-                                        onclick="return confirm('Yakin ingin drop enrollment ini?')">
-                                    <i class="fas fa-user-times mr-2"></i>Drop
-                                </button>
-                            </form>
-                        @elseif($enrollment->status === 'dropped')
-                            <form action="{{ route('enrollments.reactivate', $enrollment) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" 
-                                        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200">
-                                    <i class="fas fa-user-check mr-2"></i>Reactivate
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Detail Enrollment</h1>
+        <p class="text-gray-600">Informasi lengkap enrollment {{ $enrollment->studentClass->name }}</p>
+    </div>
+
+    <!-- Success Message -->
+    @if(session('success'))
+    <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-3 text-xl"></i>
+            <div>
+                <p class="font-bold">Berhasil!</p>
+                <p>{{ session('success') }}</p>
             </div>
         </div>
     </div>
-
-    <!-- Success Alert -->
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-            <strong class="font-bold">Berhasil!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Enrollment Information -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <h5 class="text-lg font-bold text-gray-800">
-                        <i class="fas fa-info-circle mr-2"></i>
-                        Informasi Enrollment
-                    </h5>
+        <!-- Main Information -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Enrollment Information Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h5 class="text-lg font-semibold text-white">Informasi Enrollment</h5>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Student Information -->
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Mahasiswa</label>
-                                <div class="mt-1 flex items-center">
-                                    <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                        <span class="text-blue-600 font-bold">
-                                            {{ strtoupper(substr($enrollment->student->name, 0, 2)) }}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-900 font-medium">{{ $enrollment->student->name }}</p>
-                                        <p class="text-sm text-gray-500">{{ $enrollment->student->nim }}</p>
-                                    </div>
+                        <!-- Student Class -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Kelas</label>
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                                    {{ strtoupper(substr($enrollment->studentClass->name, 0, 2)) }}
                                 </div>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Status Mahasiswa</label>
-                                <div class="mt-1">
-                                    @if($enrollment->student->status === 'active')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-2"></i>
-                                            Aktif
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                            <i class="fas fa-times-circle mr-2"></i>
-                                            Tidak Aktif
-                                        </span>
-                                    @endif
+                                <div class="ml-4">
+                                    <p class="text-lg font-semibold text-gray-900">{{ $enrollment->studentClass->name }}</p>
+                                    <p class="text-sm text-gray-500">{{ $enrollment->studentClass->year->name ?? '-' }}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Course and semester Information -->
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">
-                                    <i class="fas fa-book mr-1"></i>Mata Kuliah
-                                </label>
-                                <div class="mt-1">
-                                    <p class="text-gray-900 font-medium">{{ $enrollment->course->name }}</p>
-                                    <p class="text-sm text-gray-500">{{ $enrollment->course->code }}</p>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">
-                                    <i class="fas fa-calendar mr-1"></i>semester
-                                </label>
-                                <div class="mt-1">
-                                    <p class="text-gray-900 font-medium">{{ $enrollment->semester->name }}</p>
-                                    <p class="text-sm text-gray-500">{{ $enrollment->semester->code }}</p>
-                                </div>
-                            </div>
+                        <!-- Course -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Mata Kuliah</label>
+                            <p class="text-lg font-semibold text-gray-900">{{ $enrollment->course->name }}</p>
+                            <p class="text-sm text-gray-500">{{ $enrollment->course->code }}</p>
                         </div>
 
-                        <!-- Enrollment Details -->
-                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Tanggal Pendaftaran</label>
-                                <p class="mt-1 text-gray-900 font-medium">
-                                    <i class="fas fa-calendar-plus mr-1 text-blue-600"></i>
-                                    {{ $enrollment->enrollment_date->format('d M Y') }}
-                                </p>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Status Enrollment</label>
-                                @php
-                                    $statusConfig = [
-                                        'enrolled' => ['bg-green-100 text-green-800', 'Terdaftar', 'fas fa-check-circle'],
-                                        'dropped' => ['bg-red-100 text-red-800', 'Dropped', 'fas fa-times-circle'],
-                                        'completed' => ['bg-blue-100 text-blue-800', 'Selesai', 'fas fa-flag-checkered']
-                                    ];
-                                    $config = $statusConfig[$enrollment->status] ?? $statusConfig['enrolled'];
-                                @endphp
-                                <div class="mt-1">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $config[0] }}">
-                                        <i class="{{ $config[2] }} mr-2"></i>
-                                        {{ $config[1] }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Dibuat</label>
-                                <p class="mt-1 text-gray-900 text-sm">
-                                    {{ $enrollment->created_at->format('d M Y, H:i') }}
-                                </p>
-                            </div>
+                        <!-- Semester -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Semester</label>
+                            <p class="text-lg font-semibold text-gray-900">{{ $enrollment->semester->name }}</p>
+                            <p class="text-sm text-gray-500">{{ $enrollment->semester->code }}</p>
+                        </div>
+
+                        <!-- Enrollment Date -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Tanggal Pendaftaran</label>
+                            <p class="text-lg font-semibold text-gray-900">{{ \Carbon\Carbon::parse($enrollment->enrollment_date)->format('d M Y') }}</p>
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Status</label>
+                            @php
+                            $statusConfig = [
+                                'enrolled' => ['bg-green-100 text-green-800', 'Terdaftar', 'fas fa-check-circle'],
+                                'dropped' => ['bg-red-100 text-red-800', 'Dropped', 'fas fa-times-circle'],
+                                'completed' => ['bg-blue-100 text-blue-800', 'Selesai', 'fas fa-flag-checkered']
+                            ];
+                            $config = $statusConfig[$enrollment->status] ?? $statusConfig['enrolled'];
+                            @endphp
+                            <span class="px-4 py-2 inline-flex items-center text-sm font-semibold rounded-full {{ $config[0] }}">
+                                <i class="{{ $config[2] }} mr-2"></i>
+                                {{ $config[1] }}
+                            </span>
+                        </div>
+
+                        <!-- Created At -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Dibuat Pada</label>
+                            <p class="text-lg font-semibold text-gray-900">{{ $enrollment->created_at->format('d M Y, H:i') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <div>
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                    <h5 class="text-lg font-bold text-gray-800">
-                        <i class="fas fa-bolt mr-2"></i>
-                        Aksi Cepat
-                    </h5>
-                </div>
-                <div class="p-6 space-y-3">
-                    @if($enrollment->status === 'enrolled')
-                        <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
-                           class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
-                            <i class="fas fa-graduation-cap mr-2"></i>Input Nilai
-                        </a>
-                    @endif
-                    
-                    <a href="{{ route('enrollments.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
-                       class="w-full flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200">
-                        <i class="fas fa-list mr-2"></i>Lihat Enrollment Serupa
-                    </a>
-                    
-                    <a href="{{ route('semester.show', $enrollment->semester) }}" 
-                       class="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-200">
-                        <i class="fas fa-calendar mr-2"></i>Detail semester
-                    </a>
-                </div>
-            </div>
-
-            <!-- semester Information -->
-            <div class="mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                    <h5 class="text-lg font-bold text-gray-800">
-                        <i class="fas fa-calendar-alt mr-2"></i>
-                        Info semester
-                    </h5>
+            <!-- Students in Class -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+                    <h5 class="text-lg font-semibold text-white">Mahasiswa dalam Kelas</h5>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600">semestere:</span>
-                            <span class="font-medium">
-                                {{ $enrollment->semester->start_date->format('d M') }} - 
-                                {{ $enrollment->semester->end_date->format('d M Y') }}
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600">Pendaftaran:</span>
-                            <span class="font-medium">
-                                {{ $enrollment->semester->enrollment_start_date->format('d M') }} - 
-                                {{ $enrollment->semester->enrollment_end_date->format('d M Y') }}
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600">Status:</span>
-                            @php
-                                $semestertatusConfig = [
-                                    'active' => ['text-green-600', 'Aktif'],
-                                    'draft' => ['text-yellow-600', 'Draft'],
-                                    'completed' => ['text-gray-600', 'Selesai']
-                                ];
-                                $semesterConfig = $semestertatusConfig[$enrollment->semester->status] ?? $semestertatusConfig['draft'];
-                            @endphp
-                            <span class="font-medium {{ $semesterConfig[0] }}">{{ $semesterConfig[1] }}</span>
-                        </div>
+                    @if($enrollment->studentClass->students->count() > 0)
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">NIM</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach($enrollment->studentClass->students as $student)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $student->nim }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">{{ $student->name }}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full 
+                                            {{ $student->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                            {{ ucfirst($student->status) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600">Total: <span class="font-semibold">{{ $enrollment->studentClass->students->count() }}</span> mahasiswa</p>
+                    @else
+                    <div class="text-center py-8">
+                        <i class="fas fa-users text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500">Belum ada mahasiswa dalam kelas ini</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
+                    <h5 class="text-lg font-semibold text-white">Aksi Cepat</h5>
+                </div>
+                <div class="p-6 space-y-3">
+                    <a href="{{ route('enrollments.edit', $enrollment->id) }}" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center justify-center">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit Enrollment
+                    </a>
+
+                    @if($enrollment->status === 'enrolled')
+                    <form action="{{ route('enrollments.drop', $enrollment->id) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" onclick="return confirm('Yakin ingin mengubah status menjadi dropped?')" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center justify-center">
+                            <i class="fas fa-times-circle mr-2"></i>
+                            Drop Enrollment
+                        </button>
+                    </form>
+                    @elseif($enrollment->status === 'dropped')
+                    <form action="{{ route('enrollments.reactivate', $enrollment->id) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" onclick="return confirm('Yakin ingin mengaktifkan kembali enrollment ini?')" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center justify-center">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Aktifkan Kembali
+                        </button>
+                    </form>
+                    @endif
+
+                    <form action="{{ route('enrollments.destroy', $enrollment->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" onclick="return confirm('Yakin ingin menghapus enrollment ini? Tindakan ini tidak dapat dibatalkan.')" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center justify-center">
+                            <i class="fas fa-trash mr-2"></i>
+                            Hapus Enrollment
+                        </button>
+                    </form>
+
+                    <a href="{{ route('enrollments.index') }}" class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center justify-center">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Kembali ke Daftar
+                    </a>
+                </div>
+            </div>
+
+            <!-- Semester Info -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4">
+                    <h5 class="text-lg font-semibold text-white">Info Semester</h5>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Periode</label>
+                        <p class="text-sm font-medium text-gray-900">
+                            {{ \Carbon\Carbon::parse($enrollment->semester->start_date)->format('d M Y') }} - 
+                            {{ \Carbon\Carbon::parse($enrollment->semester->end_date)->format('d M Y') }}
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Status Semester</label>
+                        <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full 
+                            {{ $enrollment->semester->status === 'active' ? 'bg-green-100 text-green-800' : 
+                               ($enrollment->semester->status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
+                            {{ ucfirst($enrollment->semester->status) }}
+                        </span>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Periode Pendaftaran</label>
+                        <p class="text-sm font-medium text-gray-900">
+                            {{ \Carbon\Carbon::parse($enrollment->semester->enrollment_start_date)->format('d M Y') }} - 
+                            {{ \Carbon\Carbon::parse($enrollment->semester->enrollment_end_date)->format('d M Y') }}
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Grade Information -->
-    <div class="mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-amber-50">
-            <h5 class="text-lg font-bold text-gray-800">
-                <i class="fas fa-chart-line mr-2"></i>
-                Informasi Nilai
-            </h5>
-        </div>
-        <div class="p-6">
-            @if($grade)
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">
-                            {{ $grade->attendance_score ?? '-' }}
-                        </div>
-                        <div class="text-sm text-gray-600">Kehadiran</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-green-600">
-                            {{ $grade->assignment_score ?? '-' }}
-                        </div>
-                        <div class="text-sm text-gray-600">Tugas</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-yellow-600">
-                            {{ $grade->midterm_score ?? '-' }}
-                        </div>
-                        <div class="text-sm text-gray-600">UTS</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-red-600">
-                            {{ $grade->final_score ?? '-' }}
-                        </div>
-                        <div class="text-sm text-gray-600">UAS</div>
-                    </div>
-                    <div class="text-center border-l border-gray-200">
-                        <div class="text-3xl font-bold text-purple-600">
-                            {{ $grade->letter_grade ?? '-' }}
-                        </div>
-                        <div class="text-sm text-gray-600">Nilai Akhir</div>
-                        @if($grade->final_grade)
-                            <div class="text-xs text-gray-500 mt-1">
-                                ({{ number_format($grade->final_grade, 2) }})
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                <div class="mt-4 text-center">
-                    <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
-                       class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
-                        <i class="fas fa-edit mr-2"></i>Edit Nilai
-                    </a>
-                </div>
-            @else
-                <div class="text-center py-8">
-                    <i class="fas fa-chart-line text-4xl text-gray-400 mb-4"></i>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Belum Ada Nilai</h3>
-                    <p class="text-gray-600 mb-4">Nilai untuk enrollment ini belum diinput.</p>
-                    @if($enrollment->status === 'enrolled')
-                        <a href="{{ route('grades.index', ['course_id' => $enrollment->course_id, 'semester_id' => $enrollment->semester_id]) }}" 
-                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
-                            <i class="fas fa-plus mr-2"></i>Input Nilai
-                        </a>
-                    @endif
-                </div>
-            @endif
-        </div>
-    </div>
-</main>
+</div>
 @endsection

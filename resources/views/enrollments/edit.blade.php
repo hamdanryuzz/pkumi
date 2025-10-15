@@ -3,181 +3,225 @@
 @section('title', 'Edit Enrollment - Sistem Penilaian PKUMI')
 
 @section('content')
-<main class="py-6 px-4 md:px-8">
-    <!-- Header Section -->
-    <div class="mb-6">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('enrollments.index') }}" 
-               class="text-gray-600 hover:text-gray-800 transition duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Edit Enrollment</h1>
+        <p class="text-gray-600">Ubah informasi enrollment: {{ $enrollment->studentClass->name }} - {{ $enrollment->course->name }}</p>
+    </div>
+
+    <!-- Error Messages -->
+    @if($errors->any())
+    <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm" role="alert">
+        <div class="flex items-start">
+            <i class="fas fa-exclamation-circle mr-3 text-xl mt-1"></i>
             <div>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Enrollment</h2>
-                <p class="text-base text-gray-500 mt-1">
-                    Ubah informasi enrollment: {{ $enrollment->student->name }} - {{ $enrollment->course->name }}
-                </p>
+                <p class="font-bold mb-2">Terjadi kesalahan!</p>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
     </div>
-
-    <!-- Error Alert -->
-    @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-            <strong class="font-bold">Terjadi kesalahan!</strong>
-            <ul class="list-disc list-inside mt-2">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
     @endif
 
-    <!-- Form Card -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-            <h5 class="text-lg font-bold text-gray-800">
-                <i class="fas fa-edit mr-2"></i>
-                Form Edit Enrollment
-            </h5>
-            <p class="text-sm text-gray-600 mt-1">Perbarui informasi pendaftaran mahasiswa</p>
+    <!-- Edit Form -->
+    <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div class="mb-6">
+            <h5 class="text-lg font-semibold text-gray-800 mb-1">Form Edit Enrollment</h5>
+            <p class="text-sm text-gray-600">Perbarui informasi pendaftaran kelas</p>
         </div>
 
-        <form action="{{ route('enrollments.update', $enrollment) }}" method="POST" class="p-6">
+        <form action="{{ route('enrollments.update', $enrollment->id) }}" method="POST">
             @csrf
             @method('PUT')
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- semester -->
+                <!-- Semester -->
                 <div>
-                    <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-calendar mr-1"></i>semester 
-                        <span class="text-red-500">*</span>
+                    <label for="semester_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Semester <span class="text-red-500">*</span>
                     </label>
-                    <select name="semester_id" id="semester_id" 
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('semester_id') border-red-500 @enderror" 
-                            required>
-                        <option value="">Pilih semester</option>
+                    <select name="semester_id" id="semester_id" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('semester_id') border-red-500 @enderror">
+                        <option value="">Pilih Semester</option>
                         @foreach($semesters as $semester)
-                            <option value="{{ $semester->id }}" 
-                                    {{ (old('semester_id', $enrollment->semester_id) == $semester->id) ? 'selected' : '' }}>
-                                {{ $semester->name }}
-                                @if($semester->status === 'active')
-                                    <span class="text-green-600">(Aktif)</span>
-                                @endif
-                            </option>
+                        <option value="{{ $semester->id }}" {{ old('semester_id', $enrollment->semester_id) == $semester->id ? 'selected' : '' }}>
+                            {{ $semester->name }}
+                            @if($semester->status === 'active')
+                            (Aktif)
+                            @endif
+                        </option>
                         @endforeach
                     </select>
                     @error('semester_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Course -->
                 <div>
-                    <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-book mr-1"></i>Mata Kuliah 
-                        <span class="text-red-500">*</span>
+                    <label for="course_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Mata Kuliah <span class="text-red-500">*</span>
                     </label>
-                    <select name="course_id" id="course_id" 
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('course_id') border-red-500 @enderror" 
-                            required>
+                    <select name="course_id" id="course_id" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('course_id') border-red-500 @enderror">
                         <option value="">Pilih Mata Kuliah</option>
                         @foreach($courses as $course)
-                            <option value="{{ $course->id }}" {{ (old('course_id', $enrollment->course_id) == $course->id) ? 'selected' : '' }}>
-                                {{ $course->name }} ({{ $course->code }})
-                            </option>
+                        <option value="{{ $course->id }}" {{ old('course_id', $enrollment->course_id) == $course->id ? 'selected' : '' }}>
+                            {{ $course->name }} ({{ $course->code }})
+                        </option>
                         @endforeach
                     </select>
                     @error('course_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Student -->
-                <div class="md:col-span-2">
-                    <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-user mr-1"></i>Mahasiswa 
-                        <span class="text-red-500">*</span>
+                <!-- Student Class -->
+                <div>
+                    <label for="student_class_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Kelas <span class="text-red-500">*</span>
                     </label>
-                    <select name="student_id" id="student_id" 
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('student_id') border-red-500 @enderror" 
-                            required>
-                        <option value="">Pilih Mahasiswa</option>
-                        @foreach($students as $student)
-                            <option value="{{ $student->id }}" {{ (old('student_id', $enrollment->student_id) == $student->id) ? 'selected' : '' }}>
-                                {{ $student->name }} - {{ $student->nim }}
-                            </option>
+                    <select name="student_class_id" id="student_class_id" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('student_class_id') border-red-500 @enderror">
+                        <option value="">Pilih Kelas</option>
+                        @foreach($studentClasses as $class)
+                        <option value="{{ $class->id }}" {{ old('student_class_id', $enrollment->student_class_id) == $class->id ? 'selected' : '' }}>
+                            {{ $class->name }} - {{ $class->year->name ?? 'Tahun tidak diketahui' }}
+                        </option>
                         @endforeach
                     </select>
-                    @error('student_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @error('student_class_id')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Enrollment Date -->
                 <div>
-                    <label for="enrollment_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-calendar-plus mr-1"></i>Tanggal Pendaftaran 
-                        <span class="text-red-500">*</span>
+                    <label for="enrollment_date" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Tanggal Pendaftaran <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" 
-                           name="enrollment_date" 
-                           id="enrollment_date" 
-                           value="{{ old('enrollment_date', $enrollment->enrollment_date->format('Y-m-d')) }}" 
-                           class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('enrollment_date') border-red-500 @enderror" 
-                           required>
+                    <input type="date" name="enrollment_date" id="enrollment_date" value="{{ old('enrollment_date', $enrollment->enrollment_date) }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('enrollment_date') border-red-500 @enderror">
                     @error('enrollment_date')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Status -->
                 <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-info-circle mr-1"></i>Status 
-                        <span class="text-red-500">*</span>
+                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Status <span class="text-red-500">*</span>
                     </label>
-                    <select name="status" id="status" 
-                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('status') border-red-500 @enderror" 
-                            required>
+                    <select name="status" id="status" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('status') border-red-500 @enderror">
                         <option value="enrolled" {{ old('status', $enrollment->status) === 'enrolled' ? 'selected' : '' }}>Terdaftar</option>
                         <option value="dropped" {{ old('status', $enrollment->status) === 'dropped' ? 'selected' : '' }}>Dropped</option>
                         <option value="completed" {{ old('status', $enrollment->status) === 'completed' ? 'selected' : '' }}>Selesai</option>
                     </select>
                     @error('status')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
-            <!-- Grade Info -->
-            @php
-                $hasGrades = $enrollment->student->grades()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists();
-            @endphp
-            @if($hasGrades)
-                <div class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <div class="flex items-start">
-                        <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-2"></i>
-                        <div class="text-sm text-yellow-800">
-                            <strong>Peringatan:</strong>
-                            Enrollment ini sudah memiliki nilai. Perubahan data dapat mempengaruhi nilai yang sudah diinput.
-                        </div>
+            <!-- Warning Message -->
+            <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                <div class="flex items-start">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-3 mt-1"></i>
+                    <div>
+                        <p class="font-semibold text-yellow-800">Perhatian:</p>
+                        <p class="text-sm text-yellow-700">Perubahan data enrollment dapat mempengaruhi data nilai yang sudah terinput untuk kelas ini.</p>
                     </div>
                 </div>
-            @endif
+            </div>
 
-            <!-- Form Actions -->
-            <div class="mt-6 flex justify-end gap-4">
-                <a href="{{ route('enrollments.index') }}" 
-                   class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
-                    <i class="fas fa-times mr-2"></i>Batal
+            <!-- Action Buttons -->
+            <div class="mt-8 flex justify-end space-x-4">
+                <a href="{{ route('enrollments.index') }}" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-semibold transition duration-200 inline-flex items-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Batal
                 </a>
-                <button type="submit" 
-                        class="px-6 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200">
-                    <i class="fas fa-save mr-2"></i>Update Enrollment
+                <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Update Enrollment
                 </button>
             </div>
         </form>
     </div>
-</main>
+</div>
+
+<script>
+// Initialize Select2 on page load
+$(document).ready(function() {
+    console.log('Initializing Select2...');
+    
+    // Initialize Select2 for Single Enrollment
+    $('#semester_id').select2({
+        placeholder: '-- Pilih Semester --',
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+    });
+    
+    $('#student_class_id').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+    });
+    
+    $('#course_id').select2({
+        placeholder: 'Pilih kelas terlebih dahulu...',
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+    });
+    
+    $('#status').select2({
+        placeholder: '-- Pilih Status --',
+        allowClear: false,
+        width: '100%',
+        minimumResultsForSearch: -1, // Hide search for status
+        theme: 'default'
+    });
+    
+    // Initialize Select2 for Bulk Enrollment
+    $('#bulk_semester_id').select2({
+        placeholder: '-- Pilih Semester --',
+        allowClear: true,
+        width: '100%',
+        containerCssClass: 'select2-green',
+        theme: 'default'
+    });
+    
+    $('#bulk_student_class_id').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: true,
+        width: '100%',
+        containerCssClass: 'select2-green',
+        theme: 'default'
+    });
+    
+    // Trigger change event when Select2 changes
+    $('#student_class_id').on('select2:select', function(e) {
+        const studentClassId = $(this).val();
+        handleStudentClassChange(studentClassId);
+    });
+    
+    $('#student_class_id').on('select2:clear', function(e) {
+        handleStudentClassChange('');
+    });
+    
+    $('#bulk_student_class_id').on('select2:select', function(e) {
+        const studentClassId = $(this).val();
+        handleBulkClassChange(studentClassId);
+    });
+    
+    $('#bulk_student_class_id').on('select2:clear', function(e) {
+        handleBulkClassChange('');
+    });
+    
+    console.log('Select2 initialized successfully');
+});
+</script>
 @endsection
+

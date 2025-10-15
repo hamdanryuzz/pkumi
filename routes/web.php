@@ -50,6 +50,7 @@ Route::middleware('auth:web')->group(function () {
     // Grades Management
     Route::prefix('grades')->name('grades.')->group(function () {
         Route::get('/', [GradeController::class, 'index'])->name('index');
+        Route::get('/courses-by-class', [GradeController::class, 'getCoursesByClass'])->name('courses-by-class');
         Route::post('/', [GradeController::class, 'store'])->name('store');
         Route::put('/{grade}', [GradeController::class, 'update'])->name('update');
         Route::post('/bulk-update', [GradeController::class, 'bulkUpdate'])->name('bulk-update');
@@ -94,6 +95,7 @@ Route::middleware('auth:web')->group(function () {
     Route::patch('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
     Route::get('enrollments/export', [EnrollmentController::class, 'export'])->name('enrollments.export');
     Route::get('api/enrolled-students', [EnrollmentController::class, 'getEnrolledStudents'])->name('api.enrolled-students');
+    Route::get('/enrollments/courses-by-class', [EnrollmentController::class, 'getCoursesByClass'])->name('enrollments.courses-by-class');
     Route::resource('enrollments', EnrollmentController::class);
 });
 

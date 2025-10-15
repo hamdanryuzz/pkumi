@@ -25,7 +25,7 @@ class StudentController extends Controller
         $studentClassFilter = $request->input('student_class_id');
         $courseFilter = $request->input('course_id');
 
-        $query = Student::with(['enrollments', 'year', 'studentClass']);
+        $query = Student::with(['year', 'studentClass']);
 
         // Search berdasarkan nama, NIM, atau username
         if ($search) {
@@ -181,9 +181,10 @@ class StudentController extends Controller
         $semesters = Semester::all();
         
         // Base query untuk enrollments mahasiswa dengan relasi course dan semester
-        $enrollmentQuery = Enrollment::where('student_id', $student->id)
-            ->with(['course', 'semester'])
+        $enrollmentQuery = Enrollment::where('student_class_id', $student->student_class_id)
+            ->with(['course','semester'])
             ->where('status', 'enrolled');
+
         
         // Filter berdasarkan pencarian mata kuliah
         if ($search) {

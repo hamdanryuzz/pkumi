@@ -225,74 +225,101 @@
                 <!-- Enrollments List -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 flex items-center justify-between">
-                        <h2 class="text-lg font-semibold text-white">Daftar Enrollment ({{ $semester->enrollments->count() }})</h2>
+                        <h2 class="text-lg font-semibold text-white">
+                        Daftar Enrollment ({{ $semester->enrollments->count() }})
+                        </h2>
                     </div>
+
                     <div class="overflow-x-auto">
                         @if($semester->enrollments->count() > 0)
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mahasiswa</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mata Kuliah</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tanggal Daftar</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                                </tr>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kelas</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mata Kuliah</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tanggal Daftar</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                            </tr>
                             </thead>
+
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($semester->enrollments->take(10) as $enrollment)
+                            @foreach($semester->enrollments->take(10) as $enrollment)
+                                @php
+                                $className = optional($enrollment->studentClass)->name;
+                                // Inisial 2 huruf: buang spasi dulu biar gak kosong
+                                $initials = strtoupper(substr(preg_replace('/\s+/', '', $className ?? ''), 0, 2) ?: 'CL');
+
+                                // Tanggal aman: handle null/string
+                                $enrollDate = optional(\Carbon\Carbon::parse($enrollment->enrollment_date ?? null))->format('d M Y') ?? '-';
+                                @endphp
+
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span class="text-indigo-600 font-semibold text-sm">
-                                                        {{ strtoupper(substr($enrollment->student->name, 0, 2)) }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $enrollment->student->name }}</div>
-                                                <div class="text-xs text-gray-500">{{ $enrollment->student->nim }}</div>
-                                            </div>
+                                <!-- Kelas -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                        <span class="text-indigo-600 font-semibold text-sm">{{ $initials }}</span>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $enrollment->course->name }}</div>
-                                        <div class="text-xs text-gray-500">{{ $enrollment->course->code }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {{ $enrollment->enrollment_date->format('d M Y') }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($enrollment->status === 'enrolled')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Terdaftar
-                                            </span>
-                                        @elseif($enrollment->status === 'dropped')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                Dropped
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                Selesai
-                                            </span>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                        {{ $className ?? '-' }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                        {{-- tampilkan jumlah siswa di kelas jika eager load withCount --}}
+                                        @if(isset($enrollment->studentClass->students_count))
+                                            {{ $enrollment->studentClass->students_count }} siswa
                                         @endif
-                                    </td>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </td>
+
+                                <!-- Mata Kuliah -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                    {{ optional($enrollment->course)->name ?? '-' }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                    {{ optional($enrollment->course)->code ?? '' }}
+                                    </div>
+                                </td>
+
+                                <!-- Tanggal Daftar -->
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {{ $enrollDate }}
+                                </td>
+
+                                <!-- Status -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @switch($enrollment->status)
+                                    @case('enrolled')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Terdaftar</span>
+                                        @break
+                                    @case('dropped')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Dropped</span>
+                                        @break
+                                    @default
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Selesai</span>
+                                    @endswitch
+                                </td>
                                 </tr>
-                                @endforeach
+                            @endforeach
                             </tbody>
                         </table>
                         @else
                         <div class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             <h3 class="mt-2 text-sm font-medium text-gray-900">Belum Ada Enrollment</h3>
-                            <p class="mt-1 text-sm text-gray-500">Semester ini belum memiliki data enrollment mahasiswa.</p>
+                            <p class="mt-1 text-sm text-gray-500">Semester ini belum memiliki data enrollment.</p>
                         </div>
                         @endif
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
     </div>

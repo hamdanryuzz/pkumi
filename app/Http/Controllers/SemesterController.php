@@ -73,13 +73,19 @@ class SemesterController extends Controller
      */
     public function show(Semester $semester)
     {
-        $semester->load(['period', 'enrollments.student', 'enrollments.course']);
-        
+        $semester->load(['period', 'enrollments.studentClass' => fn($q) => $q->withCount('students'), 'enrollments.course']);
+
+        // Hitung total mahasiswa via Student -> studentClass.enrollments (bukan dari enrollments.student_id)
+        $totalStudents = \App\Models\Student::whereHas('studentClass.enrollments', function ($q) use ($semester) {
+            $q->where('semester_id', $semester->id)
+            ->where('status', 'enrolled');
+        })->count();
+
         $statistics = [
-            'total_enrollments' => $semester->enrollments()->count(),
-            'active_enrollments' => $semester->enrollments()->where('status', 'enrolled')->count(),
-            'total_courses' => $semester->enrollments()->distinct('course_id')->count(),
-            'total_students' => $semester->enrollments()->distinct('student_id')->count()
+            'total_enrollments'   => $semester->enrollments()->count(),
+            'active_enrollments'  => $semester->enrollments()->where('status', 'enrolled')->count(),
+            'total_courses'       => $semester->enrollments()->distinct()->count('course_id'),
+            'total_students'      => $totalStudents, // 
         ];
 
         return view('semesters.show', compact('semester', 'statistics'));
@@ -178,13 +184,18 @@ class SemesterController extends Controller
      */
     public function getEnrollmentStats(Semester $semester)
     {
+        $studentsEnrolled = \App\Models\Student::whereHas('studentClass.enrollments', function ($q) use ($semester) {
+            $q->where('semester_id', $semester->id)
+            ->where('status', 'enrolled');
+        })->count();
+
         $stats = [
-            'total_enrollments' => $semester->enrollments()->count(),
-            'active_enrollments' => $semester->enrollments()->where('status', 'enrolled')->count(),
-            'dropped_enrollments' => $semester->enrollments()->where('status', 'dropped')->count(),
-            'completed_enrollments' => $semester->enrollments()->where('status', 'completed')->count(),
-            'courses_offered' => $semester->enrollments()->distinct('course_id')->count(),
-            'students_enrolled' => $semester->enrollments()->distinct('student_id')->count()
+            'total_enrollments'    => $semester->enrollments()->count(),
+            'active_enrollments'   => $semester->enrollments()->where('status', 'enrolled')->count(),
+            'dropped_enrollments'  => $semester->enrollments()->where('status', 'dropped')->count(),
+            'completed_enrollments'=> $semester->enrollments()->where('status', 'completed')->count(),
+            'courses_offered'      => $semester->enrollments()->distinct()->count('course_id'),
+            'students_enrolled'    => $studentsEnrolled, // 
         ];
 
         return response()->json($stats);
