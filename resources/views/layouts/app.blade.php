@@ -11,6 +11,15 @@
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <style>
         :root {
             --color-primary-start: #3c83f6;
@@ -441,6 +450,80 @@
             background-color: #fef2f2;
             color: #dc2626;
             border: 1px solid #fecaca;
+        }
+
+        /* Custom Select2 Styling for Tailwind */
+        .select2-container--default .select2-selection--single {
+            background-color: rgb(249 250 251);
+            border: 1px solid rgb(209 213 219);
+            border-radius: 0.5rem;
+            height: 48px;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 24px;
+            padding-left: 0;
+            color: rgb(55 65 81);
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 46px;
+            right: 10px;
+        }
+        
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: rgb(59 130 246);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .select2-dropdown {
+            border: 1px solid rgb(209 213 219);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid rgb(209 213 219);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: rgb(59 130 246);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .select2-results__option {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: rgb(59 130 246);
+        }
+        
+        .select2-results__option[aria-selected=true] {
+            background-color: rgb(219 234 254);
+            color: rgb(30 64 175);
+        }
+        
+        /* Disabled state */
+        .select2-container--default .select2-selection--single.select2-selection--disabled {
+            background-color: rgb(229 231 235);
+            cursor: not-allowed;
+        }
+        
+        /* For green theme (bulk) */
+        .select2-green.select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-green.select2-container--default.select2-container--open .select2-selection--single {
+            border-color: rgb(16 185 129);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
     </style>
 </head>

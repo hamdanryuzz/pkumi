@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->foreignId('student_class_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
             $table->date('enrollment_date');
             $table->enum('status', ['enrolled', 'dropped', 'completed'])->default('enrolled');
-            $table->unique(['student_id', 'course_id', 'semester_id']);   // Pastikan satu mahasiswa tidak bisa mendaftar mata kuliah yang sama di semestere yang sama
+            $table->unique(['student_class_id', 'course_id', 'semester_id']);
             $table->timestamps();
         });
     }

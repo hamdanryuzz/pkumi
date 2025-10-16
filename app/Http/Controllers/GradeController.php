@@ -6,8 +6,9 @@ use App\Models\Student;
 use App\Models\Course;
 use App\Models\Grade;
 use App\Models\GradeWeight;
-use App\Models\Semester; // Huruf 'S' besar sudah benar
+use App\Models\Semester;
 use App\Models\Enrollment;
+use App\Models\StudentClass;
 use Illuminate\Http\Request;
 
 class GradeController extends Controller
@@ -18,23 +19,32 @@ class GradeController extends Controller
     public function index(Request $request)
     {
         $courses = Course::all();
-        $semesters = Semester::all(); // Variabel diganti menjadi 'semesters'
+        $semesters = Semester::orderBy('start_date', 'desc')->get();
+        $studentClasses = StudentClass::with('year')->get(); // Tambahkan data kelas
         
         $selectedCourseId = $request->get('course_id');
-        $selectedSemesterId = $request->get('semester_id'); // Konsistensi penamaan variabel
+        $selectedSemesterId = $request->get('semester_id');
+        $selectedClassId = $request->get('class_id'); // Tambahkan parameter kelas
         
         $students = collect();
         $grades = collect();
         
         if ($selectedCourseId && $selectedSemesterId) {
-            // Ambil students yang terdaftar di course pada semester tertentu
-            $students = Student::whereHas('enrollments', function($query) use ($selectedCourseId, $selectedSemesterId) {
-                $query->where('course_id', $selectedCourseId)
+            // Query dengan filter kelas jika dipilih
+            $studentsQuery = Student::with(['studentClass'])
+                ->whereHas('studentClass.enrollments', function ($q) use ($selectedCourseId, $selectedSemesterId) {
+                    $q->where('course_id', $selectedCourseId)
                     ->where('semester_id', $selectedSemesterId)
                     ->where('status', 'enrolled');
-            })->get();
+                });
             
-            // Ambil grades untuk course dan semester yang dipilih
+            // Tambahkan filter kelas jika dipilih
+            if ($selectedClassId) {
+                $studentsQuery->where('student_class_id', $selectedClassId);
+            }
+            
+            $students = $studentsQuery->get();
+            
             $grades = Grade::where('course_id', $selectedCourseId)
                 ->where('semester_id', $selectedSemesterId)
                 ->get()
@@ -44,44 +54,56 @@ class GradeController extends Controller
         $weights = GradeWeight::getCurrentWeights();
         
         return view('grades.index', compact(
-            'students', 'courses', 'semesters',
-            'selectedCourseId', 'selectedSemesterId', 
+            'students', 'courses', 'semesters', 'studentClasses',
+            'selectedCourseId', 'selectedSemesterId', 'selectedClassId',
             'grades', 'weights'
         ));
     }
 
     /**
      * Store/Update grades for selected course
+     * Opsi A: validasi enrollment berdasarkan KELAS siswa (student_class_id)
      */
     public function store(Request $request)
     {
         $request->validate([
-            'course_id' => 'required|exists:courses,id',
+            'course_id'   => 'required|exists:courses,id',
             'semester_id' => 'required|exists:semesters,id',
-            'grades' => 'required|array',
+            'grades'      => 'required|array',
             'grades.*.attendance_score' => 'nullable|numeric|min:0|max:100',
             'grades.*.assignment_score' => 'nullable|numeric|min:0|max:100',
-            'grades.*.midterm_score' => 'nullable|numeric|min:0|max:100',
-            'grades.*.final_score' => 'nullable|numeric|min:0|max:100',
+            'grades.*.midterm_score'    => 'nullable|numeric|min:0|max:100',
+            'grades.*.final_score'      => 'nullable|numeric|min:0|max:100',
         ]);
 
         $weights = GradeWeight::getCurrentWeights();
         $updatedCount = 0;
 
-        foreach ($request->grades as $studentId => $gradeData) {
-            // Validasi bahwa student terdaftar di course pada semester ini
-            $enrollment = Enrollment::where([
-                'student_id' => $studentId,
-                'course_id' => $request->course_id,
-                'semester_id' => $request->semester_id,
-                'status' => 'enrolled'
-            ])->first();
+        // Ambil semua siswa yang dikirim pada payload sekaligus (hemat query)
+        $studentIds    = array_keys($request->grades);
+        $studentsById  = Student::whereIn('id', $studentIds)
+                            ->get(['id', 'student_class_id'])
+                            ->keyBy('id');
 
-            if (!$enrollment) {
-                continue; // Skip jika student tidak terdaftar
+        foreach ($request->grades as $studentId => $gradeData) {
+            $student = $studentsById->get($studentId);
+            if (!$student) {
+                continue; // student tidak ditemukan
             }
 
-            $filteredData = array_filter($gradeData, function($value) {
+            // VALIDASI: kelas siswa harus ter-enroll pada course & semester ini
+            $enrollmentExists = Enrollment::where('student_class_id', $student->student_class_id)
+                ->where('course_id', $request->course_id)
+                ->where('semester_id', $request->semester_id)
+                ->where('status', 'enrolled')
+                ->exists();
+
+            if (!$enrollmentExists) {
+                continue; // skip jika kelas siswa tidak mengambil MK ini pada semester tsb
+            }
+
+            // Filter hanya nilai yang terisi (hindari overwrite null/empty string)
+            $filteredData = array_filter($gradeData, function ($value) {
                 return $value !== null && $value !== '';
             });
 
@@ -89,12 +111,17 @@ class GradeController extends Controller
                 continue;
             }
 
-            $grade = Grade::updateOrCreate([
-                'student_id' => $studentId,
-                'course_id' => $request->course_id,
-                'semester_id' => $request->semester_id
-            ], $filteredData);
+            // Simpan / update nilai per siswa
+            $grade = Grade::updateOrCreate(
+                [
+                    'student_id'  => $studentId,
+                    'course_id'   => $request->course_id,
+                    'semester_id' => $request->semester_id,
+                ],
+                $filteredData
+            );
 
+            // Hitung nilai akhir jika semua komponen terisi
             if ($this->allScoresPresent($grade)) {
                 $finalGrade = Grade::calculateFinalGrade(
                     $grade->attendance_score,
@@ -105,9 +132,9 @@ class GradeController extends Controller
                 );
 
                 $grade->update([
-                    'final_grade' => $finalGrade,
+                    'final_grade'  => $finalGrade,
                     'letter_grade' => Grade::getLetterGrade($finalGrade),
-                    'bobot' => Grade::getBobot($finalGrade) // ✅ Sudah ada di store()
+                    'bobot'        => Grade::getBobot($finalGrade),
                 ]);
             }
 
@@ -116,8 +143,8 @@ class GradeController extends Controller
 
         return redirect()
             ->route('grades.index', [
-                'course_id' => $request->course_id,
-                'semester_id' => $request->semester_id
+                'course_id'   => $request->course_id,
+                'semester_id' => $request->semester_id,
             ])
             ->with('success', "Successfully updated grades for {$updatedCount} students!");
     }
@@ -130,18 +157,17 @@ class GradeController extends Controller
         $request->validate([
             'attendance_score' => 'nullable|numeric|min:0|max:100',
             'assignment_score' => 'nullable|numeric|min:0|max:100',
-            'midterm_score' => 'nullable|numeric|min:0|max:100',
-            'final_score' => 'nullable|numeric|min:0|max:100',
+            'midterm_score'    => 'nullable|numeric|min:0|max:100',
+            'final_score'      => 'nullable|numeric|min:0|max:100',
         ]);
 
         $grade->update($request->only([
             'attendance_score',
             'assignment_score',
             'midterm_score',
-            'final_score'
+            'final_score',
         ]));
 
-        // Calculate final grade if all scores are present
         if ($this->allScoresPresent($grade)) {
             $weights = GradeWeight::getCurrentWeights();
             $finalGrade = Grade::calculateFinalGrade(
@@ -153,49 +179,48 @@ class GradeController extends Controller
             );
 
             $grade->update([
-                'final_grade' => $finalGrade,
+                'final_grade'  => $finalGrade,
                 'letter_grade' => Grade::getLetterGrade($finalGrade),
-                'bobot' => Grade::getBobot($finalGrade) // ✅ DITAMBAHKAN bobot
+                'bobot'        => Grade::getBobot($finalGrade),
             ]);
         }
 
         return response()->json([
-            'success' => true,
-            'final_grade' => $grade->final_grade,
+            'success'      => true,
+            'final_grade'  => $grade->final_grade,
             'letter_grade' => $grade->letter_grade,
-            'bobot' => $grade->bobot // DITAMBAHKAN bobot di response
+            'bobot'        => $grade->bobot,
         ]);
     }
 
     /**
-     * Bulk update grades (legacy method - kept for compatibility)
+     * Bulk update grades (legacy)
      */
     public function bulkUpdate(Request $request)
     {
-        $grades = $request->input('grades');
+        $grades  = $request->input('grades');
         $weights = GradeWeight::getCurrentWeights();
 
         foreach ($grades as $gradeId => $scores) {
             $grade = Grade::find($gradeId);
-            if ($grade) {
-                $grade->update($scores);
+            if (!$grade) continue;
 
-                // Calculate final grade if all scores are present
-                if ($this->allScoresPresent($grade)) {
-                    $finalGrade = Grade::calculateFinalGrade(
-                        $grade->attendance_score,
-                        $grade->assignment_score,
-                        $grade->midterm_score,
-                        $grade->final_score,
-                        $weights
-                    );
+            $grade->update($scores);
 
-                    $grade->update([
-                        'final_grade' => $finalGrade,
-                        'letter_grade' => Grade::getLetterGrade($finalGrade),
-                        'bobot' => Grade::getBobot($finalGrade) // ✅ DITAMBAHKAN bobot
-                    ]);
-                }
+            if ($this->allScoresPresent($grade)) {
+                $finalGrade = Grade::calculateFinalGrade(
+                    $grade->attendance_score,
+                    $grade->assignment_score,
+                    $grade->midterm_score,
+                    $grade->final_score,
+                    $weights
+                );
+
+                $grade->update([
+                    'final_grade'  => $finalGrade,
+                    'letter_grade' => Grade::getLetterGrade($finalGrade),
+                    'bobot'        => Grade::getBobot($finalGrade),
+                ]);
             }
         }
 
@@ -217,9 +242,34 @@ class GradeController extends Controller
      */
     private function allScoresPresent($grade)
     {
-        return $grade->attendance_score !== null &&
-               $grade->assignment_score !== null &&
-               $grade->midterm_score !== null &&
-               $grade->final_score !== null;
+        return $grade->attendance_score !== null
+            && $grade->assignment_score !== null
+            && $grade->midterm_score !== null
+            && $grade->final_score !== null;
+    }
+
+    public function getCoursesByClass(Request $request)
+    {
+        $classId = $request->get('class_id');
+        $search = $request->get('q');
+        
+        // Validasi class_id
+        if (!$classId) {
+            return response()->json([]);
+        }
+        
+        $query = Course::select('id', 'name', 'code')
+            ->where('student_class_id', $classId);
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('code', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $courses = $query->limit(10)->get();
+        
+        return response()->json($courses);
     }
 }

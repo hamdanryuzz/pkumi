@@ -3,288 +3,325 @@
 @section('title', 'Kelola Enrollment - Sistem Penilaian PKUMI')
 
 @section('content')
-<main class="py-6 px-4 md:px-8">
-    <!-- Header Section -->
-    <div class="mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Kelola Enrollment</h2>
-        <p class="text-base text-gray-500 mt-1">Kelola pendaftaran mahasiswa pada mata kuliah per semestere akademik</p>
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Kelola Enrollment</h1>
+        <p class="text-gray-600">Kelola pendaftaran kelas pada mata kuliah per semester akademik</p>
     </div>
 
-    <!-- Success/Error Alerts -->
+    <!-- Alert Messages -->
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-            <strong class="font-bold">Berhasil!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    @if(session('warning'))
-        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6" role="alert">
-            <strong class="font-bold">Peringatan!</strong>
-            <span class="block sm:inline">{{ session('warning') }}</span>
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <ul class="list-disc list-inside mt-2">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- Filters Section -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <h5 class="text-lg font-bold text-gray-800">
-                <i class="fas fa-filter mr-2"></i>Filter & Pencarian
-            </h5>
-            <p class="text-sm text-gray-600 mt-1">Filter enrollment berdasarkan semestere, mata kuliah, atau status</p>
-        </div>
-        <div class="p-6">
-            <form method="GET" action="{{ route('enrollments.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                <!-- semester Filter -->
-                <div>
-                    <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-calendar mr-1"></i>semester
-                    </label>
-                    <select name="semester_id" id="semester_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua semester</option>
-                        @foreach($semesters as $semester)
-                            <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
-                                {{ $semester->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Course Filter -->
-                <div>
-                    <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-book mr-1"></i>Mata Kuliah
-                    </label>
-                    <select name="course_id" id="course_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua Mata Kuliah</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
-                                {{ $course->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Status Filter -->
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-info-circle mr-1"></i>Status
-                    </label>
-                    <select name="status" id="status" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua Status</option>
-                        <option value="enrolled" {{ request('status') === 'enrolled' ? 'selected' : '' }}>Terdaftar</option>
-                        <option value="dropped" {{ request('status') === 'dropped' ? 'selected' : '' }}>Dropped</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Selesai</option>
-                    </select>
-                </div>
-
-                <!-- Search -->
-                <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-search mr-1"></i>Cari Mahasiswa
-                    </label>
-                    <div class="flex gap-2">
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" 
-                               placeholder="Nama atau NIM..." 
-                               class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        @if(request()->hasAny(['semester_id', 'course_id', 'status', 'search']))
-                            <a href="{{ route('enrollments.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition duration-200">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        @endif
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Action Header -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-            <div class="flex flex-wrap justify-between items-center">
-                <div>
-                    <h5 class="text-lg font-bold text-gray-800">
-                        Daftar Enrollment 
-                        <span class="text-sm font-normal text-gray-500">({{ $enrollments->total() }})</span>
-                    </h5>
-                    <p class="text-sm text-gray-600 mt-1">
-                        <i class="fas fa-user-plus mr-1"></i>
-                        Kelola semua pendaftaran mahasiswa
-                    </p>
-                </div>
-                <div class="flex gap-3 mt-2 sm:mt-0">
-                    <a href="{{ route('enrollments.export', request()->query()) }}" 
-                       class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200">
-                        <i class="fas fa-download mr-2"></i>Export CSV
-                    </a>
-                    <a href="{{ route('enrollments.create') }}" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Tambah Enrollment
-                    </a>
-                </div>
+    <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-3 text-xl"></i>
+            <div>
+                <p class="font-bold">Berhasil!</p>
+                <p>{{ session('success') }}</p>
             </div>
         </div>
     </div>
+    @endif
+
+    @if(session('warning'))
+    <div class="mb-6 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-sm" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-triangle mr-3 text-xl"></i>
+            <div>
+                <p class="font-bold">Peringatan!</p>
+                <p>{{ session('warning') }}</p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm" role="alert">
+        <div class="flex items-start">
+            <i class="fas fa-exclamation-circle mr-3 text-xl mt-1"></i>
+            <div>
+                <p class="font-bold mb-2">Error!</p>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Filter Section -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h5 class="text-lg font-semibold text-gray-800 mb-1">Filter & Pencarian</h5>
+                <p class="text-sm text-gray-600">Filter enrollment berdasarkan semester, mata kuliah, atau status</p>
+            </div>
+            <a href="{{ route('enrollments.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200 inline-flex items-center">
+                <i class="fas fa-plus-circle mr-2"></i>
+                Tambah Enrollment
+            </a>
+        </div>
+
+        <form action="{{ route('enrollments.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Semester Filter -->
+            <div>
+                <label for="semester_id" class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                <select name="semester_id" id="semester_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    <option value="">Semua Semester</option>
+                    @foreach($semesters as $semester)
+                    <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
+                        {{ $semester->name }}
+                        @if($semester->status === 'active')
+                        (Aktif)
+                        @endif
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Course Filter -->
+            <div>
+                <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2">Mata Kuliah</label>
+                <select name="course_id" id="course_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    <option value="">Semua Mata Kuliah</option>
+                    @foreach($courses as $course)
+                    <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
+                        {{ $course->name }} ({{ $course->code }})
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select name="status" id="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    <option value="">Semua Status</option>
+                    <option value="enrolled" {{ request('status') === 'enrolled' ? 'selected' : '' }}>Terdaftar</option>
+                    <option value="dropped" {{ request('status') === 'dropped' ? 'selected' : '' }}>Dropped</option>
+                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Selesai</option>
+                </select>
+            </div>
+
+            <!-- Search Input -->
+            <div>
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Cari Kelas atau Mata Kuliah</label>
+                <div class="relative">
+                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Cari nama kelas atau mata kuliah..." class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="md:col-span-4 flex justify-end space-x-3">
+                <a href="{{ route('enrollments.index') }}" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition duration-200 inline-flex items-center">
+                    <i class="fas fa-redo mr-2"></i>
+                    Reset
+                </a>
+                <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition duration-200 inline-flex items-center">
+                    <i class="fas fa-filter mr-2"></i>
+                    Filter
+                </button>
+                <a href="{{ route('enrollments.export', request()->all()) }}" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition duration-200 inline-flex items-center">
+                    <i class="fas fa-file-export mr-2"></i>
+                    Export
+                </a>
+            </div>
+        </form>
+    </div>
 
     <!-- Enrollments Table -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <h5 class="text-lg font-semibold text-gray-800 mb-1">Daftar Enrollment ({{ $enrollments->total() }})</h5>
+            <p class="text-sm text-gray-600">Kelola semua pendaftaran kelas</p>
+        </div>
+
+        @if($enrollments->count() > 0)
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-user mr-1"></i>Mahasiswa
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-book mr-1"></i>Mata Kuliah
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-calendar mr-1"></i>semester
-                        </th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-calendar-plus mr-1"></i>Tgl Daftar
-                        </th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-info-circle mr-1"></i>Status
-                        </th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-cogs mr-1"></i>Aksi
-                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kelas</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mata Kuliah</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Semester</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tgl Daftar</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($enrollments as $enrollment)
-                        <tr class="hover:bg-gray-50 transition-colors duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                        <span class="text-blue-600 font-semibold text-sm">
-                                            {{ strtoupper(substr($enrollment->student->name, 0, 2)) }}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">{{ $enrollment->student->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $enrollment->student->nim }}</div>
-                                    </div>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach($enrollments as $enrollment)
+                    <tr class="hover:bg-gray-50 transition duration-150">
+                        <!-- Student Class -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                                    {{ strtoupper(substr($enrollment->studentClass->name, 0, 2)) }}
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $enrollment->course->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $enrollment->course->code }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $enrollment->semester->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $enrollment->semester->code }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
-                                {{ $enrollment->enrollment_date->format('d M Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                @php
-                                    $statusConfig = [
-                                        'enrolled' => ['bg-green-100 text-green-800', 'Terdaftar', 'fas fa-check-circle'],
-                                        'dropped' => ['bg-red-100 text-red-800', 'Dropped', 'fas fa-times-circle'],
-                                        'completed' => ['bg-blue-100 text-blue-800', 'Selesai', 'fas fa-flag-checkered']
-                                    ];
-                                    $config = $statusConfig[$enrollment->status] ?? $statusConfig['enrolled'];
-                                @endphp
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $config[0] }}">
-                                    <i class="{{ $config[2] }} mr-1"></i>
-                                    {{ $config[1] }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                <div class="flex justify-center gap-2">
-                                    <a href="{{ route('enrollments.show', $enrollment) }}" 
-                                       class="text-blue-600 hover:text-blue-900 transition duration-200" 
-                                       title="Lihat Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('enrollments.edit', $enrollment) }}" 
-                                       class="text-yellow-600 hover:text-yellow-900 transition duration-200" 
-                                       title="Edit Enrollment">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    @if($enrollment->status === 'enrolled')
-                                        <form action="{{ route('enrollments.drop', $enrollment) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" 
-                                                    class="text-red-600 hover:text-red-900 transition duration-200" 
-                                                    title="Drop Enrollment"
-                                                    onclick="return confirm('Yakin ingin drop enrollment ini?')">
-                                                <i class="fas fa-user-times"></i>
-                                            </button>
-                                        </form>
-                                    @elseif($enrollment->status === 'dropped')
-                                        <form action="{{ route('enrollments.reactivate', $enrollment) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" 
-                                                    class="text-green-600 hover:text-green-900 transition duration-200" 
-                                                    title="Reactivate Enrollment">
-                                                <i class="fas fa-user-check"></i>
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @if(!$enrollment->student->grades()->where('course_id', $enrollment->course_id)->where('semester_id', $enrollment->semester_id)->exists())
-                                        <form action="{{ route('enrollments.destroy', $enrollment) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="text-red-600 hover:text-red-900 transition duration-200" 
-                                                    title="Hapus Enrollment"
-                                                    onclick="return confirm('Yakin ingin menghapus enrollment ini?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    @endif
+                                <div class="ml-4">
+                                    <div class="text-sm font-semibold text-gray-900">{{ $enrollment->studentClass->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $enrollment->studentClass->year->name ?? '-' }}</div>
                                 </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-                                <i class="fas fa-user-slash text-4xl mb-4"></i>
-                                <p class="text-lg">Tidak ada enrollment yang ditemukan</p>
-                                <p class="text-sm mt-2">
-                                    @if(request()->hasAny(['semester_id', 'course_id', 'status', 'search']))
-                                        <a href="{{ route('enrollments.index') }}" class="text-blue-600 hover:text-blue-800">
-                                            Reset filter untuk melihat semua enrollment
-                                        </a>
-                                    @else
-                                        <a href="{{ route('enrollments.create') }}" class="text-blue-600 hover:text-blue-800">
-                                            Klik di sini untuk membuat enrollment pertama
-                                        </a>
-                                    @endif
-                                </p>
-                            </td>
-                        </tr>
-                    @endforelse
+                            </div>
+                        </td>
+
+                        <!-- Course -->
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">{{ $enrollment->course->name }}</div>
+                            <div class="text-xs text-gray-500">{{ $enrollment->course->code }}</div>
+                        </td>
+
+                        <!-- Semester -->
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">{{ $enrollment->semester->name }}</div>
+                            <div class="text-xs text-gray-500">{{ $enrollment->semester->code }}</div>
+                        </td>
+
+                        <!-- Enrollment Date -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($enrollment->enrollment_date)->format('d M Y') }}</div>
+                        </td>
+
+                        <!-- Status -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                            $statusConfig = [
+                                'enrolled' => ['bg-green-100 text-green-800', 'Terdaftar', 'fas fa-check-circle'],
+                                'dropped' => ['bg-red-100 text-red-800', 'Dropped', 'fas fa-times-circle'],
+                                'completed' => ['bg-blue-100 text-blue-800', 'Selesai', 'fas fa-flag-checkered']
+                            ];
+                            $config = $statusConfig[$enrollment->status] ?? $statusConfig['enrolled'];
+                            @endphp
+                            <span class="px-3 py-1 inline-flex items-center text-xs font-semibold rounded-full {{ $config[0] }}">
+                                <i class="{{ $config[2] }} mr-2"></i>
+                                {{ $config[1] }}
+                            </span>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <a href="{{ route('enrollments.show', $enrollment->id) }}" class="text-blue-600 hover:text-blue-800 transition duration-150" title="Detail">
+                                    <i class="fas fa-eye text-lg"></i>
+                                </a>
+                                <a href="{{ route('enrollments.edit', $enrollment->id) }}" class="text-yellow-600 hover:text-yellow-800 transition duration-150" title="Edit">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </a>
+                                <form action="{{ route('enrollments.destroy', $enrollment->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus enrollment ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800 transition duration-150" title="Hapus">
+                                        <i class="fas fa-trash text-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
 
         <!-- Pagination -->
-        @if($enrollments->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200">
-                {{ $enrollments->appends(request()->query())->links() }}
-            </div>
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            {{ $enrollments->links() }}
+        </div>
+        @else
+        <!-- Empty State -->
+        <div class="p-12 text-center">
+            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">Tidak ada enrollment yang ditemukan</h3>
+            <p class="text-gray-500 mb-6">
+                @if(request()->hasAny(['semester_id', 'course_id', 'status', 'search']))
+                Reset filter untuk melihat semua enrollment
+                @else
+                Klik tombol di bawah untuk membuat enrollment pertama
+                @endif
+            </p>
+            @if(request()->hasAny(['semester_id', 'course_id', 'status', 'search']))
+            <a href="{{ route('enrollments.index') }}" class="inline-block bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200">
+                <i class="fas fa-redo mr-2"></i>
+                Reset Filter
+            </a>
+            @else
+            <a href="{{ route('enrollments.create') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition duration-200">
+                <i class="fas fa-plus-circle mr-2"></i>
+                Tambah Enrollment
+            </a>
+            @endif
+        </div>
         @endif
     </div>
-</main>
+</div>
+
+<script>
+// Initialize Select2 on page load
+$(document).ready(function() {
+    console.log('Initializing Select2...');
+    
+    // Initialize Select2 for Single Enrollment
+    $('#semester_id').select2({
+        placeholder: '-- Pilih Semester --',
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+    });
+    
+    $('#course_id').select2({
+        placeholder: 'Pilih kelas terlebih dahulu...',
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+    });
+    
+    $('#status').select2({
+        placeholder: '-- Pilih Status --',
+        allowClear: false,
+        width: '100%',
+        minimumResultsForSearch: -1, // Hide search for status
+        theme: 'default'
+    });
+    
+    // Initialize Select2 for Bulk Enrollment
+    $('#bulk_semester_id').select2({
+        placeholder: '-- Pilih Semester --',
+        allowClear: true,
+        width: '100%',
+        containerCssClass: 'select2-green',
+        theme: 'default'
+    });
+    
+    $('#bulk_student_class_id').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: true,
+        width: '100%',
+        containerCssClass: 'select2-green',
+        theme: 'default'
+    });
+    
+    // Trigger change event when Select2 changes
+    $('#student_class_id').on('select2:select', function(e) {
+        const studentClassId = $(this).val();
+        handleStudentClassChange(studentClassId);
+    });
+    
+    $('#student_class_id').on('select2:clear', function(e) {
+        handleStudentClassChange('');
+    });
+    
+    $('#bulk_student_class_id').on('select2:select', function(e) {
+        const studentClassId = $(this).val();
+        handleBulkClassChange(studentClassId);
+    });
+    
+    $('#bulk_student_class_id').on('select2:clear', function(e) {
+        handleBulkClassChange('');
+    });
+    
+    console.log('Select2 initialized successfully');
+});
+</script>
 @endsection

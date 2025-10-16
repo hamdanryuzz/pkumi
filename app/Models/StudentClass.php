@@ -36,4 +36,8 @@ class StudentClass extends Model
     {
         return $this->name . ' - ' . ($this->year->name ?? 'Tahun tidak diketahui');
     }
+
+    public function enrollments() {
+        return $this->hasMany(Enrollment::class);
+    }
 }
