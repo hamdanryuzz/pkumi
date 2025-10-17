@@ -39,7 +39,17 @@
 
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div class="flex items-center gap-6">
-            <img src="{{ asset('images/xaviera.jpeg') }}" alt="User Avatar" class="w-24 h-24 rounded-full object-cover flex-shrink-0">
+            @if($student->image)
+                <img src="{{ asset('storage/students/' . $student->image) }}" 
+                    alt="User Avatar" 
+                    class="w-24 h-24 rounded-full object-cover flex-shrink-0">
+            @else
+                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                    <span class="text-white text-2xl font-bold">
+                        {{ strtoupper(substr($student->name, 0, 2)) }}
+                    </span>
+                </div>
+            @endif
             <div>
                 <h2 class="text-xl font-medium text-black leading-tight">{{ $student->name ?? 'Nama Mahasiswa' }}</h2>
                 <p class="text-base font-normal text-black/50 leading-normal">{{ $student->nim ?? 'NIM Tidak Diketahui' }}</p>

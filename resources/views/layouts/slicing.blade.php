@@ -510,17 +510,19 @@
                         </div>
                         
                         <div class="w-[50px] h-[50px] rounded-lg border border-blue-primary overflow-hidden hidden md:block">
-                            @if($student->image)
-                                <img src="{{ asset('storage/students/' . $student->image) }}" 
-                                    alt="Profile Picture" 
-                                    class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                    <span class="text-white text-xl font-bold">
-                                        {{ strtoupper(substr($student->name, 0, 2)) }}
-                                    </span>
-                                </div>
-                            @endif
+                            <a href="{{ route('mahasiswa.profile') }}">
+                                @if($student->image)
+                                    <img src="{{ asset('storage/students/' . $student->image) }}" 
+                                        alt="Profile Picture" 
+                                        class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                        <span class="text-white text-xl font-bold">
+                                            {{ strtoupper(substr($student->name, 0, 2)) }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </a>
                         </div>
                     </div>
                 </div>
