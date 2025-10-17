@@ -372,7 +372,18 @@
 
             <div class="w-full h-full bg-brand-bg flex flex-col items-center gap-8 pt-[54px] pb-[23px] px-[26px] overflow-y-auto">
                 <div class="flex flex-col items-center text-center gap-[23px] sidebar-info-box">
-                    <img src="{{ asset('images/xaviera.jpeg') }}" alt="Profile Picture" class="profile-img w-[120px] h-[120px] rounded-full object-cover">
+                    @if($student->image)
+                        <img src="{{ asset('storage/students/' . $student->image) }}" 
+                            alt="Profile Picture" 
+                            class="profile-img w-[120px] h-[120px] rounded-full object-cover">
+                    @else
+                        <div class="w-[120px] h-[120px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-3xl font-bold">
+                                {{ strtoupper(substr($student->name, 0, 2)) }}
+                            </span>
+                        </div>
+                    @endif
+
                     <div class="flex flex-col sidebar-text">
                         <h1 class="font-poppins font-semibold text-[25px] leading-tight text-black">{{ $student->name ?? 'Pengguna' }}</h1>
                         <div class="flex flex-col mt-2">
@@ -499,7 +510,17 @@
                         </div>
                         
                         <div class="w-[50px] h-[50px] rounded-lg border border-blue-primary overflow-hidden hidden md:block">
-                            <img src="{{ asset('images/xaviera.jpeg') }}" alt="Profile Picture" class="w-full h-full object-cover">
+                            @if($student->image)
+                                <img src="{{ asset('storage/students/' . $student->image) }}" 
+                                    alt="Profile Picture" 
+                                    class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                    <span class="text-white text-xl font-bold">
+                                        {{ strtoupper(substr($student->name, 0, 2)) }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

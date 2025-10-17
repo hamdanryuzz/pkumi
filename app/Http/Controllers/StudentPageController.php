@@ -28,8 +28,8 @@ class StudentPageController extends Controller
             return $query->where('period_id', $request->period_id);
         })->orderBy('code', 'asc')->get();
 
-        // Query untuk mendapatkan mata kuliah berdasarkan filter
-        $enrollments = Enrollment::where('student_id', $student->id)
+        // Query untuk mendapatkan enrollment berdasarkan student_class_id dari student
+        $enrollments = Enrollment::where('student_class_id', $student->student_class_id)
             ->where('status', 'enrolled')
             ->when($request->period_id, function ($query) use ($request) {
                 return $query->whereHas('semester', function ($q) use ($request) {
@@ -42,13 +42,13 @@ class StudentPageController extends Controller
             ->when($request->search, function ($query) use ($request) {
                 return $query->whereHas('course', function ($q) use ($request) {
                     $q->where('name', 'like', '%' . $request->search . '%')
-                      ->orWhere('code', 'like', '%' . $request->search . '%');
+                        ->orWhere('code', 'like', '%' . $request->search . '%');
                 });
             })
             ->with(['course', 'semester.period'])
             ->get();
 
-        // Ambil nilai dari tabel grades dan hitung SKS/Bobot
+        // Ambil nilai dari tabel grades dan tampilkan semua komponen nilai
         $courses = $enrollments->map(function ($enrollment) use ($student) {
             $grade = Grade::where('student_id', $student->id)
                 ->where('course_id', $enrollment->course_id)
@@ -59,8 +59,12 @@ class StudentPageController extends Controller
                 'course_name' => $enrollment->course->name,
                 'course_code' => $enrollment->course->code,
                 'sks' => $enrollment->course->sks,
-                'letter_grade' => $grade ? $grade->letter_grade : '-',
+                'attendance_score' => $grade ? $grade->attendance_score : '-',
+                'assignment_score' => $grade ? $grade->assignment_score : '-',
+                'midterm_score' => $grade ? $grade->midterm_score : '-',
+                'final_score' => $grade ? $grade->final_score : '-',
                 'final_grade' => $grade ? $grade->final_grade : '-',
+                'letter_grade' => $grade ? $grade->letter_grade : '-',
                 'semester' => $enrollment->semester->name,
                 'period_name' => $enrollment->semester->period->name,
             ];
