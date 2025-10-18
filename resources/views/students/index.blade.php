@@ -282,4 +282,57 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const yearSelect = document.querySelector('select[name="year_id"]');
+    const classSelect = document.querySelector('select[name="student_class_id"]');
+    const allClasses = @json($studentClasses);
+    
+    // Simpan nilai yang sudah dipilih sebelumnya
+    const selectedYearId = "{{ request('year_id') }}";
+    const selectedClassId = "{{ request('student_class_id') }}";
+    
+    // Function untuk memfilter kelas berdasarkan year_id
+    function filterClasses(yearId) {
+        // Clear existing options kecuali option pertama (Semua Kelas)
+        classSelect.innerHTML = '<option value="">Semua Kelas</option>';
+        
+        if (yearId) {
+            // Filter kelas yang year_id-nya sesuai dengan yang dipilih
+            const filteredClasses = allClasses.filter(cls => cls.year_id == yearId);
+            
+            filteredClasses.forEach(function(cls) {
+                const option = new Option(cls.name, cls.id);
+                if (cls.id == selectedClassId) {
+                    option.selected = true;
+                }
+                classSelect.add(option);
+            });
+        } else {
+            // Jika tidak ada year yang dipilih, tampilkan semua kelas
+            allClasses.forEach(function(cls) {
+                const option = new Option(cls.name, cls.id);
+                if (cls.id == selectedClassId) {
+                    option.selected = true;
+                }
+                classSelect.add(option);
+            });
+        }
+    }
+    
+    // Jalankan filter saat halaman pertama kali dimuat
+    if (selectedYearId) {
+        filterClasses(selectedYearId);
+    }
+    
+    // Event listener saat dropdown angkatan berubah
+    yearSelect.addEventListener('change', function() {
+        const selectedYear = this.value;
+        filterClasses(selectedYear);
+        
+        // Reset dropdown kelas jika year berubah
+        classSelect.value = '';
+    });
+});
+</script>
 @endsection
