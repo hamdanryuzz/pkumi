@@ -49,7 +49,7 @@
                 <div>
                     <label for="year_id" class="block text-xs font-medium text-gray-700 uppercase tracking-wider mb-2">Filter Angkatan</label>
                     <select name="year_id" id="year_id" 
-                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
+                            class="select2-year block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
                         <option value="">Semua Angkatan</option>
                         @foreach($years as $year)
                             <option value="{{ $year->id }}" 
@@ -293,5 +293,21 @@ document.getElementById('search').addEventListener('keypress', function(e) {
         this.closest('form').submit();
     }
 });
+</script>
+<script>
+    // ========== SELECT2 INITIALIZATION ==========
+    
+    /**
+     * Initialize Select2 for Year dropdown
+     */
+    $('.select2-year').select2({
+        placeholder: '-- Pilih Angkatan --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Angkatan tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
 </script>
 @endsection

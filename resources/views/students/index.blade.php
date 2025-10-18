@@ -49,7 +49,7 @@
                                    id="search"
                                    value="{{ request('search') }}"
                                    placeholder="Cari nama, NIM, atau username"
-                                   class="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200">
+                                   class="block w-full pl-9 pr-3 py-2.5 flex items-center border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200">
                         </div>
                     </div>
 
@@ -57,7 +57,7 @@
                     <div>
                         <label for="year_id" class="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wider">Angkatan</label>
                         <select name="year_id" id="year_id" 
-                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
+                                class="select2-year block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
                             <option value="">Semua Angkatan</option>
                             @foreach($years as $year)
                                 <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
@@ -71,7 +71,7 @@
                     <div>
                         <label for="student_class_id" class="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wider">Kelas</label>
                         <select name="student_class_id" id="student_class_id" 
-                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
+                                class="select2-class block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition-all duration-200">
                             <option value="">Semua Kelas</option>
                             @foreach($studentClasses as $class)
                                 <option value="{{ $class->id }}" {{ request('student_class_id') == $class->id ? 'selected' : '' }}>
@@ -334,5 +334,34 @@ document.addEventListener('DOMContentLoaded', function() {
         classSelect.value = '';
     });
 });
+</script>
+<script>
+    // ========== SELECT2 INITIALIZATION ==========
+    
+    /**
+     * Initialize Select2 for Year dropdown
+     */
+    $('.select2-year').select2({
+        placeholder: '-- Pilih Angkatan --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Angkatan tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
+
+    /**
+     * Initialize Select2 for Class dropdown
+     */
+    $('.select2-class').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Kelas tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
 </script>
 @endsection

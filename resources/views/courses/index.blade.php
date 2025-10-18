@@ -52,7 +52,7 @@
                 <label for="student_class_id" class="block text-sm font-medium text-gray-700 mb-2">Filter Kelas</label>
                 <select id="student_class_id" 
                         name="student_class_id" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="select2-class w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Semua Kelas</option>
                     @foreach($studentClasses as $class)
                         <option value="{{ $class->id }}" 
@@ -193,4 +193,21 @@
         @endif
     </div>
 </div>
+
+<script>
+    // ========== SELECT2 INITIALIZATION ==========
+    
+    /**
+     * Initialize Select2 for Class dropdown
+     */
+    $('.select2-class').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Kelas tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
+</script>
 @endsection
