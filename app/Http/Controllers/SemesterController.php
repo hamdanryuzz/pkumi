@@ -13,13 +13,31 @@ class SemesterController extends Controller
     /**
      * Display a listing of semesters
      */
-    public function index()
+    public function index(Request $request)
     {
-        $semesters = Semester::with('period')
-            ->latest()
-            ->paginate(10);
+        $query = Semester::with('period');
         
-        return view('semesters.index', compact('semesters'));
+        // Filter by period
+        if ($request->filled('period_id')) {
+            $query->where('period_id', $request->period_id);
+        }
+        
+        // Search by name or code
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('code', 'like', "%{$search}%")
+                ->orWhereHas('period', function($periodQuery) use ($search) {
+                    $periodQuery->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+        
+        $semesters = $query->latest()->paginate(10);
+        $periods = Period::all();
+        
+        return view('semesters.index', compact('semesters', 'periods'));
     }
 
     /**
