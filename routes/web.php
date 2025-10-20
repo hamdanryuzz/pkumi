@@ -63,10 +63,14 @@ Route::middleware('auth:web')->group(function () {
     Route::post('grade-weights/reset', [GradeWeightController::class, 'reset'])->name('grade-weights.reset');
 
     // Reports
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
-    Route::get('reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.exportExcel');
-    Route::get('reports/student-card/{id}', [ReportController::class, 'studentCard'])->name('reports.studentCard');
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/student-classes/{year}', [ReportController::class, 'getStudentClassesByYear'])->name('student-classes');
+        Route::get('/courses', [ReportController::class, 'getCoursesByClassAndSemester'])->name('courses');
+        Route::get('/filtered-students', [ReportController::class, 'getFilteredStudents'])->name('filtered-students');
+        Route::post('/print-filter', [ReportController::class, 'printByFilter'])->name('print-filter');
+        Route::post('/print-student', [ReportController::class, 'printByStudent'])->name('print-student');
+    });
 
     // Log
     Route::get('log', [LogController::class, 'index'])->name('log.index');

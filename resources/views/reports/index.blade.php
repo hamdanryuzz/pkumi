@@ -1,216 +1,304 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan - Sistem Penilaian PKUMI')
-
 @section('content')
-<main class="py-6 px-4 md:px-8">
-    <div class="mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Laporan Rekap Nilai</h2>
-        <p class="text-base text-gray-500 mt-1">Kelola dan pantau nilai mahasiswa secara keseluruhan</p>
-    </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-6">Laporan Nilai Mahasiswa</h2>
 
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
-        <div class="flex items-center px-6 py-4 border-b border-gray-200">
-            <i class="fas fa-filter text-gray-400 mr-2"></i>
-            <h3 class="text-lg font-bold text-gray-800">Filter Data</h3>
-        </div>
-        <div class="p-6">
-            <form action="{{ route('reports.index') }}" method="GET" class="flex flex-wrap items-end gap-4">
-                <div class="flex flex-col flex-1 min-w-[160px] gap-1">
-                    <label for="angkatan" class="block text-sm font-medium text-gray-700">Angkatan</label>
-                    <select name="angkatan" id="angkatan" class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        <option value="">Pilih Angkatan...</option>
-                        {{-- Contoh data angkatan, sesuaikan dengan data lo --}}
-                        <option value="2024" {{ request('angkatan') == '2024' ? 'selected' : '' }}>2024</option>
-                        <option value="2023" {{ request('angkatan') == '2023' ? 'selected' : '' }}>2023</option>
-                    </select>
-                </div>
-
-                <div class="flex flex-col flex-1 min-w-[160px] gap-1">
-                    <label for="kelas" class="block text-sm font-medium text-gray-700">Kelas</label>
-                    <select name="kelas" id="kelas" class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        <option value="">Pilih Kelas...</option>
-                        {{-- Contoh data kelas, sesuaikan dengan data lo --}}
-                        <option value="A" {{ request('kelas') == 'A' ? 'selected' : '' }}>Kelas A</option>
-                        <option value="B" {{ request('kelas') == 'B' ? 'selected' : '' }}>Kelas B</option>
-                    </select>
-                </div>
-
-                <div class="flex flex-col flex-1 min-w-[160px] gap-1">
-                    <label for="matakuliah" class="block text-sm font-medium text-gray-700">Mata Kuliah</label>
-                    <select name="matakuliah" id="matakuliah" class="form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        <option value="">Pilih Mata Kuliah...</option>
-                        {{-- Contoh data matakuliah, sesuaikan dengan data lo --}}
-                        <option value="Pemrograman Web" {{ request('matakuliah') == 'Pemrograman Web' ? 'selected' : '' }}>Pemrograman Web</option>
-                    </select>
-                </div>
+        <!-- Filter Section -->
+        <form id="filterForm" method="POST" action="{{ route('reports.print-filter') }}">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 
-                <button type="submit" class="inline-flex items-center px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md transition duration-200">
-                    <i class="fas fa-filter mr-2"></i>
-                    Filter
-                </button>
-                <a href="{{ route('reports.index') }}" class="inline-flex items-center px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md transition duration-200">
-                    <i class="fas fa-undo-alt mr-2"></i>
-                    Reset
-                </a>
-            </form>
-            
-            <hr class="my-6 border-gray-200">
-            
-            <h4 class="text-base font-bold text-gray-800 mb-4">Cetak Laporan</h4>
-            <div class="flex flex-wrap gap-4">
-                <a href="{{ route('reports.exportPdf') }}" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-md shadow-sm hover:bg-red-700 transition duration-200">
-                    <i class="fas fa-file-pdf mr-2"></i>Download PDF
-                </a>
-                <a href="{{ route('reports.exportExcel') }}" class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-md shadow-sm hover:bg-green-700 transition duration-200">
-                    <i class="fas fa-file-excel mr-2"></i>Download Excel
-                </a>
-            </div>
-        </div>
-    </div>
+                <!-- Filter Semester -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                    <select name="semester_id" id="semester_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                        <option value="">Pilih Semester</option>
+                        @foreach($semesters as $semester)
+                            <option value="{{ $semester->id }}">{{ $semester->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800">Data Nilai Mahasiswa</h3>
-            <p class="text-sm text-gray-500 mt-1">Kelas A - Angkatan 2024</p>
-        </div>
-        <div class="p-6">
+                <!-- Filter Angkatan -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Angkatan</label>
+                    <select name="year_id" id="year_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                        <option value="">Pilih Angkatan</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year->id }}">{{ $year->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Filter Kelas -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                    <select name="student_class_id" id="student_class_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required disabled>
+                        <option value="">Pilih Kelas</option>
+                    </select>
+                </div>
+
+                <!-- Filter Mata Kuliah -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mata Kuliah</label>
+                    <select name="course_id" id="course_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required disabled>
+                        <option value="">Pilih Mata Kuliah</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 mb-6">
+                <button type="button" id="btnFilter" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium">
+                    Tampilkan Data
+                </button>
+                <button type="submit" id="btnPrintFilter" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium" disabled>
+                    <i class="fas fa-print mr-2"></i>Print PDF (Filter)
+                </button>
+            </div>
+        </form>
+
+        <!-- Students List Table -->
+        <div id="studentsTable" class="hidden">
+            <h3 class="text-xl font-semibold mb-4">Daftar Mahasiswa</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIM</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Presensi</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tugas</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">UTS</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">UAS</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Akhir</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Huruf</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kehadiran</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tugas</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UTS</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UAS</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Grade</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Letter Grade</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($students as $student)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $student->nim }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $student->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">{{ $student->grade->attendance_score ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">{{ $student->grade->assignment_score ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">{{ $student->grade->midterm_score ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">{{ $student->grade->final_score ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
-                                @if($student->grade && $student->grade->final_grade)
-                                    <strong class="font-bold">{{ number_format($student->grade->final_grade, 2) }}</strong>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
-                                @if($student->grade && $student->grade->letter_grade)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $student->grade->letter_grade }}</span>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                <a href="{{ route('reports.studentCard', $student->id) }}" 
-                                   class="inline-flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 text-blue-500" title="Cetak Kartu Nilai">
-                                    <i class="fas fa-print"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="9" class="px-6 py-8 text-center text-gray-500">
-                                <div class="flex flex-col items-center">
-                                    <i class="fas fa-users fa-3x text-gray-300 mb-3"></i>
-                                    <p class="text-lg font-medium">Tidak ada data mahasiswa</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
+                    <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const semesterId = document.getElementById('semester_id');
+    const yearId = document.getElementById('year_id');
+    const studentClassId = document.getElementById('student_class_id');
+    const courseId = document.getElementById('course_id');
+    const btnFilter = document.getElementById('btnFilter');
+    const btnPrintFilter = document.getElementById('btnPrintFilter');
+    const studentsTable = document.getElementById('studentsTable');
+    const studentsTableBody = document.getElementById('studentsTableBody');
 
-        <div class="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center text-center">
-            <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 mb-3">
-                <i class="fas fa-users text-xl"></i>
-            </div>
-            <p class="text-2xl font-bold text-gray-800">{{ $students->count() }}</p>
-            <p class="text-sm font-medium text-gray-500 mt-1">Total Mahasiswa</p>
-        </div>
+    // Event listener untuk angkatan - load kelas
+    yearId.addEventListener('change', function() {
+        const yearValue = this.value;
+        
+        studentClassId.disabled = true;
+        studentClassId.innerHTML = '<option value="">Pilih Kelas</option>';
+        courseId.disabled = true;
+        courseId.innerHTML = '<option value="">Pilih Mata Kuliah</option>';
+        studentsTable.classList.add('hidden');
+        btnPrintFilter.disabled = true;
 
-        <div class="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center text-center">
-            @php
-                $completedGrades = $students->filter(fn($s) => $s->grade && $s->grade->final_grade);
-            @endphp
-            <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center text-green-600 mb-3">
-                <i class="fas fa-check-circle text-xl"></i>
-            </div>
-            <p class="text-2xl font-bold text-gray-800">{{ $completedGrades->count() }}</p>
-            <p class="text-sm font-medium text-gray-500 mt-1">Sudah Dinilai</p>
-        </div>
+        if (yearValue) {
+            const url = '{{ route("reports.student-classes", ":year") }}'.replace(':year', yearValue);
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            studentClassId.appendChild(option);
+                        });
+                        studentClassId.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal memuat data kelas');
+                });
+        }
+    });
 
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <h6 class="text-lg font-bold text-gray-800 mb-3">Bobot Penilaian</h6>
-            <table class="w-full text-sm">
-                <tbody>
-                    <tr>
-                        <td class="py-1 text-gray-600">Presensi</td>
-                        <td class="py-1 text-right font-medium text-gray-800">{{ $weights->attendance_weight }}%</td>
-                    </tr>
-                    <tr>
-                        <td class="py-1 text-gray-600">Tugas</td>
-                        <td class="py-1 text-right font-medium text-gray-800">{{ $weights->assignment_weight }}%</td>
-                    </tr>
-                    <tr>
-                        <td class="py-1 text-gray-600">UTS</td>
-                        <td class="py-1 text-right font-medium text-gray-800">{{ $weights->midterm_weight }}%</td>
-                    </tr>
-                    <tr>
-                        <td class="py-1 text-gray-600">UAS</td>
-                        <td class="py-1 text-right font-medium text-gray-800">{{ $weights->final_weight }}%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    // Event listener untuk load courses
+    function loadCourses() {
+        const classValue = studentClassId.value;
+        const semesterValue = semesterId.value;
+        
+        if (classValue && semesterValue) {
+            courseId.disabled = true;
+            courseId.innerHTML = '<option value="">Pilih Mata Kuliah</option>';
+            studentsTable.classList.add('hidden');
+            btnPrintFilter.disabled = true;
 
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <h6 class="text-lg font-bold text-gray-800 mb-3">Distribusi Nilai</h6>
-            <table class="w-full text-sm">
-                <tbody>
-                    @php
-                        $gradeDistribution = $completedGrades->groupBy(fn($s) => $s->grade->letter_grade);
-                    @endphp
-                    @foreach(['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C', 'D', 'E'] as $grade)
-                        @if($gradeDistribution->has($grade) || $grade === 'A+' || $grade === 'A' || $grade === 'A-' || $grade === 'B+' || $grade === 'B' || $grade === 'B-' || $grade === 'C' || $grade === 'D' || $grade === 'E')
-                            <tr>
-                                <td class="py-1 text-sm text-gray-600">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ 
-                                        $grade == 'A+' || $grade == 'A' || $grade == 'A-' ? 'bg-green-100 text-green-800' : (
-                                        $grade == 'B+' || $grade == 'B' || $grade == 'B-' ? 'bg-blue-100 text-blue-800' : (
-                                        $grade == 'C' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-                                        ))
-                                    }}">
-                                        {{ $grade }}
-                                    </span>
-                                </td>
-                                <td class="py-1 text-right text-gray-800 font-medium">
-                                    {{ $gradeDistribution->get($grade, collect())->count() }} mahasiswa
-                                </td>
-                            </tr>
-                        @endif
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+            const url = '{{ route("reports.courses") }}?student_class_id=' + classValue + '&semester_id=' + semesterValue;
 
-    </div>
-</main>
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.code + ' - ' + item.name;
+                            courseId.appendChild(option);
+                        });
+                        courseId.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal memuat data mata kuliah');
+                });
+        }
+    }
+
+    studentClassId.addEventListener('change', loadCourses);
+    semesterId.addEventListener('change', function() {
+        if (studentClassId.value) {
+            loadCourses();
+        }
+    });
+
+    // Event listener untuk button Tampilkan Data
+    btnFilter.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        console.log('Button clicked'); // Debug
+        
+        if (!semesterId.value || !yearId.value || !studentClassId.value || !courseId.value) {
+            alert('Mohon lengkapi semua filter!');
+            return;
+        }
+
+        console.log('All filters filled'); // Debug
+
+        // Load students data
+        const url = '{{ route("reports.filtered-students") }}?' + new URLSearchParams({
+            semester_id: semesterId.value,
+            year_id: yearId.value,
+            student_class_id: studentClassId.value,
+            course_id: courseId.value
+        });
+
+        console.log('Fetching URL:', url); // Debug
+
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status); // Debug
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(students => {
+                console.log('Students data:', students); // Debug
+                
+                // Clear table body
+                studentsTableBody.innerHTML = '';
+                
+                if (students && students.length > 0) {
+                    students.forEach((student, index) => {
+                        const grade = student.grades && student.grades.length > 0 ? student.grades[0] : null;
+
+                        // Helper function untuk handle null/undefined values dan string "null"
+                        const displayValue = (value) => {
+                            // Cek jika value adalah null, undefined, empty string, atau string "null"
+                            if (value === null || value === undefined || value === '' || value === 'null') {
+                                return '-';
+                            }
+                            return value;
+                        };
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${index + 1}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${student.nim}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${student.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${grade ? grade.attendance_score : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${grade ? grade.assignment_score : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${grade ? grade.midterm_score : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${grade ? grade.final_score : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${grade ? grade.final_grade : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${grade ? grade.letter_grade : '-'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <button onclick="printStudent(${student.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
+                                    <i class="fas fa-print mr-1"></i>Print PDF
+                                </button>
+                            </td>
+                        `;
+                        studentsTableBody.appendChild(row);
+                    });
+                    
+                    // Show table and enable print button
+                    studentsTable.classList.remove('hidden');
+                    btnPrintFilter.disabled = false;
+                } else {
+                    studentsTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Tidak ada data mahasiswa</td></tr>';
+                    studentsTable.classList.remove('hidden');
+                    btnPrintFilter.disabled = true;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal memuat data mahasiswa: ' + error.message);
+            });
+    });
+});
+
+// Function untuk print per student
+function printStudent(studentId) {
+    const semesterId = document.getElementById('semester_id').value;
+    const courseId = document.getElementById('course_id').value;
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("reports.print-student") }}';
+    form.target = '_blank';
+    
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = '{{ csrf_token() }}';
+    form.appendChild(csrfInput);
+    
+    // Add student_id
+    const studentInput = document.createElement('input');
+    studentInput.type = 'hidden';
+    studentInput.name = 'student_id';
+    studentInput.value = studentId;
+    form.appendChild(studentInput);
+    
+    // Add semester_id
+    const semesterInput = document.createElement('input');
+    semesterInput.type = 'hidden';
+    semesterInput.name = 'semester_id';
+    semesterInput.value = semesterId;
+    form.appendChild(semesterInput);
+    
+    // Add course_id
+    const courseInput = document.createElement('input');
+    courseInput.type = 'hidden';
+    courseInput.name = 'course_id';
+    courseInput.value = courseId;
+    form.appendChild(courseInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+</script>
 @endsection
