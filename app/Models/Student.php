@@ -3,16 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Storage;
-
 
 class Student extends Authenticatable
 {
     use HasFactory;
 
     protected $fillable = [
+        // Field lama (tidak diubah)
         'nim',
         'name',
         'username',
@@ -23,12 +22,37 @@ class Student extends Authenticatable
         'address',
         'status',
         'student_class_id',
-        'year_id'
+        'year_id',
+
+        // 🔽 Field tambahan dari migration
+        'gender',
+        'date_of_birth',
+        'student_job',
+        'marital_status',
+        'program',
+        'admission_year',
+        'first_semester',
+        'origin_of_university',
+        'initial_study_program',
+        'graduation_year',
+        'gpa',
+        'father_name',
+        'father_last_education',
+        'father_job',
+        'mother_name',
+        'mother_last_education',
+        'mother_job',
+        'street',
+        'rt_rw',
+        'village',
+        'district',
+        'city',
+        'province',
+        'description',
     ];
 
     public function grades()
     {
-        // Relasi Mahasiswa memiliki banyak nilai
         return $this->hasMany(Grade::class);
     }
 
@@ -70,35 +94,24 @@ class Student extends Authenticatable
             ->withTimestamps();
     }
 
-    /**
-     * ACCESSOR: Menghitung IPK (Indeks Prestasi Kumulatif) Mahasiswa.
-     * Dapat dipanggil sebagai $student->ipk
-     */
     public function getIpkAttribute()
     {
-        // Eager load courses untuk mendapatkan SKS (karena grades tidak punya relasi langsung ke course)
         $grades = $this->grades()->with('course')->get();
 
-        // Total Bobot (Bobot Nilai * SKS)
         $totalBobotX_Sks = $grades->sum(function($grade) {
-            // Pastikan semua komponen nilai dan SKS tersedia
             if ($grade->bobot && $grade->course && $grade->course->sks) {
-                // Konversi string bobot nilai (misal '3.70') menjadi float
                 return (float)$grade->bobot * $grade->course->sks;
             }
             return 0;
         });
 
-        // Total SKS yang diperhitungkan (SKS mata kuliah yang sudah memiliki nilai final)
         $totalSks = $grades->sum(function($grade) {
-            // Hanya hitung SKS jika grade tersebut memiliki nilai bobot (asumsi nilai sudah final)
             if ($grade->bobot && $grade->course && $grade->course->sks) {
                 return $grade->course->sks;
             }
             return 0;
         });
 
-        // Hitung IPK = Total Bobot x SKS / Total SKS
         if ($totalSks > 0) {
             return round($totalBobotX_Sks / $totalSks, 2);
         }
@@ -106,18 +119,10 @@ class Student extends Authenticatable
         return 0.00;
     }
 
-    /**
-     * ACCESSOR: Mendapatkan URL lengkap untuk gambar profil mahasiswa.
-     * Dapat dipanggil sebagai $student->image_url
-     */
-    // Penggunaan: $student->image_url di view
     public function getImageUrlAttribute()
     {
-        if ($this->image) {
-            // Gunakan Storage facade
-            if (\Storage::exists('public/students/' . $this->image)) {
-                return \Storage::url('students/' . $this->image);
-            }
+        if ($this->image && \Storage::exists('public/students/' . $this->image)) {
+            return \Storage::url('students/' . $this->image);
         }
         return asset('images/default-avatar.png');
     }
