@@ -18,6 +18,16 @@
                         </svg>
                         Export Excel
                     </a>
+                    <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" class="inline-flex items-center space-x-2">
+                        @csrf
+                        <label for="file" class="inline-flex items-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg cursor-pointer transition-all duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Import Excel
+                        </label>
+                        <input type="file" name="file" id="file" class="hidden" accept=".xlsx,.xls,.csv" onchange="this.form.submit()">
+                    </form>
                     <a href="{{ route('students.create') }}" 
                        class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

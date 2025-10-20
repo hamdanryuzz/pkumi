@@ -3,24 +3,55 @@
 namespace App\Imports;
 
 use App\Models\Student;
-use App\Models\Grade;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Illuminate\Support\Facades\Hash;
 
 class StudentsImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        $student = Student::create([
+        if (!isset($row['nim']) || empty($row['nim'])) {
+            return null; // skip baris kosong
+        }
+
+        return new Student([
             'nim' => $row['nim'],
-            'name' => $row['nama'] ?? $row['name'],
+            'name' => $row['name'] ?? null,
+            'username' => $row['username'] ?? strtolower(str_replace(' ', '.', $row['name'] ?? '')),
             'email' => $row['email'] ?? null,
-            'phone' => $row['telepon'] ?? $row['phone'] ?? null,
+            'password' => isset($row['password']) ? Hash::make($row['password']) : Hash::make('password123'),
+            'phone' => $row['phone'] ?? null,
+            'address' => $row['address'] ?? null,
             'status' => $row['status'] ?? 'active',
+            'student_class_id' => $row['student_class_id'] ?? null,
+            'year_id' => $row['year_id'] ?? null,
+
+            // Field tambahan
+            'gender' => $row['gender'] ?? null,
+            'date_of_birth' => $row['date_of_birth'] ?? null,
+            'student_job' => $row['student_job'] ?? null,
+            'marital_status' => $row['marital_status'] ?? null,
+            'program' => $row['program'] ?? null,
+            'admission_year' => $row['admission_year'] ?? null,
+            'first_semester' => $row['first_semester'] ?? null,
+            'origin_of_university' => $row['origin_of_university'] ?? null,
+            'initial_study_program' => $row['initial_study_program'] ?? null,
+            'graduation_year' => $row['graduation_year'] ?? null,
+            'gpa' => $row['gpa'] ?? null,
+            'father_name' => $row['father_name'] ?? null,
+            'father_last_education' => $row['father_last_education'] ?? null,
+            'father_job' => $row['father_job'] ?? null,
+            'mother_name' => $row['mother_name'] ?? null,
+            'mother_last_education' => $row['mother_last_education'] ?? null,
+            'mother_job' => $row['mother_job'] ?? null,
+            'street' => $row['street'] ?? null,
+            'rt_rw' => $row['rt_rw'] ?? null,
+            'village' => $row['village'] ?? null,
+            'district' => $row['district'] ?? null,
+            'city' => $row['city'] ?? null,
+            'province' => $row['province'] ?? null,
+            'description' => $row['description'] ?? null,
         ]);
-
-        Grade::create(['student_id' => $student->id]);
-
-        return $student;
     }
 }
