@@ -26,7 +26,7 @@ class Course extends Model
     public function semesters()
     {
         return $this->belongsToMany(Semester::class, 'enrollments')
-            ->withPivot(['student_id', 'enrollment_date', 'status'])
+            ->withPivot(['student_class_id', 'enrollment_date', 'status'])
             ->withTimestamps();
     }
 
@@ -51,4 +51,15 @@ class Course extends Model
         return $this->belongsTo(StudentClass::class, 'student_class_id');
     }
     
+    /**
+     * Relasi untuk mendapatkan kelas yang terdaftar di semester tertentu
+     */
+    public function studentClassesInSemester($semesterId)
+    {
+        return $this->belongsToMany(StudentClass::class, 'enrollments')
+            ->wherePivot('semester_id', $semesterId)
+            ->wherePivot('status', 'enrolled')
+            ->withPivot(['enrollment_date', 'status'])
+            ->withTimestamps();
+    }
 }

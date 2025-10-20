@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\StudentClass;
 use App\Models\Year;
+use App\Models\Course;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -95,13 +97,42 @@ class StudentClassController extends Controller
     /**
      * Menampilkan detail kelas siswa.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $studentClass = StudentClass::with(['year', 'students' => function ($query) {
-            $query->select('id', 'student_class_id', 'name', 'nim'); // Limit kolom untuk optimasi
+            $query->select('id', 'student_class_id', 'name', 'nim');
         }])->findOrFail($id);
 
-        return view('student_classes.show', compact('studentClass'));
+        // Ambil parameter search dan filter semester
+        $search = $request->input('search');
+        $semesterFilter = $request->input('semester_id');
+
+        // Query untuk mata kuliah dengan relasi
+        $coursesQuery = Course::where('student_class_id', $id)
+            ->with(['semesters']);
+
+        // Terapkan search jika ada
+        if ($search) {
+            $coursesQuery->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                ->orWhere('code', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        // Terapkan filter semester jika ada
+        if ($semesterFilter) {
+            $coursesQuery->whereHas('semesters', function ($q) use ($semesterFilter) {
+                $q->where('semesters.id', $semesterFilter);
+            });
+        }
+
+        // Eksekusi query dengan pagination
+        $courses = $coursesQuery->paginate(10);
+
+        // Ambil semua semester untuk dropdown filter
+        $semesters = Semester::orderBy('name')->get();
+
+        return view('student_classes.show', compact('studentClass', 'courses', 'semesters', 'semesterFilter', 'search'));
     }
 
     /**
