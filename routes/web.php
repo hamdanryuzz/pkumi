@@ -46,6 +46,8 @@ Route::middleware('auth:web')->group(function () {
     Route::get('students/success', [StudentController::class, 'success'])->name('students.success');
     Route::get('api/student-classes/{year}', [StudentController::class, 'getStudentClasses'])->name('api.student-classes');
     Route::resource('students', StudentController::class);
+    Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+
 
     // Grades Management
     Route::prefix('grades')->name('grades.')->group(function () {
