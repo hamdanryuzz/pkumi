@@ -10,10 +10,18 @@ class YearController extends Controller
     /**
      * Menampilkan semua data tahun.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $years = Year::latest()->get();
-        return view('years.index', compact('years'));
+        $search = $request->input('search');
+        
+        $years = Year::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->get();
+            
+        return view('years.index', compact('years', 'search'));
     }
 
     /**

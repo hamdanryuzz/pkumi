@@ -49,13 +49,38 @@
 
         <!-- Years Table -->
         <div class="bg-white rounded-lg border border-gray-200">
-            <!-- Header -->
+            <!-- Header with Search -->
             <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">Daftar Angkatan</h3>
-                    <div class="text-sm text-gray-500">
-                        Total: <span class="font-medium">{{ $years->count() }}</span> angkatan
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Daftar Angkatan</h3>
+                        <div class="text-sm text-gray-500 mt-1">
+                            Total: <span class="font-medium">{{ $years->count() }}</span> angkatan
+                        </div>
                     </div>
+                    
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ route('years.index') }}" class="w-full sm:w-auto">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ $search ?? '' }}"
+                                   placeholder="Cari angkatan..." 
+                                   class="block w-full sm:w-64 pl-10 pr-10 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                            @if($search)
+                            <a href="{{ route('years.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <svg class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </a>
+                            @endif
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -125,9 +150,19 @@
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
-                                <h3 class="mt-4 text-base font-medium text-gray-900">Tidak ada data angkatan</h3>
+                                <h3 class="mt-4 text-base font-medium text-gray-900">
+                                    @if($search)
+                                        Tidak ada hasil untuk "{{ $search }}"
+                                    @else
+                                        Tidak ada data angkatan
+                                    @endif
+                                </h3>
                                 <p class="mt-2 text-sm text-gray-500">
-                                    <a href="{{ route('years.create') }}" class="text-blue-600 hover:text-blue-800">Tambah angkatan pertama</a>
+                                    @if($search)
+                                        <a href="{{ route('years.index') }}" class="text-blue-600 hover:text-blue-800">Hapus pencarian</a>
+                                    @else
+                                        <a href="{{ route('years.create') }}" class="text-blue-600 hover:text-blue-800">Tambah angkatan pertama</a>
+                                    @endif
                                 </p>
                             </td>
                         </tr>
@@ -138,4 +173,17 @@
         </div>
     </div>
 </div>
+
+<!-- Auto-submit search form on input (optional) -->
+<script>
+    const searchInput = document.querySelector('input[name="search"]');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            this.form.submit();
+        }, 500); // Delay 500ms setelah user berhenti mengetik
+    });
+</script>
 @endsection
