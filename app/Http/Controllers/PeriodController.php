@@ -10,10 +10,20 @@ class PeriodController extends Controller
     /**
      * Display a listing of the periods.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $periods = Period::with('semesters')->latest()->get();
-        return view('periods.index', compact('periods'));
+        $search = $request->input('search');
+        
+        $periods = Period::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('code', 'like', "%{$search}%")
+                            ->orWhere('status', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->get();
+
+        return view('periods.index', compact('periods', 'search'));
     }
 
     /**
