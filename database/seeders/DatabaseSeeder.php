@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         $this->seedStudentClasses();
         $this->seedCourses();
         $this->seedStudents();
-        $this->seedEnrollments();
+        // $this->seedEnrollments();
         $this->seedGrades();
         $this->seedRegistrations();
         $this->seedLogs();
@@ -385,86 +385,86 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed Enrollments (Current Active Semester)
      */
-    private function seedEnrollments(): void
-    {
-        $activeSemesterId = 5; // Semester Ganjil 2025/2026 (currently active)
+    // private function seedEnrollments(): void
+    // {
+    //     $activeSemesterId = 5; // Semester Ganjil 2025/2026 (currently active)
         
-        $enrollments = [
-            // Tahun 1 students enrolled in their courses (semester 5)
-            ['student_id' => 1, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
-            ['student_id' => 1, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
-            ['student_id' => 1, 'course_id' => 3, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
-            ['student_id' => 1, 'course_id' => 4, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
+    //     $enrollments = [
+    //         // Tahun 1 students enrolled in their courses (semester 5)
+    //         ['student_id' => 1, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
+    //         ['student_id' => 1, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
+    //         ['student_id' => 1, 'course_id' => 3, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
+    //         ['student_id' => 1, 'course_id' => 4, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-15', 'status' => 'enrolled'],
             
-            ['student_id' => 2, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-16', 'status' => 'enrolled'],
-            ['student_id' => 2, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-16', 'status' => 'enrolled'],
-            ['student_id' => 2, 'course_id' => 3, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-16', 'status' => 'enrolled'],
+    //         ['student_id' => 2, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-16', 'status' => 'enrolled'],
+    //         ['student_id' => 2, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-16', 'status' => 'enrolled'],
+    //         ['student_id' => 2, 'course_id' => 3, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-16', 'status' => 'enrolled'],
             
-            ['student_id' => 3, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-17', 'status' => 'enrolled'],
-            ['student_id' => 3, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-17', 'status' => 'enrolled'],
-            ['student_id' => 3, 'course_id' => 4, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-17', 'status' => 'enrolled'],
+    //         ['student_id' => 3, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-17', 'status' => 'enrolled'],
+    //         ['student_id' => 3, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-17', 'status' => 'enrolled'],
+    //         ['student_id' => 3, 'course_id' => 4, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-17', 'status' => 'enrolled'],
             
-            ['student_id' => 4, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-18', 'status' => 'enrolled'],
-            ['student_id' => 4, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-18', 'status' => 'enrolled'],
+    //         ['student_id' => 4, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-18', 'status' => 'enrolled'],
+    //         ['student_id' => 4, 'course_id' => 2, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-18', 'status' => 'enrolled'],
             
-            ['student_id' => 5, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-19', 'status' => 'enrolled'],
-            ['student_id' => 5, 'course_id' => 3, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-19', 'status' => 'enrolled'],
-            ['student_id' => 5, 'course_id' => 4, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-19', 'status' => 'enrolled'],
+    //         ['student_id' => 5, 'course_id' => 1, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-19', 'status' => 'enrolled'],
+    //         ['student_id' => 5, 'course_id' => 3, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-19', 'status' => 'enrolled'],
+    //         ['student_id' => 5, 'course_id' => 4, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-19', 'status' => 'enrolled'],
             
-            // Class 2 students
-            ['student_id' => 6, 'course_id' => 5, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-20', 'status' => 'enrolled'],
-            ['student_id' => 6, 'course_id' => 6, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-20', 'status' => 'enrolled'],
+    //         // Class 2 students
+    //         ['student_id' => 6, 'course_id' => 5, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-20', 'status' => 'enrolled'],
+    //         ['student_id' => 6, 'course_id' => 6, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-20', 'status' => 'enrolled'],
             
-            ['student_id' => 7, 'course_id' => 5, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-21', 'status' => 'enrolled'],
-            ['student_id' => 7, 'course_id' => 6, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-21', 'status' => 'enrolled'],
+    //         ['student_id' => 7, 'course_id' => 5, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-21', 'status' => 'enrolled'],
+    //         ['student_id' => 7, 'course_id' => 6, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-21', 'status' => 'enrolled'],
             
-            ['student_id' => 8, 'course_id' => 5, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-22', 'status' => 'enrolled'],
-            ['student_id' => 8, 'course_id' => 6, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-22', 'status' => 'enrolled'],
+    //         ['student_id' => 8, 'course_id' => 5, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-22', 'status' => 'enrolled'],
+    //         ['student_id' => 8, 'course_id' => 6, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-22', 'status' => 'enrolled'],
             
-            // Class 3 students
-            ['student_id' => 9, 'course_id' => 7, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-23', 'status' => 'enrolled'],
-            ['student_id' => 9, 'course_id' => 8, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-23', 'status' => 'enrolled'],
+    //         // Class 3 students
+    //         ['student_id' => 9, 'course_id' => 7, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-23', 'status' => 'enrolled'],
+    //         ['student_id' => 9, 'course_id' => 8, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-23', 'status' => 'enrolled'],
             
-            ['student_id' => 10, 'course_id' => 7, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-24', 'status' => 'enrolled'],
-            ['student_id' => 10, 'course_id' => 8, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-24', 'status' => 'enrolled'],
+    //         ['student_id' => 10, 'course_id' => 7, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-24', 'status' => 'enrolled'],
+    //         ['student_id' => 10, 'course_id' => 8, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-24', 'status' => 'enrolled'],
             
-            // Tahun 2 students
-            ['student_id' => 11, 'course_id' => 11, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-10', 'status' => 'enrolled'],
-            ['student_id' => 11, 'course_id' => 12, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-10', 'status' => 'enrolled'],
-            ['student_id' => 11, 'course_id' => 13, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-10', 'status' => 'enrolled'],
+    //         // Tahun 2 students
+    //         ['student_id' => 11, 'course_id' => 11, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-10', 'status' => 'enrolled'],
+    //         ['student_id' => 11, 'course_id' => 12, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-10', 'status' => 'enrolled'],
+    //         ['student_id' => 11, 'course_id' => 13, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-10', 'status' => 'enrolled'],
             
-            ['student_id' => 12, 'course_id' => 11, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-11', 'status' => 'enrolled'],
-            ['student_id' => 12, 'course_id' => 12, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-11', 'status' => 'enrolled'],
-            ['student_id' => 12, 'course_id' => 14, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-11', 'status' => 'enrolled'],
+    //         ['student_id' => 12, 'course_id' => 11, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-11', 'status' => 'enrolled'],
+    //         ['student_id' => 12, 'course_id' => 12, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-11', 'status' => 'enrolled'],
+    //         ['student_id' => 12, 'course_id' => 14, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-11', 'status' => 'enrolled'],
             
-            ['student_id' => 13, 'course_id' => 11, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-12', 'status' => 'enrolled'],
-            ['student_id' => 13, 'course_id' => 13, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-12', 'status' => 'enrolled'],
+    //         ['student_id' => 13, 'course_id' => 11, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-12', 'status' => 'enrolled'],
+    //         ['student_id' => 13, 'course_id' => 13, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-12', 'status' => 'enrolled'],
             
-            ['student_id' => 14, 'course_id' => 12, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-13', 'status' => 'enrolled'],
-            ['student_id' => 14, 'course_id' => 14, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-13', 'status' => 'enrolled'],
+    //         ['student_id' => 14, 'course_id' => 12, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-13', 'status' => 'enrolled'],
+    //         ['student_id' => 14, 'course_id' => 14, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-13', 'status' => 'enrolled'],
             
-            // Tahun 3 students
-            ['student_id' => 17, 'course_id' => 19, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-05', 'status' => 'enrolled'],
-            ['student_id' => 17, 'course_id' => 20, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-05', 'status' => 'enrolled'],
+    //         // Tahun 3 students
+    //         ['student_id' => 17, 'course_id' => 19, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-05', 'status' => 'enrolled'],
+    //         ['student_id' => 17, 'course_id' => 20, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-05', 'status' => 'enrolled'],
             
-            ['student_id' => 18, 'course_id' => 19, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-06', 'status' => 'enrolled'],
-            ['student_id' => 18, 'course_id' => 21, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-06', 'status' => 'enrolled'],
+    //         ['student_id' => 18, 'course_id' => 19, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-06', 'status' => 'enrolled'],
+    //         ['student_id' => 18, 'course_id' => 21, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-06', 'status' => 'enrolled'],
             
-            // Tahun 4 students
-            ['student_id' => 20, 'course_id' => 24, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-01', 'status' => 'enrolled'],
-            ['student_id' => 20, 'course_id' => 25, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-01', 'status' => 'enrolled'],
-            ['student_id' => 20, 'course_id' => 26, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-01', 'status' => 'enrolled'],
+    //         // Tahun 4 students
+    //         ['student_id' => 20, 'course_id' => 24, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-01', 'status' => 'enrolled'],
+    //         ['student_id' => 20, 'course_id' => 25, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-01', 'status' => 'enrolled'],
+    //         ['student_id' => 20, 'course_id' => 26, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-01', 'status' => 'enrolled'],
             
-            ['student_id' => 21, 'course_id' => 24, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-02', 'status' => 'enrolled'],
-            ['student_id' => 21, 'course_id' => 26, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-02', 'status' => 'enrolled'],
-        ];
+    //         ['student_id' => 21, 'course_id' => 24, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-02', 'status' => 'enrolled'],
+    //         ['student_id' => 21, 'course_id' => 26, 'semester_id' => $activeSemesterId, 'enrollment_date' => '2025-07-02', 'status' => 'enrolled'],
+    //     ];
 
-        foreach ($enrollments as $enrollment) {
-            Enrollment::create($enrollment);
-        }
+    //     foreach ($enrollments as $enrollment) {
+    //         Enrollment::create($enrollment);
+    //     }
 
-        $this->command->info('✓ Enrollments seeded (48 enrollments)');
-    }
+    //     $this->command->info('✓ Enrollments seeded (48 enrollments)');
+    // }
 
     /**
      * Seed Grades (Mix of complete, partial, and empty grades)
