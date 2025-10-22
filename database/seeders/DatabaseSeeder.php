@@ -231,10 +231,10 @@ class DatabaseSeeder extends Seeder
     private function seedYears(): void
     {
         $years = [
-            ['name' => 'Tahun 1'],
-            ['name' => 'Tahun 2'],
-            ['name' => 'Tahun 3'],
-            ['name' => 'Tahun 4'],
+            ['name' => 'Angkatan 1'],
+            ['name' => 'Angkatan 2'],
+            ['name' => 'Angkatan 3'],
+            ['name' => 'Angkatan 4'],
         ];
 
         foreach ($years as $year) {

@@ -3,16 +3,40 @@
 namespace App\Imports;
 
 use App\Models\Student;
+use App\Models\Year;
+use App\Models\StudentClass;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\Importable;
 
-class StudentsImport implements ToModel, WithHeadingRow
+class StudentsImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithValidation
 {
+    use Importable, SkipsFailures;
+
+    protected $errors = [];
+
     public function model(array $row)
     {
-        if (!isset($row['nim']) || empty($row['nim'])) {
-            return null; // skip baris kosong
+        // Skip baris kosong
+        if (empty($row['nim']) || empty($row['name'])) {
+            return null;
+        }
+
+        // Ambil berdasarkan nama, bukan ID
+        $year = Year::where('name', trim($row['year_name'] ?? ''))->first();
+        $class = StudentClass::where('name', trim($row['class_name'] ?? ''))->first();
+
+        // Jika data tidak ditemukan, catat error
+        if (!$year || !$class) {
+            $missing = [];
+            if (!$year) $missing[] = "Tahun '{$row['year_name']}'";
+            if (!$class) $missing[] = "Kelas '{$row['class_name']}'";
+            $this->errors[] = "Baris NIM {$row['nim']}: " . implode(' & ', $missing) . " tidak ditemukan di database.";
+            return null;
         }
 
         return new Student([
@@ -20,12 +44,14 @@ class StudentsImport implements ToModel, WithHeadingRow
             'name' => $row['name'] ?? null,
             'username' => $row['username'] ?? strtolower(str_replace(' ', '.', $row['name'] ?? '')),
             'email' => $row['email'] ?? null,
-            'password' => isset($row['password']) ? Hash::make($row['password']) : Hash::make('password123'),
+            'password' => isset($row['password']) 
+                ? Hash::make($row['password']) 
+                : Hash::make('password123'),
             'phone' => $row['phone'] ?? null,
             'address' => $row['address'] ?? null,
             'status' => $row['status'] ?? 'active',
-            'student_class_id' => $row['student_class_id'] ?? null,
-            'year_id' => $row['year_id'] ?? null,
+            'student_class_id' => $class->id,
+            'year_id' => $year->id,
 
             // Field tambahan
             'gender' => $row['gender'] ?? null,
@@ -53,5 +79,26 @@ class StudentsImport implements ToModel, WithHeadingRow
             'province' => $row['province'] ?? null,
             'description' => $row['description'] ?? null,
         ]);
+    }
+
+    /**
+     * Validasi basic
+     */
+    public function rules(): array
+    {
+        return [
+            'nim' => 'required',
+            'name' => 'required',
+            'year_name' => 'required',
+            'class_name' => 'required',
+        ];
+    }
+
+    /**
+     * Ambil error yang ditemukan selama import
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
     }
 }

@@ -187,6 +187,91 @@
             </div>
         </div>
 
+        <!-- Detailed Student Information -->
+        <div x-data="{ open: null }" class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Detail Lengkap Mahasiswa</h3>
+
+            <!-- Accordion Section -->
+            <div class="divide-y divide-gray-200">
+                <!-- Data Pribadi -->
+                <div>
+                    <button @click="open === 1 ? open = null : open = 1" 
+                        class="w-full flex justify-between items-center py-3 text-left">
+                        <span class="font-medium text-gray-800">🧍‍♂️ Data Pribadi</span>
+                        <svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open === 1" x-collapse class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <x-detail-item label="Jenis Kelamin" value="{{ ucfirst($student->gender ?? '-') }}" />
+                        <x-detail-item label="Tanggal Lahir" value="{{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d M Y') : '-' }}" />
+                        <x-detail-item label="Pekerjaan" value="{{ $student->student_job ?? '-' }}" />
+                        <x-detail-item label="Status Kawin" value="{{ $student->marital_status ?? '-' }}" />
+                        <x-detail-item label="Program Studi" value="{{ $student->program ?? '-' }}" />
+                        <x-detail-item label="Tahun Masuk" value="{{ $student->admission_year ?? '-' }}" />
+                    </div>
+                </div>
+
+                <!-- Data Akademik -->
+                <div class="pt-4">
+                    <button @click="open === 2 ? open = null : open = 2" 
+                        class="w-full flex justify-between items-center py-3 text-left">
+                        <span class="font-medium text-gray-800">🎓 Data Akademik</span>
+                        <svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open === 2" x-collapse class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <x-detail-item label="Semester Pertama" value="{{ $student->first_semester ?? '-' }}" />
+                        <x-detail-item label="Asal Universitas" value="{{ $student->origin_of_university ?? '-' }}" />
+                        <x-detail-item label="Program Studi Awal" value="{{ $student->initial_study_program ?? '-' }}" />
+                        <x-detail-item label="Tahun Lulus" value="{{ $student->graduation_year ?? '-' }}" />
+                        <x-detail-item label="IPK" value="{{ $student->gpa ?? '-' }}" />
+                        <x-detail-item label="Deskripsi" value="{{ $student->description ?? '-' }}" />
+                    </div>
+                </div>
+
+                <!-- Data Orang Tua -->
+                <div class="pt-4">
+                    <button @click="open === 3 ? open = null : open = 3" 
+                        class="w-full flex justify-between items-center py-3 text-left">
+                        <span class="font-medium text-gray-800">👨‍👩‍👧 Data Orang Tua</span>
+                        <svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open === 3" x-collapse class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <x-detail-item label="Nama Ayah" value="{{ $student->father_name ?? '-' }}" />
+                        <x-detail-item label="Pendidikan Ayah" value="{{ $student->father_last_education ?? '-' }}" />
+                        <x-detail-item label="Pekerjaan Ayah" value="{{ $student->father_job ?? '-' }}" />
+                        <x-detail-item label="Nama Ibu" value="{{ $student->mother_name ?? '-' }}" />
+                        <x-detail-item label="Pendidikan Ibu" value="{{ $student->mother_last_education ?? '-' }}" />
+                        <x-detail-item label="Pekerjaan Ibu" value="{{ $student->mother_job ?? '-' }}" />
+                    </div>
+                </div>
+
+                <!-- Data Alamat -->
+                <div class="pt-4">
+                    <button @click="open === 4 ? open = null : open = 4" 
+                        class="w-full flex justify-between items-center py-3 text-left">
+                        <span class="font-medium text-gray-800">📍 Alamat Lengkap</span>
+                        <svg :class="{'rotate-180': open === 4}" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open === 4" x-collapse class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <x-detail-item label="Jalan" value="{{ $student->street ?? '-' }}" />
+                        <x-detail-item label="RT / RW" value="{{ $student->rt_rw ?? '-' }}" />
+                        <x-detail-item label="Desa / Kelurahan" value="{{ $student->village ?? '-' }}" />
+                        <x-detail-item label="Kecamatan" value="{{ $student->district ?? '-' }}" />
+                        <x-detail-item label="Kota / Kabupaten" value="{{ $student->city ?? '-' }}" />
+                        <x-detail-item label="Provinsi" value="{{ $student->province ?? '-' }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Academic Records Section -->
         <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <div class="flex items-center justify-between mb-4">

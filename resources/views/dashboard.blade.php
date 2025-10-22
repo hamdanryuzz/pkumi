@@ -113,16 +113,7 @@
                         <i class="fas fa-edit text-xl mb-2"></i>
                         <span class="text-sm font-medium">Input Nilai</span>
                     </a>
-                    <a href="{{ route('reports.exportPdf') }}" 
-                        class="flex flex-col items-center justify-center p-4 bg-red-50 text-red-600 rounded-lg transition-colors duration-200 hover:bg-red-100">
-                        <i class="fas fa-file-pdf text-xl mb-2"></i>
-                        <span class="text-sm font-medium">Cetak PDF</span>
-                    </a>
-                    <a href="{{ route('reports.exportExcel') }}" 
-                        class="flex flex-col items-center justify-center p-4 bg-yellow-50 text-yellow-600 rounded-lg transition-colors duration-200 hover:bg-yellow-100">
-                        <i class="fas fa-file-excel text-xl mb-2"></i>
-                        <span class="text-sm font-medium">Export Excel</span>
-                    </a>
+                
                 </div>
             </div>
         </div>

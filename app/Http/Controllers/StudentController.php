@@ -317,7 +317,16 @@ class StudentController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
 
-        Excel::import(new StudentsImport, $request->file('file'));
+        $import = new StudentsImport();
+        Excel::import($import, $request->file('file'));
+
+        $errors = $import->getErrors();
+
+        if (count($errors) > 0) {
+            return redirect()->route('students.index')
+                ->with('warning', 'Beberapa baris tidak diimpor karena data tidak valid:')
+                ->with('import_errors', $errors);
+        }
 
         return redirect()->route('students.index')
             ->with('success', 'Data students berhasil diimpor.');

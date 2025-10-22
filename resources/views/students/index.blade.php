@@ -40,6 +40,18 @@
         </div>
     </div>
 
+    @if(session('import_errors'))
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+            <p class="font-semibold text-yellow-800">{{ session('warning') }}</p>
+            <ul class="mt-2 list-disc list-inside text-yellow-700 text-sm">
+                @foreach (session('import_errors') as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         <!-- Search and Filter Section -->
         <div class="bg-white rounded-lg border border-gray-200 mb-6">
