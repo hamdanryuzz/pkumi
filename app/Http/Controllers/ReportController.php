@@ -18,8 +18,8 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        $semesters = Semester::all();
-        $years = Year::all();
+        $semesters = Semester::orderBy('start_date', 'desc')->get();
+        $years = Year::orderBy('name', 'asc')->get();
         $studentClasses = collect();
         $courses = collect();
         $students = collect();
