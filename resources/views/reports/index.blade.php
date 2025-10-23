@@ -16,7 +16,12 @@
                     <select name="semester_id" id="semester_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                         <option value="">Pilih Semester</option>
                         @foreach($semesters as $semester)
-                            <option value="{{ $semester->id }}">{{ $semester->name }}</option>
+                            <option value="{{ $semester->id }}">
+                                {{ $semester->name }}
+                                @if($semester->status === 'active')
+                                (Aktif)
+                                @endif
+                            </option>
                         @endforeach
                     </select>
                 </div>
