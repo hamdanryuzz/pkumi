@@ -46,7 +46,7 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithVal
             'email' => $row['email'] ?? null,
             'password' => isset($row['password']) 
                 ? Hash::make($row['password']) 
-                : Hash::make('password123'),
+                : Hash::make('PkumiStudent11!'),
             'phone' => $row['phone'] ?? null,
             'address' => $row['address'] ?? null,
             'status' => $row['status'] ?? 'active',

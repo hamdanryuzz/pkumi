@@ -393,7 +393,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white border border-black/40 flex flex-col gap-5 rounded-lg shadow-sm w-full sidebar-info-box">
+                <!-- <div class="bg-white border border-black/40 flex flex-col gap-5 rounded-lg shadow-sm w-full sidebar-info-box">
                     <div class="pl-[29px] pr-[26px] pt-[22px] pb-[6px]">
                         <div class="flex flex-col gap-[7px]">
                             <p class="font-inter font-medium text-[14px] text-brand-gpa-label sidebar-text">Indeks Prestasi Kumulatif</p>
@@ -413,7 +413,7 @@
                             </svg>
                         </a>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="bg-white rounded-2xl overflow-hidden w-full shadow-sm sidebar-info-box">
                     <div class="flex bg-brand-dark-header text-white font-poppins font-semibold text-base text-center">
@@ -461,7 +461,7 @@
                     </div>
 
                     <div class="flex items-center space-x-5 flex-shrink-0">
-                        <div class="relative">
+                        <!-- <div class="relative">
                             <button id="notifications-menu-button" aria-label="Show notifications" class="focus:outline-none p-1 rounded-full">
                                 <div class="relative">
                                     <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
@@ -482,7 +482,7 @@
                                 </a>
                                 <a href="#" class="block px-4 py-2 text-sm text-center text-blue-primary hover:underline">Lihat semua notifikasi</a>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="relative">
                             <button id="options-menu-button" aria-label="Show options menu" class="focus:outline-none p-1 rounded-full hover:bg-gray-200 transition-colors">

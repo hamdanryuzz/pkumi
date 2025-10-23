@@ -366,6 +366,44 @@
                 font-size: 24px;
             }
         }
+
+        /* --- MOBILE RESPONSIVE --- */
+        .mobile-bg {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-background-image {
+            max-width: 90%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* Saat layar kecil: sembunyikan sisi kanan dan tampilkan gambar di atas */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-right {
+                display: none;
+            }
+
+            .mobile-bg {
+                display: block;
+            }
+
+            .logo {
+                width: 80px;
+                margin-bottom: 10px;
+            }
+
+            .card-title {
+                font-size: 22px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -377,9 +415,18 @@
             <div class="login-card">
                 <div class="card-header">
                     <img src="{{ asset('images/logo0pkumi.png') }}" alt="PKUMI Logo" class="logo">
+
+                    <!-- Tambahkan ini -->
+                    <div class="mobile-bg">
+                        <img src="{{ asset('images/pkumibg.png') }}" alt="PKUMI Background" class="mobile-background-image">
+                    </div>
+
                     <h1 class="card-title">Welcome Back</h1>
                     <p class="card-subtitle">Sign in to continue to your account</p>
                 </div>
+
+
+                
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
@@ -405,16 +452,16 @@
                     </div>
 
                     <div class="form-footer">
-                        <label class="checkbox-wrapper">
+                        <!-- <label class="checkbox-wrapper">
                             <input type="checkbox" name="remember">
                             <span class="checkbox-label">Remember me</span>
-                        </label>
+                        </label> -->
                         <a href="#" class="forgot-link">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="submit-btn">Sign In</button>
 
-                    <div class="divider">
+                    <!-- <div class="divider">
                         <span>Or continue with</span>
                     </div>
 
@@ -439,7 +486,7 @@
                     <p class="signup-text">
                         Don't have an account? 
                         <a href="#" class="signup-link">Sign up</a>
-                    </p>
+                    </p> -->
                 </form>
             </div>
         </div>

@@ -119,9 +119,9 @@
     <div class="flex justify-between items-center mb-8">
         <h2 class="font-poppins font-semibold text-4xl tracking-wider">Rincian Nilai Akademik</h2>
         {{-- Link unduh transkrip - arahkan ke ReportController --}}
-        <a href="#" class="bg-blue-primary text-blue-light font-poppins font-medium px-5 py-2 rounded-lg hover:bg-blue-600 transition duration-200 shadow-md">
+        <!-- <a href="#" class="bg-blue-primary text-blue-light font-poppins font-medium px-5 py-2 rounded-lg hover:bg-blue-600 transition duration-200 shadow-md">
             Unduh transkrip
-        </a>
+        </a> -->
     </div>
 
     {{-- FILTERS DINAMIS --}}
