@@ -42,9 +42,15 @@ class StudentClassController extends Controller
         }
         
         // Eksekusi query dengan pagination
-        $studentClasses = $query->withCount('students') // Hitung jumlah siswa tanpa load data lengkap
+        $studentClasses = $query
+            ->withCount('students') // Hitung jumlah siswa
+            ->withCount([
+                'enrollments as unique_semesters_count' => function ($query) {
+                    $query->select(\DB::raw('COUNT(DISTINCT semester_id)'));
+                }
+            ])
             ->latest()
-            ->paginate(10); // Tambah pagination (10 item per halaman)
+            ->paginate(10);
         
         // Ambil semua tahun untuk dropdown filter
         $years = Year::orderBy('name', 'desc')->get();
@@ -101,7 +107,14 @@ class StudentClassController extends Controller
     {
         $studentClass = StudentClass::with(['year', 'students' => function ($query) {
             $query->select('id', 'student_class_id', 'name', 'nim');
-        }])->findOrFail($id);
+        }])
+        ->withCount('students') // Hitung jumlah siswa
+        ->withCount([
+            'enrollments as unique_semesters_count' => function ($query) {
+                $query->select(\DB::raw('COUNT(DISTINCT semester_id)'));
+            }
+        ])
+        ->findOrFail($id);
 
         // Ambil parameter search dan filter semester
         $search = $request->input('search');
@@ -132,7 +145,10 @@ class StudentClassController extends Controller
         // Ambil semua semester untuk dropdown filter
         $semesters = Semester::orderBy('name')->get();
 
-        return view('student_classes.show', compact('studentClass', 'courses', 'semesters', 'semesterFilter', 'search'));
+        // Ambil unique semesters untuk ditampilkan
+        $uniqueSemesters = $studentClass->unique_semesters;
+
+        return view('student_classes.show', compact('studentClass', 'courses', 'semesters', 'semesterFilter', 'search', 'uniqueSemesters'));
     }
 
     /**

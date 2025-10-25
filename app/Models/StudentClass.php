@@ -40,4 +40,15 @@ class StudentClass extends Model
     public function enrollments() {
         return $this->hasMany(Enrollment::class);
     }
+
+    public function getUniqueSemestersAttribute()
+    {
+        return $this->enrollments()
+            ->with('semester')
+            ->get()
+            ->pluck('semester')
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+    }
 }
