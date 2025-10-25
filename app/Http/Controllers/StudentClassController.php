@@ -20,6 +20,7 @@ class StudentClassController extends Controller
         // Ambil parameter dari request
         $search = $request->input('search');
         $yearFilter = $request->input('year_id');
+        $classFilter = $request->input('class_name'); // Filter kelas baru
         
         // Query dasar dengan relasi year dan students
         $query = StudentClass::with(['year', 'students' => function ($query) {
@@ -40,6 +41,11 @@ class StudentClassController extends Controller
         if ($yearFilter) {
             $query->where('year_id', $yearFilter);
         }
+
+        // Terapkan filter nama kelas jika ada
+        if ($classFilter) {
+            $query->where('name', $classFilter);
+        }
         
         // Eksekusi query dengan pagination
         $studentClasses = $query
@@ -54,8 +60,14 @@ class StudentClassController extends Controller
         
         // Ambil semua tahun untuk dropdown filter
         $years = Year::orderBy('name', 'desc')->get();
+
+        // Ambil nama kelas unique untuk dropdown filter
+        $classNames = StudentClass::select('name')
+            ->distinct()
+            ->orderBy('name')
+            ->pluck('name');
         
-        return view('student_classes.index', compact('studentClasses', 'years', 'yearFilter', 'search'));
+        return view('student_classes.index', compact('studentClasses', 'years', 'yearFilter', 'search', 'classNames', 'classFilter'));
     }
 
     /**

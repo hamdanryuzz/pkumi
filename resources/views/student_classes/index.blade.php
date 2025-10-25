@@ -20,7 +20,7 @@
     <!-- Filter & Search Section -->
     <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
         <form method="GET" action="{{ route('student_classes.index') }}" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search Input -->
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
@@ -28,11 +28,11 @@
                         Cari Kelas
                     </label>
                     <input type="text" 
-                           name="search" 
-                           id="search"
-                           value="{{ $search ?? '' }}"
-                           placeholder="Cari nama kelas atau angkatan..."
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        name="search" 
+                        id="search"
+                        value="{{ $search ?? '' }}"
+                        placeholder="Cari nama kelas atau angkatan..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                 </div>
 
                 <!-- Year Filter -->
@@ -52,6 +52,24 @@
                         @endforeach
                     </select>
                 </div>
+
+                <!-- Class Name Filter (NEW) -->
+                <div>
+                    <label for="class_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-chalkboard-teacher mr-1"></i>
+                        Filter Nama Kelas
+                    </label>
+                    <select name="class_name" 
+                            id="class_name"
+                            class="select2-class w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">Semua Kelas</option>
+                        @foreach($classNames as $className)
+                            <option value="{{ $className }}" {{ $classFilter == $className ? 'selected' : '' }}>
+                                {{ $className }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <!-- Action Buttons -->
@@ -62,11 +80,50 @@
                     Terapkan Filter
                 </button>
                 <a href="{{ route('student_classes.index') }}" 
-                   class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors">
+                class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors">
                     <i class="fas fa-redo mr-2"></i>
                     Reset
                 </a>
             </div>
+            
+            <!-- Active Filters Display (Optional) -->
+            @if($search || $yearFilter || $classFilter)
+            <div class="pt-4 border-t border-gray-200">
+                <p class="text-sm font-medium text-gray-700 mb-2">Filter Aktif:</p>
+                <div class="flex flex-wrap gap-2">
+                    @if($search)
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <i class="fas fa-search mr-1"></i>
+                            Pencarian: {{ $search }}
+                            <a href="{{ route('student_classes.index', array_filter(['year_id' => $yearFilter, 'class_name' => $classFilter])) }}" 
+                            class="ml-2 hover:text-blue-900">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </span>
+                    @endif
+                    @if($yearFilter)
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            <i class="fas fa-calendar mr-1"></i>
+                            Angkatan: {{ $years->firstWhere('id', $yearFilter)->name ?? 'Unknown' }}
+                            <a href="{{ route('student_classes.index', array_filter(['search' => $search, 'class_name' => $classFilter])) }}" 
+                            class="ml-2 hover:text-purple-900">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </span>
+                    @endif
+                    @if($classFilter)
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-chalkboard-teacher mr-1"></i>
+                            Kelas: {{ $classFilter }}
+                            <a href="{{ route('student_classes.index', array_filter(['search' => $search, 'year_id' => $yearFilter])) }}" 
+                            class="ml-2 hover:text-green-900">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </span>
+                    @endif
+                </div>
+            </div>
+            @endif
         </form>
     </div>
 
@@ -288,6 +345,19 @@ document.getElementById('search').addEventListener('keypress', function(e) {
         width: '100%',
         language: {
             noResults: function() { return "Angkatan tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
+
+    /**
+     * Initialize Select2 for Class dropdown
+     */
+    $('.select2-class').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Kelas tidak ditemukan"; },
             searching: function() { return "Mencari..."; }
         }
     });
