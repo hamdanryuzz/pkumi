@@ -39,13 +39,13 @@ class DatabaseSeeder extends Seeder
         $this->seedUsers();
         $this->seedPeriods();
         $this->seedSemesters();
-        $this->seedYears();
-        $this->seedStudentClasses();
-        $this->seedCourses();
-        $this->seedStudents();
+        // $this->seedYears();
+        // $this->seedStudentClasses();
+        // $this->seedCourses();
+        // $this->seedStudents();
         // $this->seedEnrollments();
-        $this->seedGrades();
-        $this->seedRegistrations();
+        // $this->seedGrades();
+        // $this->seedRegistrations();
         $this->seedLogs();
 
         $this->command->info('✅ Database seeded successfully!');
@@ -228,159 +228,159 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed Years (Student Levels: Tahun 1, 2, 3, 4)
      */
-    private function seedYears(): void
-    {
-        $years = [
-            ['name' => 'Angkatan 1'],
-            ['name' => 'Angkatan 2'],
-            ['name' => 'Angkatan 3'],
-            ['name' => 'Angkatan 4'],
-        ];
+    // private function seedYears(): void
+    // {
+    //     $years = [
+    //         ['name' => 'Angkatan 1'],
+    //         ['name' => 'Angkatan 2'],
+    //         ['name' => 'Angkatan 3'],
+    //         ['name' => 'Angkatan 4'],
+    //     ];
 
-        foreach ($years as $year) {
-            Year::create($year);
-        }
+    //     foreach ($years as $year) {
+    //         Year::create($year);
+    //     }
 
-        $this->command->info('✓ Years seeded (4 levels)');
-    }
+    //     $this->command->info('✓ Years seeded (4 levels)');
+    // }
 
     /**
      * Seed Student Classes
      */
-    private function seedStudentClasses(): void
-    {
-        $classes = [
-            // Tahun 1
-            ['year_id' => 1, 'name' => 'S2 PKUP A'],
-            ['year_id' => 1, 'name' => 'S2 PKUP B'],
-            ['year_id' => 1, 'name' => 'S2 PKU A'],
-            ['year_id' => 1, 'name' => 'S3 PKU A'],
+    // private function seedStudentClasses(): void
+    // {
+    //     $classes = [
+    //         // Tahun 1
+    //         ['year_id' => 1, 'name' => 'S2 PKUP A'],
+    //         ['year_id' => 1, 'name' => 'S2 PKUP B'],
+    //         ['year_id' => 1, 'name' => 'S2 PKU A'],
+    //         ['year_id' => 1, 'name' => 'S3 PKU A'],
 
-            // Tahun 2
-            ['year_id' => 2, 'name' => 'S2 PKUP A'],
-            ['year_id' => 2, 'name' => 'S2 PKUP B'],
-            ['year_id' => 2, 'name' => 'S2 PKU A'],
-            ['year_id' => 2, 'name' => 'S3 PKU A'],
+    //         // Tahun 2
+    //         ['year_id' => 2, 'name' => 'S2 PKUP A'],
+    //         ['year_id' => 2, 'name' => 'S2 PKUP B'],
+    //         ['year_id' => 2, 'name' => 'S2 PKU A'],
+    //         ['year_id' => 2, 'name' => 'S3 PKU A'],
 
-            // Tahun 3
-            ['year_id' => 3, 'name' => 'S2 PKUP A'],
-            ['year_id' => 3, 'name' => 'S2 PKU A'],
-            ['year_id' => 3, 'name' => 'S3 PKU A'],
+    //         // Tahun 3
+    //         ['year_id' => 3, 'name' => 'S2 PKUP A'],
+    //         ['year_id' => 3, 'name' => 'S2 PKU A'],
+    //         ['year_id' => 3, 'name' => 'S3 PKU A'],
 
-            // Tahun 4
-            ['year_id' => 4, 'name' => 'S2 PKUP A'],
-            ['year_id' => 4, 'name' => 'S2 PKU A'],
-        ];
+    //         // Tahun 4
+    //         ['year_id' => 4, 'name' => 'S2 PKUP A'],
+    //         ['year_id' => 4, 'name' => 'S2 PKU A'],
+    //     ];
 
-        foreach ($classes as $class) {
-            StudentClass::create($class);
-        }
+    //     foreach ($classes as $class) {
+    //         StudentClass::create($class);
+    //     }
 
-        $this->command->info('✓ Student classes seeded (13 classes)');
-    }
+    //     $this->command->info('✓ Student classes seeded (13 classes)');
+    // }
 
     /**
      * Seed Courses
      */
-    private function seedCourses(): void
-    {
-        $courses = [
-            // Tahun 1 Courses
-            ['name' => 'Pemrograman Dasar', 'code' => 'CS101', 'student_class_id' => 1, 'sks' => 3],
-            ['name' => 'Matematika Diskrit', 'code' => 'MTK101', 'student_class_id' => 1, 'sks' => 3],
-            ['name' => 'Bahasa Inggris Teknis', 'code' => 'ENG101', 'student_class_id' => 1, 'sks' => 2],
-            ['name' => 'Algoritma & Pemrograman', 'code' => 'CS102', 'student_class_id' => 1, 'sks' => 4],
+    // private function seedCourses(): void
+    // {
+    //     $courses = [
+    //         // Tahun 1 Courses
+    //         ['name' => 'Pemrograman Dasar', 'code' => 'CS101', 'student_class_id' => 1, 'sks' => 3],
+    //         ['name' => 'Matematika Diskrit', 'code' => 'MTK101', 'student_class_id' => 1, 'sks' => 3],
+    //         ['name' => 'Bahasa Inggris Teknis', 'code' => 'ENG101', 'student_class_id' => 1, 'sks' => 2],
+    //         ['name' => 'Algoritma & Pemrograman', 'code' => 'CS102', 'student_class_id' => 1, 'sks' => 4],
             
-            ['name' => 'Pemrograman Dasar', 'code' => 'CS101B', 'student_class_id' => 2, 'sks' => 3],
-            ['name' => 'Matematika Diskrit', 'code' => 'MTK101B', 'student_class_id' => 2, 'sks' => 3],
+    //         ['name' => 'Pemrograman Dasar', 'code' => 'CS101B', 'student_class_id' => 2, 'sks' => 3],
+    //         ['name' => 'Matematika Diskrit', 'code' => 'MTK101B', 'student_class_id' => 2, 'sks' => 3],
             
-            ['name' => 'Pengantar Teknologi Informasi', 'code' => 'TI101', 'student_class_id' => 3, 'sks' => 3],
-            ['name' => 'Logika Informatika', 'code' => 'CS103', 'student_class_id' => 3, 'sks' => 2],
+    //         ['name' => 'Pengantar Teknologi Informasi', 'code' => 'TI101', 'student_class_id' => 3, 'sks' => 3],
+    //         ['name' => 'Logika Informatika', 'code' => 'CS103', 'student_class_id' => 3, 'sks' => 2],
             
-            ['name' => 'Sistem Digital', 'code' => 'CS104', 'student_class_id' => 4, 'sks' => 3],
-            ['name' => 'Arsitektur Komputer', 'code' => 'CS105', 'student_class_id' => 4, 'sks' => 3],
+    //         ['name' => 'Sistem Digital', 'code' => 'CS104', 'student_class_id' => 4, 'sks' => 3],
+    //         ['name' => 'Arsitektur Komputer', 'code' => 'CS105', 'student_class_id' => 4, 'sks' => 3],
 
-            // Tahun 2 Courses
-            ['name' => 'Struktur Data', 'code' => 'CS201', 'student_class_id' => 5, 'sks' => 4],
-            ['name' => 'Basis Data', 'code' => 'CS202', 'student_class_id' => 5, 'sks' => 3],
-            ['name' => 'Pemrograman Web', 'code' => 'CS203', 'student_class_id' => 5, 'sks' => 3],
-            ['name' => 'Jaringan Komputer', 'code' => 'CS204', 'student_class_id' => 5, 'sks' => 3],
+    //         // Tahun 2 Courses
+    //         ['name' => 'Struktur Data', 'code' => 'CS201', 'student_class_id' => 5, 'sks' => 4],
+    //         ['name' => 'Basis Data', 'code' => 'CS202', 'student_class_id' => 5, 'sks' => 3],
+    //         ['name' => 'Pemrograman Web', 'code' => 'CS203', 'student_class_id' => 5, 'sks' => 3],
+    //         ['name' => 'Jaringan Komputer', 'code' => 'CS204', 'student_class_id' => 5, 'sks' => 3],
             
-            ['name' => 'Struktur Data', 'code' => 'CS201B', 'student_class_id' => 6, 'sks' => 4],
-            ['name' => 'Basis Data', 'code' => 'CS202B', 'student_class_id' => 6, 'sks' => 3],
+    //         ['name' => 'Struktur Data', 'code' => 'CS201B', 'student_class_id' => 6, 'sks' => 4],
+    //         ['name' => 'Basis Data', 'code' => 'CS202B', 'student_class_id' => 6, 'sks' => 3],
             
-            ['name' => 'Pemrograman Berorientasi Objek', 'code' => 'CS205', 'student_class_id' => 7, 'sks' => 4],
-            ['name' => 'Sistem Operasi', 'code' => 'CS206', 'student_class_id' => 7, 'sks' => 3],
+    //         ['name' => 'Pemrograman Berorientasi Objek', 'code' => 'CS205', 'student_class_id' => 7, 'sks' => 4],
+    //         ['name' => 'Sistem Operasi', 'code' => 'CS206', 'student_class_id' => 7, 'sks' => 3],
 
-            // Tahun 3 Courses
-            ['name' => 'Kecerdasan Buatan', 'code' => 'CS301', 'student_class_id' => 9, 'sks' => 3],
-            ['name' => 'Machine Learning', 'code' => 'CS302', 'student_class_id' => 9, 'sks' => 3],
-            ['name' => 'Rekayasa Perangkat Lunak', 'code' => 'CS303', 'student_class_id' => 9, 'sks' => 4],
+    //         // Tahun 3 Courses
+    //         ['name' => 'Kecerdasan Buatan', 'code' => 'CS301', 'student_class_id' => 9, 'sks' => 3],
+    //         ['name' => 'Machine Learning', 'code' => 'CS302', 'student_class_id' => 9, 'sks' => 3],
+    //         ['name' => 'Rekayasa Perangkat Lunak', 'code' => 'CS303', 'student_class_id' => 9, 'sks' => 4],
             
-            ['name' => 'Data Mining', 'code' => 'CS304', 'student_class_id' => 10, 'sks' => 3],
-            ['name' => 'Keamanan Informasi', 'code' => 'CS305', 'student_class_id' => 10, 'sks' => 3],
+    //         ['name' => 'Data Mining', 'code' => 'CS304', 'student_class_id' => 10, 'sks' => 3],
+    //         ['name' => 'Keamanan Informasi', 'code' => 'CS305', 'student_class_id' => 10, 'sks' => 3],
 
-            // Tahun 4 Courses
-            ['name' => 'Metodologi Penelitian', 'code' => 'CS401', 'student_class_id' => 12, 'sks' => 2],
-            ['name' => 'Etika Profesi', 'code' => 'CS402', 'student_class_id' => 12, 'sks' => 2],
-            ['name' => 'Skripsi', 'code' => 'CS499', 'student_class_id' => 12, 'sks' => 6],
-        ];
+    //         // Tahun 4 Courses
+    //         ['name' => 'Metodologi Penelitian', 'code' => 'CS401', 'student_class_id' => 12, 'sks' => 2],
+    //         ['name' => 'Etika Profesi', 'code' => 'CS402', 'student_class_id' => 12, 'sks' => 2],
+    //         ['name' => 'Skripsi', 'code' => 'CS499', 'student_class_id' => 12, 'sks' => 6],
+    //     ];
 
-        foreach ($courses as $course) {
-            Course::create($course);
-        }
+    //     foreach ($courses as $course) {
+    //         Course::create($course);
+    //     }
 
-        $this->command->info('✓ Courses seeded (26 courses)');
-    }
+    //     $this->command->info('✓ Courses seeded (26 courses)');
+    // }
 
     /**
      * Seed Students
      */
-    private function seedStudents(): void
-    {
-        $students = [
-            // Tahun 1 - Class 1 (S2 PKUP A)
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010101', 'name' => 'Ahmad Fauzi', 'username' => 'ahmad.fauzi', 'email' => 'ahmad.fauzi@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567801', 'address' => 'Jakarta', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010102', 'name' => 'Siti Nurhaliza', 'username' => 'siti.nurhaliza', 'email' => 'siti.nurhaliza@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567802', 'address' => 'Bandung', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010103', 'name' => 'Muhammad Rizki', 'username' => 'muhammad.rizki', 'email' => 'muhammad.rizki@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567803', 'address' => 'Surabaya', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010104', 'name' => 'Fatimah Azzahra', 'username' => 'fatimah.azzahra', 'email' => 'fatimah.azzahra@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567804', 'address' => 'Yogyakarta', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010105', 'name' => 'Abdullah Rahman', 'username' => 'abdullah.rahman', 'email' => 'abdullah.rahman@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567805', 'address' => 'Semarang', 'status' => 'active'],
+    // private function seedStudents(): void
+    // {
+    //     $students = [
+    //         // Tahun 1 - Class 1 (S2 PKUP A)
+    //         ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010101', 'name' => 'Ahmad Fauzi', 'username' => 'ahmad.fauzi', 'email' => 'ahmad.fauzi@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567801', 'address' => 'Jakarta', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010102', 'name' => 'Siti Nurhaliza', 'username' => 'siti.nurhaliza', 'email' => 'siti.nurhaliza@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567802', 'address' => 'Bandung', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010103', 'name' => 'Muhammad Rizki', 'username' => 'muhammad.rizki', 'email' => 'muhammad.rizki@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567803', 'address' => 'Surabaya', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010104', 'name' => 'Fatimah Azzahra', 'username' => 'fatimah.azzahra', 'email' => 'fatimah.azzahra@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567804', 'address' => 'Yogyakarta', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 1, 'nim' => '2025010105', 'name' => 'Abdullah Rahman', 'username' => 'abdullah.rahman', 'email' => 'abdullah.rahman@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567805', 'address' => 'Semarang', 'status' => 'active'],
             
-            // Tahun 1 - Class 2 (S2 PKUP B)
-            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2025010201', 'name' => 'Dewi Anggraini', 'username' => 'dewi.anggraini', 'email' => 'dewi.anggraini@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567806', 'address' => 'Malang', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2025010202', 'name' => 'Rudi Hartono', 'username' => 'rudi.hartono', 'email' => 'rudi.hartono@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567807', 'address' => 'Medan', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2025010203', 'name' => 'Aisyah Putri', 'username' => 'aisyah.putri', 'email' => 'aisyah.putri@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567808', 'address' => 'Palembang', 'status' => 'active'],
+    //         // Tahun 1 - Class 2 (S2 PKUP B)
+    //         ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2025010201', 'name' => 'Dewi Anggraini', 'username' => 'dewi.anggraini', 'email' => 'dewi.anggraini@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567806', 'address' => 'Malang', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2025010202', 'name' => 'Rudi Hartono', 'username' => 'rudi.hartono', 'email' => 'rudi.hartono@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567807', 'address' => 'Medan', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 2, 'nim' => '2025010203', 'name' => 'Aisyah Putri', 'username' => 'aisyah.putri', 'email' => 'aisyah.putri@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567808', 'address' => 'Palembang', 'status' => 'active'],
             
-            // Tahun 1 - Class 3 (S2 PKU A)
-            ['year_id' => 1, 'student_class_id' => 3, 'nim' => '2025010301', 'name' => 'Budi Setiawan', 'username' => 'budi.setiawan', 'email' => 'budi.setiawan@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567809', 'address' => 'Jakarta', 'status' => 'active'],
-            ['year_id' => 1, 'student_class_id' => 3, 'nim' => '2025010302', 'name' => 'Nina Kartika', 'username' => 'nina.kartika', 'email' => 'nina.kartika@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567810', 'address' => 'Bogor', 'status' => 'active'],
+    //         // Tahun 1 - Class 3 (S2 PKU A)
+    //         ['year_id' => 1, 'student_class_id' => 3, 'nim' => '2025010301', 'name' => 'Budi Setiawan', 'username' => 'budi.setiawan', 'email' => 'budi.setiawan@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567809', 'address' => 'Jakarta', 'status' => 'active'],
+    //         ['year_id' => 1, 'student_class_id' => 3, 'nim' => '2025010302', 'name' => 'Nina Kartika', 'username' => 'nina.kartika', 'email' => 'nina.kartika@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567810', 'address' => 'Bogor', 'status' => 'active'],
 
-            // Tahun 2 - Class 5 (S2 PKUP A)
-            ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020101', 'name' => 'Arief Budiman', 'username' => 'arief.budiman', 'email' => 'arief.budiman@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567811', 'address' => 'Jakarta', 'status' => 'active'],
-            ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020102', 'name' => 'Linda Wijaya', 'username' => 'linda.wijaya', 'email' => 'linda.wijaya@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567812', 'address' => 'Bandung', 'status' => 'active'],
-            ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020103', 'name' => 'Hendra Gunawan', 'username' => 'hendra.gunawan', 'email' => 'hendra.gunawan@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567813', 'address' => 'Surabaya', 'status' => 'active'],
-            ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020104', 'name' => 'Maya Sari', 'username' => 'maya.sari', 'email' => 'maya.sari@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567814', 'address' => 'Semarang', 'status' => 'active'],
+    //         // Tahun 2 - Class 5 (S2 PKUP A)
+    //         ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020101', 'name' => 'Arief Budiman', 'username' => 'arief.budiman', 'email' => 'arief.budiman@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567811', 'address' => 'Jakarta', 'status' => 'active'],
+    //         ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020102', 'name' => 'Linda Wijaya', 'username' => 'linda.wijaya', 'email' => 'linda.wijaya@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567812', 'address' => 'Bandung', 'status' => 'active'],
+    //         ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020103', 'name' => 'Hendra Gunawan', 'username' => 'hendra.gunawan', 'email' => 'hendra.gunawan@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567813', 'address' => 'Surabaya', 'status' => 'active'],
+    //         ['year_id' => 2, 'student_class_id' => 5, 'nim' => '2024020104', 'name' => 'Maya Sari', 'username' => 'maya.sari', 'email' => 'maya.sari@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567814', 'address' => 'Semarang', 'status' => 'active'],
 
-            // Tahun 2 - Class 6 (S2 PKUP B)
-            ['year_id' => 2, 'student_class_id' => 6, 'nim' => '2024020201', 'name' => 'Eko Prasetyo', 'username' => 'eko.prasetyo', 'email' => 'eko.prasetyo@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567815', 'address' => 'Yogyakarta', 'status' => 'active'],
-            ['year_id' => 2, 'student_class_id' => 6, 'nim' => '2024020202', 'name' => 'Rini Susanti', 'username' => 'rini.susanti', 'email' => 'rini.susanti@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567816', 'address' => 'Solo', 'status' => 'active'],
+    //         // Tahun 2 - Class 6 (S2 PKUP B)
+    //         ['year_id' => 2, 'student_class_id' => 6, 'nim' => '2024020201', 'name' => 'Eko Prasetyo', 'username' => 'eko.prasetyo', 'email' => 'eko.prasetyo@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567815', 'address' => 'Yogyakarta', 'status' => 'active'],
+    //         ['year_id' => 2, 'student_class_id' => 6, 'nim' => '2024020202', 'name' => 'Rini Susanti', 'username' => 'rini.susanti', 'email' => 'rini.susanti@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567816', 'address' => 'Solo', 'status' => 'active'],
 
-            // Tahun 3 - Class 9 (S2 PKUP A)
-            ['year_id' => 3, 'student_class_id' => 9, 'nim' => '2023030101', 'name' => 'Doni Kurniawan', 'username' => 'doni.kurniawan', 'email' => 'doni.kurniawan@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567817', 'address' => 'Jakarta', 'status' => 'active'],
-            ['year_id' => 3, 'student_class_id' => 9, 'nim' => '2023030102', 'name' => 'Sri Mulyani', 'username' => 'sri.mulyani', 'email' => 'sri.mulyani@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567818', 'address' => 'Bandung', 'status' => 'active'],
-            ['year_id' => 3, 'student_class_id' => 9, 'nim' => '2023030103', 'name' => 'Agus Salim', 'username' => 'agus.salim', 'email' => 'agus.salim@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567819', 'address' => 'Surabaya', 'status' => 'active'],
+    //         // Tahun 3 - Class 9 (S2 PKUP A)
+    //         ['year_id' => 3, 'student_class_id' => 9, 'nim' => '2023030101', 'name' => 'Doni Kurniawan', 'username' => 'doni.kurniawan', 'email' => 'doni.kurniawan@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567817', 'address' => 'Jakarta', 'status' => 'active'],
+    //         ['year_id' => 3, 'student_class_id' => 9, 'nim' => '2023030102', 'name' => 'Sri Mulyani', 'username' => 'sri.mulyani', 'email' => 'sri.mulyani@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567818', 'address' => 'Bandung', 'status' => 'active'],
+    //         ['year_id' => 3, 'student_class_id' => 9, 'nim' => '2023030103', 'name' => 'Agus Salim', 'username' => 'agus.salim', 'email' => 'agus.salim@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567819', 'address' => 'Surabaya', 'status' => 'active'],
 
-            // Tahun 4 - Class 12 (S2 PKUP A)
-            ['year_id' => 4, 'student_class_id' => 12, 'nim' => '2022040101', 'name' => 'Irfan Hakim', 'username' => 'irfan.hakim', 'email' => 'irfan.hakim@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567820', 'address' => 'Jakarta', 'status' => 'active'],
-            ['year_id' => 4, 'student_class_id' => 12, 'nim' => '2022040102', 'name' => 'Nur Azizah', 'username' => 'nur.azizah', 'email' => 'nur.azizah@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567821', 'address' => 'Tangerang', 'status' => 'active'],
-        ];
+    //         // Tahun 4 - Class 12 (S2 PKUP A)
+    //         ['year_id' => 4, 'student_class_id' => 12, 'nim' => '2022040101', 'name' => 'Irfan Hakim', 'username' => 'irfan.hakim', 'email' => 'irfan.hakim@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567820', 'address' => 'Jakarta', 'status' => 'active'],
+    //         ['year_id' => 4, 'student_class_id' => 12, 'nim' => '2022040102', 'name' => 'Nur Azizah', 'username' => 'nur.azizah', 'email' => 'nur.azizah@student.ac.id', 'password' => Hash::make('student123'), 'phone' => '081234567821', 'address' => 'Tangerang', 'status' => 'active'],
+    //     ];
 
-        foreach ($students as $student) {
-            Student::create($student);
-        }
+    //     foreach ($students as $student) {
+    //         Student::create($student);
+    //     }
 
-        $this->command->info('✓ Students seeded (21 students)');
-    }
+    //     $this->command->info('✓ Students seeded (21 students)');
+    // }
 
     /**
      * Seed Enrollments (Current Active Semester)
@@ -469,274 +469,274 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed Grades (Mix of complete, partial, and empty grades)
      */
-    private function seedGrades(): void
-    {
-        $weights = GradeWeight::first();
-        $activeSemesterId = 5;
+    // private function seedGrades(): void
+    // {
+    //     $weights = GradeWeight::first();
+    //     $activeSemesterId = 5;
 
-        $gradesData = [
-            // Student 1 - Has all scores
-            [
-                'student_id' => 1, 
-                'course_id' => 1, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 95.00,
-                'assignment_score' => 88.00,
-                'midterm_score' => 85.00,
-                'final_score' => 90.00,
-            ],
-            [
-                'student_id' => 1, 
-                'course_id' => 2, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 90.00,
-                'assignment_score' => 85.00,
-                'midterm_score' => 80.00,
-                'final_score' => 87.00,
-            ],
-            [
-                'student_id' => 1, 
-                'course_id' => 3, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 100.00,
-                'assignment_score' => 92.00,
-                'midterm_score' => 88.00,
-                'final_score' => null, // Final exam not yet taken
-            ],
-            [
-                'student_id' => 1, 
-                'course_id' => 4, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 85.00,
-                'assignment_score' => 78.00,
-                'midterm_score' => null,
-                'final_score' => null,
-            ],
+    //     $gradesData = [
+    //         // Student 1 - Has all scores
+    //         [
+    //             'student_id' => 1, 
+    //             'course_id' => 1, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 95.00,
+    //             'assignment_score' => 88.00,
+    //             'midterm_score' => 85.00,
+    //             'final_score' => 90.00,
+    //         ],
+    //         [
+    //             'student_id' => 1, 
+    //             'course_id' => 2, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 90.00,
+    //             'assignment_score' => 85.00,
+    //             'midterm_score' => 80.00,
+    //             'final_score' => 87.00,
+    //         ],
+    //         [
+    //             'student_id' => 1, 
+    //             'course_id' => 3, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 100.00,
+    //             'assignment_score' => 92.00,
+    //             'midterm_score' => 88.00,
+    //             'final_score' => null, // Final exam not yet taken
+    //         ],
+    //         [
+    //             'student_id' => 1, 
+    //             'course_id' => 4, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 85.00,
+    //             'assignment_score' => 78.00,
+    //             'midterm_score' => null,
+    //             'final_score' => null,
+    //         ],
             
-            // Student 2 - Mix of scores
-            [
-                'student_id' => 2, 
-                'course_id' => 1, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 88.00,
-                'assignment_score' => 90.00,
-                'midterm_score' => 82.00,
-                'final_score' => 85.00,
-            ],
-            [
-                'student_id' => 2, 
-                'course_id' => 2, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 92.00,
-                'assignment_score' => 87.00,
-                'midterm_score' => 89.00,
-                'final_score' => null,
-            ],
-            [
-                'student_id' => 2, 
-                'course_id' => 3, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 95.00,
-                'assignment_score' => 88.00,
-                'midterm_score' => null,
-                'final_score' => null,
-            ],
+    //         // Student 2 - Mix of scores
+    //         [
+    //             'student_id' => 2, 
+    //             'course_id' => 1, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 88.00,
+    //             'assignment_score' => 90.00,
+    //             'midterm_score' => 82.00,
+    //             'final_score' => 85.00,
+    //         ],
+    //         [
+    //             'student_id' => 2, 
+    //             'course_id' => 2, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 92.00,
+    //             'assignment_score' => 87.00,
+    //             'midterm_score' => 89.00,
+    //             'final_score' => null,
+    //         ],
+    //         [
+    //             'student_id' => 2, 
+    //             'course_id' => 3, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 95.00,
+    //             'assignment_score' => 88.00,
+    //             'midterm_score' => null,
+    //             'final_score' => null,
+    //         ],
             
-            // Student 3 - Some scores
-            [
-                'student_id' => 3, 
-                'course_id' => 1, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 78.00,
-                'assignment_score' => 82.00,
-                'midterm_score' => 75.00,
-                'final_score' => 80.00,
-            ],
-            [
-                'student_id' => 3, 
-                'course_id' => 2, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 85.00,
-                'assignment_score' => 80.00,
-                'midterm_score' => 78.00,
-                'final_score' => null,
-            ],
+    //         // Student 3 - Some scores
+    //         [
+    //             'student_id' => 3, 
+    //             'course_id' => 1, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 78.00,
+    //             'assignment_score' => 82.00,
+    //             'midterm_score' => 75.00,
+    //             'final_score' => 80.00,
+    //         ],
+    //         [
+    //             'student_id' => 3, 
+    //             'course_id' => 2, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 85.00,
+    //             'assignment_score' => 80.00,
+    //             'midterm_score' => 78.00,
+    //             'final_score' => null,
+    //         ],
             
-            // Student 4 - Early stage (only attendance)
-            [
-                'student_id' => 4, 
-                'course_id' => 1, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 90.00,
-                'assignment_score' => null,
-                'midterm_score' => null,
-                'final_score' => null,
-            ],
-            [
-                'student_id' => 4, 
-                'course_id' => 2, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 88.00,
-                'assignment_score' => null,
-                'midterm_score' => null,
-                'final_score' => null,
-            ],
+    //         // Student 4 - Early stage (only attendance)
+    //         [
+    //             'student_id' => 4, 
+    //             'course_id' => 1, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 90.00,
+    //             'assignment_score' => null,
+    //             'midterm_score' => null,
+    //             'final_score' => null,
+    //         ],
+    //         [
+    //             'student_id' => 4, 
+    //             'course_id' => 2, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 88.00,
+    //             'assignment_score' => null,
+    //             'midterm_score' => null,
+    //             'final_score' => null,
+    //         ],
             
-            // Student 5
-            [
-                'student_id' => 5, 
-                'course_id' => 1, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 92.00,
-                'assignment_score' => 95.00,
-                'midterm_score' => 90.00,
-                'final_score' => 93.00,
-            ],
+    //         // Student 5
+    //         [
+    //             'student_id' => 5, 
+    //             'course_id' => 1, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 92.00,
+    //             'assignment_score' => 95.00,
+    //             'midterm_score' => 90.00,
+    //             'final_score' => 93.00,
+    //         ],
             
-            // Student 11 (Year 2) - Complete grades
-            [
-                'student_id' => 11, 
-                'course_id' => 11, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 95.00,
-                'assignment_score' => 90.00,
-                'midterm_score' => 92.00,
-                'final_score' => 94.00,
-            ],
-            [
-                'student_id' => 11, 
-                'course_id' => 12, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 88.00,
-                'assignment_score' => 85.00,
-                'midterm_score' => 87.00,
-                'final_score' => 89.00,
-            ],
+    //         // Student 11 (Year 2) - Complete grades
+    //         [
+    //             'student_id' => 11, 
+    //             'course_id' => 11, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 95.00,
+    //             'assignment_score' => 90.00,
+    //             'midterm_score' => 92.00,
+    //             'final_score' => 94.00,
+    //         ],
+    //         [
+    //             'student_id' => 11, 
+    //             'course_id' => 12, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 88.00,
+    //             'assignment_score' => 85.00,
+    //             'midterm_score' => 87.00,
+    //             'final_score' => 89.00,
+    //         ],
             
-            // Student 12 (Year 2)
-            [
-                'student_id' => 12, 
-                'course_id' => 11, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 82.00,
-                'assignment_score' => 85.00,
-                'midterm_score' => 80.00,
-                'final_score' => 83.00,
-            ],
+    //         // Student 12 (Year 2)
+    //         [
+    //             'student_id' => 12, 
+    //             'course_id' => 11, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 82.00,
+    //             'assignment_score' => 85.00,
+    //             'midterm_score' => 80.00,
+    //             'final_score' => 83.00,
+    //         ],
             
-            // Student 17 (Year 3)
-            [
-                'student_id' => 17, 
-                'course_id' => 19, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 90.00,
-                'assignment_score' => 88.00,
-                'midterm_score' => 85.00,
-                'final_score' => 87.00,
-            ],
+    //         // Student 17 (Year 3)
+    //         [
+    //             'student_id' => 17, 
+    //             'course_id' => 19, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 90.00,
+    //             'assignment_score' => 88.00,
+    //             'midterm_score' => 85.00,
+    //             'final_score' => 87.00,
+    //         ],
             
-            // Student 20 (Year 4) - Thesis student
-            [
-                'student_id' => 20, 
-                'course_id' => 26, 
-                'semester_id' => $activeSemesterId,
-                'attendance_score' => 100.00,
-                'assignment_score' => 90.00,
-                'midterm_score' => 85.00,
-                'final_score' => null, // Thesis not yet defended
-            ],
-        ];
+    //         // Student 20 (Year 4) - Thesis student
+    //         [
+    //             'student_id' => 20, 
+    //             'course_id' => 26, 
+    //             'semester_id' => $activeSemesterId,
+    //             'attendance_score' => 100.00,
+    //             'assignment_score' => 90.00,
+    //             'midterm_score' => 85.00,
+    //             'final_score' => null, // Thesis not yet defended
+    //         ],
+    //     ];
 
-        foreach ($gradesData as $data) {
-            // Calculate final grade only if all scores are present
-            if ($data['attendance_score'] && $data['assignment_score'] && 
-                $data['midterm_score'] && $data['final_score']) {
+    //     foreach ($gradesData as $data) {
+    //         // Calculate final grade only if all scores are present
+    //         if ($data['attendance_score'] && $data['assignment_score'] && 
+    //             $data['midterm_score'] && $data['final_score']) {
                 
-                $finalGrade = Grade::calculateFinalGrade(
-                    $data['attendance_score'],
-                    $data['assignment_score'],
-                    $data['midterm_score'],
-                    $data['final_score'],
-                    $weights
-                );
+    //             $finalGrade = Grade::calculateFinalGrade(
+    //                 $data['attendance_score'],
+    //                 $data['assignment_score'],
+    //                 $data['midterm_score'],
+    //                 $data['final_score'],
+    //                 $weights
+    //             );
                 
-                $data['final_grade'] = $finalGrade;
-                $data['letter_grade'] = Grade::getLetterGrade($finalGrade);
-                $data['bobot'] = Grade::getBobot($finalGrade);
-            } else {
-                $data['final_grade'] = null;
-                $data['letter_grade'] = null;
-                $data['bobot'] = null;
-            }
+    //             $data['final_grade'] = $finalGrade;
+    //             $data['letter_grade'] = Grade::getLetterGrade($finalGrade);
+    //             $data['bobot'] = Grade::getBobot($finalGrade);
+    //         } else {
+    //             $data['final_grade'] = null;
+    //             $data['letter_grade'] = null;
+    //             $data['bobot'] = null;
+    //         }
 
-            Grade::create($data);
-        }
+    //         Grade::create($data);
+    //     }
 
-        $this->command->info('✓ Grades seeded (18 grade records)');
-    }
+    //     $this->command->info('✓ Grades seeded (18 grade records)');
+    // }
 
     /**
      * Seed Registrations (Prospective Students)
      */
-    private function seedRegistrations(): void
-    {
-        $registrations = [
-            [
-                'username' => 'anisa.rahmawati',
-                'email' => 'anisa.rahmawati@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'pending',
-            ],
-            [
-                'username' => 'farhan.maulana',
-                'email' => 'farhan.maulana@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'pending',
-            ],
-            [
-                'username' => 'dimas.prakoso',
-                'email' => 'dimas.prakoso@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'lolos',
-            ],
-            [
-                'username' => 'putri.amanda',
-                'email' => 'putri.amanda@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'lolos',
-            ],
-            [
-                'username' => 'rizal.hidayat',
-                'email' => 'rizal.hidayat@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'gagal',
-            ],
-            [
-                'username' => 'sari.wulandari',
-                'email' => 'sari.wulandari@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'gagal',
-            ],
-            [
-                'username' => 'bayu.santoso',
-                'email' => 'bayu.santoso@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'pending',
-            ],
-            [
-                'username' => 'mega.susanti',
-                'email' => 'mega.susanti@gmail.com',
-                'password' => Hash::make('register123'),
-                'status' => 'lolos',
-            ],
-        ];
+    // private function seedRegistrations(): void
+    // {
+    //     $registrations = [
+    //         [
+    //             'username' => 'anisa.rahmawati',
+    //             'email' => 'anisa.rahmawati@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'pending',
+    //         ],
+    //         [
+    //             'username' => 'farhan.maulana',
+    //             'email' => 'farhan.maulana@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'pending',
+    //         ],
+    //         [
+    //             'username' => 'dimas.prakoso',
+    //             'email' => 'dimas.prakoso@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'lolos',
+    //         ],
+    //         [
+    //             'username' => 'putri.amanda',
+    //             'email' => 'putri.amanda@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'lolos',
+    //         ],
+    //         [
+    //             'username' => 'rizal.hidayat',
+    //             'email' => 'rizal.hidayat@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'gagal',
+    //         ],
+    //         [
+    //             'username' => 'sari.wulandari',
+    //             'email' => 'sari.wulandari@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'gagal',
+    //         ],
+    //         [
+    //             'username' => 'bayu.santoso',
+    //             'email' => 'bayu.santoso@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'pending',
+    //         ],
+    //         [
+    //             'username' => 'mega.susanti',
+    //             'email' => 'mega.susanti@gmail.com',
+    //             'password' => Hash::make('register123'),
+    //             'status' => 'lolos',
+    //         ],
+    //     ];
 
-        foreach ($registrations as $registration) {
-            Registration::create($registration);
-        }
+    //     foreach ($registrations as $registration) {
+    //         Registration::create($registration);
+    //     }
 
-        $this->command->info('✓ Registrations seeded (8 registrations)');
-    }
+    //     $this->command->info('✓ Registrations seeded (8 registrations)');
+    // }
 
     /**
      * Seed Logs (Audit Trail)

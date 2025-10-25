@@ -599,8 +599,8 @@
                     <li>
                         <a href="{{ route('periods.index') }}" class="nav-link {{ request()->routeIs('periods.*') ? 'active' : '' }}" @click="window.innerWidth < 768 && closeSidebar()">
                             <i class="fa-solid fa-graduation-cap nav-icon"></i>
-                            <span class="nav-text">Manage Tahun Ajaran</span>
-                            <div class="nav-tooltip">Manage Tahun Ajaran</div>
+                            <span class="nav-text">Manage Tahun Angkatan</span>
+                            <div class="nav-tooltip">Manage Tahun Angkatan</div>
                         </a>
                     </li>
                     <li>
