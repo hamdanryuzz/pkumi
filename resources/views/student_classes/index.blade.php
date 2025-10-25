@@ -7,7 +7,7 @@
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Manajemen Kelas</h2>
+            <h2 class="text-2xl font-bold text-gray-800">Manage Kelas</h2>
             <p class="text-sm text-gray-600 mt-1">Kelola data kelas mahasiswa dan angkatan</p>
         </div>
         <a href="{{ route('student_classes.create') }}" 
