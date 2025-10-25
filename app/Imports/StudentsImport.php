@@ -26,19 +26,27 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithVal
             return null;
         }
 
-        // Ambil berdasarkan nama, bukan ID
+        // Ambil Year berdasarkan nama
         $year = Year::where('name', trim($row['year_name'] ?? ''))->first();
-        $class = StudentClass::where('name', trim($row['class_name'] ?? ''))->first();
+
+        // Ambil StudentClass berdasarkan nama DAN year_id
+        $class = null;
+        if ($year) {
+            $class = StudentClass::where('name', trim($row['class_name'] ?? ''))
+                ->where('year_id', $year->id)
+                ->first();
+        }
 
         // Jika data tidak ditemukan, catat error
         if (!$year || !$class) {
             $missing = [];
             if (!$year) $missing[] = "Tahun '{$row['year_name']}'";
-            if (!$class) $missing[] = "Kelas '{$row['class_name']}'";
+            if (!$class) $missing[] = "Kelas '{$row['class_name']}' untuk tahun '{$row['year_name']}'";
             $this->errors[] = "Baris NIM {$row['nim']}: " . implode(' & ', $missing) . " tidak ditemukan di database.";
             return null;
         }
 
+        // Buat record Student baru
         return new Student([
             'nim' => $row['nim'],
             'name' => $row['name'] ?? null,
@@ -81,9 +89,6 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithVal
         ]);
     }
 
-    /**
-     * Validasi basic
-     */
     public function rules(): array
     {
         return [
@@ -94,9 +99,6 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithVal
         ];
     }
 
-    /**
-     * Ambil error yang ditemukan selama import
-     */
     public function getErrors(): array
     {
         return $this->errors;
