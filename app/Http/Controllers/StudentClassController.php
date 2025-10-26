@@ -191,11 +191,14 @@ class StudentClassController extends Controller
         $request->validate([
             'year_id' => 'required|exists:years,id',
             'class_program' => 'required|in:S2 PKU,S2 PKUP,S3 PKU',
-            'class_suffix' => 'required|in:A,B,C,D',
+            'class_suffix' => 'nullable|in:A,B,C,D',
         ]);
 
-        // Gabungkan class_program dan class_suffix menjadi name
-        $className = $request->class_program . ' ' . $request->class_suffix;
+        // Normalisasi: jika suffix kosong, set ke null
+        $suffix = $request->filled('class_suffix') ? $request->class_suffix : null;
+
+        // Gabungkan program dan suffix (tanpa spasi berlebih)
+        $className = $suffix ? "{$request->class_program} {$suffix}" : $request->class_program;
 
         // Validasi uniqueness (ignore current record)
         $exists = StudentClass::where('name', $className)

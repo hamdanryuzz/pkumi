@@ -217,7 +217,7 @@
                                 </div>
 
                                 <!-- View Button -->
-                                <a href="{{ route('student-classes.show', $class->id) }}" 
+                                <a href="{{ route('student_classes.show', $class->id) }}" 
                                    class="block w-full px-4 py-2 bg-indigo-600 text-white text-sm font-semibold text-center rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200">
                                     Lihat Detail Kelas
                                 </a>
