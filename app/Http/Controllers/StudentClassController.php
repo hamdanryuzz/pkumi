@@ -86,28 +86,36 @@ class StudentClassController extends Controller
     {
         $request->validate([
             'year_id' => 'required|exists:years,id',
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('student_classes', 'name')->where(function ($query) use ($request) {
-                    return $query->where('year_id', $request->year_id);
-                }), // Unik per tahun
-            ],
+            'class_program' => 'required|in:S2 PKU,S2 PKUP,S3 PKU',
+            'class_suffix' => 'nullable|in:A,B,C,D',
         ]);
+
+        // Normalisasi: '' -> null
+        $suffix = $request->filled('class_suffix') ? $request->class_suffix : null;
+
+        // Rakit name tanpa spasi berlebih
+        $className = $suffix ? "{$request->class_program} {$suffix}" : $request->class_program;
+
+        // Validasi uniqueness
+        $exists = StudentClass::where('name', $className)
+            ->where('year_id', $request->year_id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['class_suffix' => 'Kelas ' . $className . ' untuk tahun ini sudah ada.'])
+                ->withInput();
+        }
 
         try {
             StudentClass::create([
                 'year_id' => $request->year_id,
-                'name' => $request->name,
+                'name' => $className,
             ]);
 
-            Log::info('Kelas siswa baru dibuat', ['name' => $request->name, 'year_id' => $request->year_id]);
-
+            Log::info('Kelas siswa baru dibuat', ['name' => $className, 'year_id' => $request->year_id]);
             return redirect()->route('student_classes.index')->with('success', 'Kelas berhasil dibuat.');
         } catch (\Exception $e) {
             Log::error('Gagal membuat kelas siswa', ['error' => $e->getMessage()]);
-
             return back()->withErrors(['error' => 'Terjadi kesalahan saat membuat kelas. Silakan coba lagi.']);
         }
     }
@@ -182,28 +190,34 @@ class StudentClassController extends Controller
 
         $request->validate([
             'year_id' => 'required|exists:years,id',
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('student_classes', 'name')->ignore($id)->where(function ($query) use ($request) {
-                    return $query->where('year_id', $request->year_id);
-                }), // Unik per tahun, ignore ID saat edit
-            ],
+            'class_program' => 'required|in:S2 PKU,S2 PKUP,S3 PKU',
+            'class_suffix' => 'required|in:A,B,C,D',
         ]);
+
+        // Gabungkan class_program dan class_suffix menjadi name
+        $className = $request->class_program . ' ' . $request->class_suffix;
+
+        // Validasi uniqueness (ignore current record)
+        $exists = StudentClass::where('name', $className)
+            ->where('year_id', $request->year_id)
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['class_suffix' => 'Kelas ' . $className . ' untuk tahun ini sudah ada.'])
+                ->withInput();
+        }
 
         try {
             $studentClass->update([
                 'year_id' => $request->year_id,
-                'name' => $request->name,
+                'name' => $className,
             ]);
 
-            Log::info('Kelas siswa diupdate', ['id' => $id, 'name' => $request->name]);
-
+            Log::info('Kelas siswa diupdate', ['id' => $id, 'name' => $className]);
             return redirect()->route('student_classes.index')->with('success', 'Kelas berhasil diupdate.');
         } catch (\Exception $e) {
             Log::error('Gagal update kelas siswa', ['id' => $id, 'error' => $e->getMessage()]);
-
             return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate kelas. Silakan coba lagi.']);
         }
     }
