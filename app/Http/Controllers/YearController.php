@@ -3,25 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Year;
+use App\Models\Period;
 use Illuminate\Http\Request;
 
 class YearController extends Controller
 {
     /**
-     * Menampilkan semua data tahun.
+     * Menampilkan daftar tahun dengan filter period dan search.
      */
     public function index(Request $request)
     {
         $search = $request->input('search');
-        
+        $periodFilter = $request->input('period_id');
+
+        $periods = Period::orderBy('name')->get();
+
         $years = Year::query()
+            ->with('period')
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', '%' . $search . '%');
             })
+            ->when($periodFilter, function ($query, $periodFilter) {
+                return $query->where('period_id', $periodFilter);
+            })
             ->latest()
             ->get();
-            
-        return view('years.index', compact('years', 'search'));
+
+        return view('years.index', compact('years', 'search', 'periods', 'periodFilter'));
     }
 
     /**
@@ -29,7 +37,8 @@ class YearController extends Controller
      */
     public function create()
     {
-        return view('years.create');
+        $periods = Period::orderBy('name')->get();
+        return view('years.create', compact('periods'));
     }
 
     /**
@@ -38,22 +47,35 @@ class YearController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|unique:years,name',
+            'year_number' => 'required|string',
+            'semester' => 'required|in:Ganjil,Genap',
+            'period_id' => 'required|exists:periods,id',
         ]);
+
+        $name = 'Angkatan ' . $request->year_number . ' ' . $request->semester;
 
         Year::create([
-            'name' => $request->name,
+            'name' => $name,
+            'period_id' => $request->period_id,
         ]);
 
-        return redirect()->route('years.index')->with('success', 'Year created successfully.');
+        return redirect()->route('years.index')->with('success', 'Angkatan berhasil ditambahkan.');
     }
 
     /**
-     * Menampilkan detail tahun (opsional, jarang dipakai di web CRUD).
+     * Menampilkan detail tahun.
      */
     public function show($id)
     {
-        $year = Year::findOrFail($id);
+        $year = Year::with([
+            'period',
+            'studentClasses' => function($query) {
+                $query->withCount('students')
+                    ->withCount('enrollments')
+                    ->orderBy('name');
+            }
+        ])->findOrFail($id);
+
         return view('years.show', compact('year'));
     }
 
@@ -63,7 +85,14 @@ class YearController extends Controller
     public function edit($id)
     {
         $year = Year::findOrFail($id);
-        return view('years.edit', compact('year'));
+        $periods = Period::orderBy('name')->get();
+        
+        // Parse existing name to extract year_number and semester
+        $nameParts = explode(' ', $year->name);
+        $yearNumber = isset($nameParts[1]) ? $nameParts[1] : '';
+        $semester = isset($nameParts[2]) ? $nameParts[2] : 'Ganjil';
+
+        return view('years.edit', compact('year', 'periods', 'yearNumber', 'semester'));
     }
 
     /**
@@ -72,16 +101,21 @@ class YearController extends Controller
     public function update(Request $request, $id)
     {
         $year = Year::findOrFail($id);
-
+        
         $request->validate([
-            'name' => 'required|string|unique:years,name,' . $year->id,
+            'year_number' => 'required|string',
+            'semester' => 'required|in:Ganjil,Genap',
+            'period_id' => 'required|exists:periods,id',
         ]);
+
+        $name = 'Angkatan ' . $request->year_number . ' ' . $request->semester;
 
         $year->update([
-            'name' => $request->name,
+            'name' => $name,
+            'period_id' => $request->period_id,
         ]);
 
-        return redirect()->route('years.index')->with('success', 'Year updated successfully.');
+        return redirect()->route('years.index')->with('success', 'Angkatan berhasil diperbarui.');
     }
 
     /**
@@ -92,6 +126,6 @@ class YearController extends Controller
         $year = Year::findOrFail($id);
         $year->delete();
 
-        return redirect()->route('years.index')->with('success', 'Year deleted successfully.');
+        return redirect()->route('years.index')->with('success', 'Angkatan berhasil dihapus.');
     }
 }

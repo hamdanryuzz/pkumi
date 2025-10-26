@@ -9,7 +9,12 @@ class Year extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['period_id', 'name'];
+
+    public function period()
+    {
+        return $this->belongsTo(Period::class);
+    }
 
     public function students()
     {

@@ -20,6 +20,11 @@ class Period extends Model
         'status' => 'string',
     ];
 
+    public function years(): HasMany
+    {
+        return $this->hasMany(Year::class);
+    }
+
     /**
      * Relationship with Semester model
      * One Period has many Semesters
