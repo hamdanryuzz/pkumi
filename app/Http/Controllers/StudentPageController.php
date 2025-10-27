@@ -10,6 +10,10 @@ use App\Models\Grade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+// Hapus komentar pada use statement untuk model submission
+use App\Models\RubrikSubmission;
+use App\Models\KhazanahSubmission;
+use App\Models\Student; // Pastikan model Student di-import
 
 class StudentPageController extends Controller
 {
@@ -131,4 +135,112 @@ class StudentPageController extends Controller
 
         return back()->with('success', 'Profil Anda berhasil diperbarui!');
     }
+    public function showRubrikForm()
+    {
+        // Pastikan mahasiswa login
+        if (!Auth::guard('student')->check()) {
+            return redirect()->route('login')->with('error', 'Silakan login.');
+        }
+        // Kamu bisa mengirim data 'tags' atau kategori ke view ini jika perlu
+        return view('mahasiswa.rubrik-opini.create');
+    }
+
+    /**
+     * Menyimpan data submission Rubrik Opini dari mahasiswa.
+     */
+    public function storeRubrik(Request $request)
+    {
+         // Pastikan mahasiswa login
+        $student = Auth::guard('student')->user();
+        if (!$student) {
+            return redirect()->route('login')->with('error', 'Silakan login.');
+        }
+
+        // Validasi data input
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'ringkasan' => 'required|string|max:500', // Sesuaikan max length jika perlu
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Max 2MB
+            'tags' => 'nullable|string|max:255', // Asumsi tags dipisah koma
+            'konten' => 'required|string',
+        ]);
+
+        // --- Logika Penyimpanan Data ---
+        // 1. Proses upload gambar jika ada
+        $imagePath = null;
+        if ($request->hasFile('cover_image')) {
+            // Simpan gambar dan dapatkan path-nya
+            $imagePath = $request->file('cover_image')->store('rubrik_covers', 'public'); 
+             // Pastikan storage:link sudah dijalankan
+        }
+
+        // 2. Buat record baru di database menggunakan Model
+        RubrikSubmission::create([
+            'student_id' => $student->id,
+            'title' => $validated['judul'],
+            'summary' => $validated['ringkasan'],
+            'content' => $validated['konten'],
+            'tags' => $validated['tags'],
+            'cover_image_path' => $imagePath,
+            'status' => 'pending', // Status awal
+        ]);
+
+        // Redirect kembali ke dashboard dengan pesan sukses
+        return redirect()->route('mahasiswa.dashboard')->with('success', 'Rubrik Opini berhasil dikirim dan sedang menunggu review.');
+    }
+
+    /**
+     * Menampilkan form untuk submit Khazanah.
+     */
+    public function showKhazanahForm()
+    {
+        // Pastikan mahasiswa login
+        if (!Auth::guard('student')->check()) {
+            return redirect()->route('login')->with('error', 'Silakan login.');
+        }
+        return view('mahasiswa.khazanah.create');
+    }
+
+    /**
+     * Menyimpan data submission Khazanah dari mahasiswa.
+     */
+    public function storeKhazanah(Request $request)
+    {
+        // Pastikan mahasiswa login
+        $student = Auth::guard('student')->user();
+        if (!$student) {
+            return redirect()->route('login')->with('error', 'Silakan login.');
+        }
+
+        // Validasi data input
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'ringkasan' => 'required|string|max:500',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'tags' => 'nullable|string|max:255',
+            'konten' => 'required|string',
+        ]);
+
+        // --- Logika Penyimpanan Data ---
+        $imagePath = null;
+        if ($request->hasFile('cover_image')) {
+             // Simpan gambar dan dapatkan path-nya
+            $imagePath = $request->file('cover_image')->store('khazanah_covers', 'public');
+            // Pastikan storage:link sudah dijalankan
+        }
+
+        // Buat record baru di database menggunakan Model
+        KhazanahSubmission::create([
+            'student_id' => $student->id,
+            'title' => $validated['judul'],
+            'summary' => $validated['ringkasan'],
+            'content' => $validated['konten'],
+            'tags' => $validated['tags'],
+            'cover_image_path' => $imagePath,
+            'status' => 'pending', // Status awal
+        ]);
+
+        return redirect()->route('mahasiswa.dashboard')->with('success', 'Khazanah berhasil dikirim dan sedang menunggu review.');
+    }
 }
+
