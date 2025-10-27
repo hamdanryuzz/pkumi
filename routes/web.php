@@ -36,7 +36,7 @@ Route::middleware('guest')->group(function () {
 // Rute untuk logout
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-// Gunakan middleware 'auth' untuk rute yang hanya bisa diakses setelah login
+// Gunakan middleware 'auth' untuk rute yang only bisa diakses setelah login
 Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -115,4 +115,12 @@ Route::middleware(['auth:student'])->group(function () {
     Route::get('/', [StudentPageController::class, 'index'])->name('mahasiswa.dashboard');
     Route::get('/profile', [StudentPageController::class, 'profile'])->name('mahasiswa.profile'); 
     Route::put('/profile', [StudentPageController::class, 'updateProfile'])->name('mahasiswa.profile.update');
+
+    // BARU: Rute untuk Submit Rubrik Opini
+    Route::get('/rubrik-opini/create', [StudentPageController::class, 'showRubrikForm'])->name('mahasiswa.rubrik-opini.create');
+    Route::post('/rubrik-opini', [StudentPageController::class, 'storeRubrik'])->name('mahasiswa.rubrik-opini.store');
+
+    // BARU: Rute untuk Submit Khazanah
+    Route::get('/khazanah/create', [StudentPageController::class, 'showKhazanahForm'])->name('mahasiswa.khazanah.create');
+    Route::post('/khazanah', [StudentPageController::class, 'storeKhazanah'])->name('mahasiswa.khazanah.store');
 });
