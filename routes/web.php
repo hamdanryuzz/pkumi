@@ -102,6 +102,7 @@ Route::middleware('auth:web')->group(function () {
     Route::get('enrollments/export', [EnrollmentController::class, 'export'])->name('enrollments.export');
     Route::get('api/enrolled-students', [EnrollmentController::class, 'getEnrolledStudents'])->name('api.enrolled-students');
     Route::get('/enrollments/courses-by-class', [EnrollmentController::class, 'getCoursesByClass'])->name('enrollments.courses-by-class');
+    Route::get('/enrollments/classes-by-year', [EnrollmentController::class, 'getClassesByYear'])->name('enrollments.classesByYear');
     Route::resource('enrollments', EnrollmentController::class);
 });
 

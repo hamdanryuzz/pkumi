@@ -67,7 +67,7 @@ class EnrollmentController extends Controller
     public function create(Request $request)
     {
         $semesters = Semester::orderBy('start_date', 'desc')->get();
-        
+        $years = Year::orderBy('name', 'desc')->get();
         $studentClasses = StudentClass::orderBy('name')->get();
         
         // Courses akan difilter via AJAX berdasarkan student_class_id
@@ -88,6 +88,7 @@ class EnrollmentController extends Controller
         
         return view('enrollments.create', compact(
             'semesters',
+            'years',
             'courses',
             'studentClasses',
             'selectedSemester',
@@ -154,9 +155,10 @@ class EnrollmentController extends Controller
     {
         $semesters = Semester::orderBy('start_date', 'desc')->get();
         $courses = Course::orderBy('name')->get();
+        $years = Year::orderBy('name', 'desc')->get();
         $studentClasses = StudentClass::with('year')->orderBy('name')->get();
 
-        return view('enrollments.edit', compact('enrollment', 'semesters', 'courses', 'studentClasses'));
+        return view('enrollments.edit', compact('enrollment', 'semesters', 'courses', 'years', 'studentClasses'));
     }
 
     /**
@@ -364,6 +366,25 @@ class EnrollmentController extends Controller
         return response()->json([
             'courses' => $courses,
             'count' => $courses->count()
+        ]);
+    }
+
+    /**
+     * Get student classes by year (AJAX endpoint)
+     */
+    public function getClassesByYear(Request $request)
+    {
+        $request->validate([
+            'year_id' => 'required|exists:years,id'
+        ]);
+        
+        $studentClasses = StudentClass::where('year_id', $request->year_id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+        
+        return response()->json([
+            'student_classes' => $studentClasses,
+            'count' => $studentClasses->count()
         ]);
     }
 }

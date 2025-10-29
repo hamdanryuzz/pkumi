@@ -154,21 +154,43 @@
                             </div>
                         </div>
 
-                        <!-- Student Class -->
-                        <div>
-                            <label for="student_class_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Kelas <span class="text-red-500">*</span>
+                        <!-- Filter Angkatan (Year) -->
+                        <div class="mb-4">
+                            <label for="year_filter_single" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <i class="fas fa-filter text-gray-500 mr-1"></i>Angkatan
                             </label>
-                            <select name="student_class_id" id="student_class_id" 
-                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" 
-                                    required onchange="handleStudentClassChange(this.value)">
-                                <option value="">-- Pilih Kelas --</option>
-                                @foreach($studentClasses as $class)
-                                    <option value="{{ $class->id }}" {{ old('student_class_id') == $class->id ? 'selected' : '' }}>
-                                        {{ $class->name }} ({{ $class->year->name }})
+                            <select id="year_id" name="year_id" 
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm">
+                                <option value="">-- Semua Angkatan --</option>
+                                @foreach($years ?? [] as $year)
+                                    <option value="{{ $year->id }}" {{ ($selectedYear ?? '') == $year->id ? 'selected' : '' }}>
+                                        {{ $year->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Pilih angkatan untuk memfilter kelas yang tersedia
+                            </p>
+                        </div>
+
+                        <!-- Filter Kelas -->
+                        <div class="mb-4">
+                            <label for="student_class_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Kelas <span class="text-red-500">*</span>
+                            </label>
+                            <select id="student_class_id" name="student_class_id" required
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm" disabled>
+                                <option value="">-- Pilih Kelas --</option>
+                                @foreach($studentClasses as $class)
+                                    <option value="{{ $class->id }}" data-year-id="{{ $class->year_id ?? '' }}" 
+                                        {{ ($selectedClass ?? '') == $class->id ? 'selected' : '' }}>
+                                        {{ $class->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('student_class_id')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Course -->
@@ -255,6 +277,25 @@
                                 </select>
                             </div>
 
+                            <!-- Filter Angkatan (Year) -->
+                        <div class="mb-4">
+                            <label for="year_filter_single" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <i class="fas fa-filter text-gray-500 mr-1"></i>Angkatan
+                            </label>
+                            <select id="bulk_year_id" name="bulk_year_id" 
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm">
+                                <option value="">-- Pilih Angkatan --</option>
+                                @foreach($years ?? [] as $year)
+                                    <option value="{{ $year->id }}" {{ ($selectedYear ?? '') == $year->id ? 'selected' : '' }}>
+                                        {{ $year->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Pilih angkatan untuk memfilter kelas yang tersedia
+                            </p>
+                        </div>
+
                             <!-- Student Class -->
                             <div>
                                 <label for="bulk_student_class_id" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -262,7 +303,7 @@
                                 </label>
                                 <select name="student_class_id" id="bulk_student_class_id" 
                                         class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all" 
-                                        required onchange="handleBulkClassChange(this.value)">
+                                        required onchange="handleBulkClassChange(this.value)" disabled>
                                     <option value="">-- Pilih Kelas --</option>
                                     @foreach($studentClasses as $class)
                                         <option value="{{ $class->id }}">
@@ -370,6 +411,13 @@ $(document).ready(function() {
         width: '100%',
         theme: 'default'
     });
+
+    $('#year_id').select2({
+        placeholder: '-- Pilih Angkatan --',
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+    });
     
     $('#student_class_id').select2({
         placeholder: '-- Pilih Kelas --',
@@ -396,6 +444,14 @@ $(document).ready(function() {
     // Initialize Select2 for Bulk Enrollment
     $('#bulk_semester_id').select2({
         placeholder: '-- Pilih Semester --',
+        allowClear: true,
+        width: '100%',
+        containerCssClass: 'select2-green',
+        theme: 'default'
+    });
+
+    $('#bulk_year_id').select2({
+        placeholder: '-- Pilih Angkatan --',
         allowClear: true,
         width: '100%',
         containerCssClass: 'select2-green',
@@ -447,7 +503,7 @@ function switchTab(tab) {
 
 // Initialize with single tab active
 document.addEventListener('DOMContentLoaded', function() {
-    switchTab('single');
+    switchTab('bulk');
 });
 
 // Single enrollment handler
@@ -622,5 +678,183 @@ function updateBulkCount() {
 }
 
 console.log('=== SCRIPT READY ===');
+</script>
+
+<script>
+$(document).ready(function() {
+
+    // Simpan semua data kelas untuk filtering
+    const allStudentClasses = @json($studentClasses);
+
+    // SINGLE ENROLLMENT SECTION
+    // Filter Angkatan - untuk memfilter dropdown kelas
+    $('#year_id').on('change', function() {
+        const yearId = $(this).val();
+        const $classDropdown = $('#student_class_id');
+        const $courseDropdown = $('#course_id');
+
+        // Reset course dropdown
+        $courseDropdown.prop('disabled', true)
+            .html('<option value="">-- Pilih kelas terlebih dahulu --</option>')
+            .trigger('change');
+
+        if (yearId) {
+            // Filter kelas berdasarkan year_id
+            const filteredClasses = allStudentClasses.filter(c => c.year_id == yearId);
+            
+            $classDropdown.html('<option value="">-- Pilih Kelas --</option>');
+            
+            if (filteredClasses.length > 0) {
+                filteredClasses.forEach(function(studentClass) {
+                    $classDropdown.append(
+                        `<option value="${studentClass.id}" data-year-id="${studentClass.year_id}">${studentClass.name}</option>`
+                    );
+                });
+                $classDropdown.prop('disabled', false);
+            } else {
+                $classDropdown.html('<option value="">-- Tidak ada kelas untuk angkatan ini --</option>');
+                $classDropdown.prop('disabled', true);
+            }
+        } else {
+            // Tampilkan semua kelas jika tidak ada filter
+            $classDropdown.html('<option value="">-- Pilih Kelas --</option>');
+            allStudentClasses.forEach(function(studentClass) {
+                $classDropdown.append(
+                    `<option value="${studentClass.id}" data-year-id="${studentClass.year_id}">${studentClass.name}</option>`
+                );
+            });
+            $classDropdown.prop('disabled', false);
+        }
+
+        // Trigger change untuk update Select2
+        $classDropdown.trigger('change');
+    });
+
+    // Handler untuk dropdown Kelas (existing functionality)
+    $('#student_class_id').on('change', function() {
+        const classId = $(this).val();
+        const $courseDropdown = $('#course_id');
+
+        if (classId) {
+            $courseDropdown.prop('disabled', true)
+                .html('<option value="">-- Memuat mata kuliah... --</option>');
+
+            // AJAX call ke server untuk mendapatkan courses
+            $.ajax({
+                url: '{{ route("enrollments.courses-by-class") }}',
+                type: 'GET',
+                data: { student_class_id: classId },
+                success: function(response) {
+                    $courseDropdown.html('<option value="">-- Pilih Mata Kuliah --</option>');
+                    
+                    if (response.courses && response.courses.length > 0) {
+                        response.courses.forEach(function(course) {
+                            $courseDropdown.append(
+                                `<option value="${course.id}">${course.name} (${course.code})</option>`
+                            );
+                        });
+                        $courseDropdown.prop('disabled', false);
+                    } else {
+                        $courseDropdown.html('<option value="">-- Tidak ada mata kuliah --</option>');
+                    }
+                    $courseDropdown.trigger('change');
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr);
+                    $courseDropdown.html('<option value="">-- Error memuat data --</option>');
+                }
+            });
+        } else {
+            $courseDropdown.prop('disabled', true)
+                .html('<option value="">-- Pilih kelas terlebih dahulu --</option>')
+                .trigger('change');
+        }
+    });
+
+    // BULK ENROLLMENT SECTION
+    // Filter Angkatan - untuk memfilter dropdown kelas
+    $('#bulk_year_id').on('change', function() {
+        const yearId = $(this).val();
+        const $classDropdown = $('#bulk_student_class_id');
+        const $courseDropdown = $('#course_id');
+
+        // Reset course dropdown
+        $courseDropdown.prop('disabled', true)
+            .html('<option value="">-- Pilih kelas terlebih dahulu --</option>')
+            .trigger('change');
+
+        if (yearId) {
+            // Filter kelas berdasarkan year_id
+            const filteredClasses = allStudentClasses.filter(c => c.year_id == yearId);
+            
+            $classDropdown.html('<option value="">-- Pilih Kelas --</option>');
+            
+            if (filteredClasses.length > 0) {
+                filteredClasses.forEach(function(studentClass) {
+                    $classDropdown.append(
+                        `<option value="${studentClass.id}" data-year-id="${studentClass.year_id}">${studentClass.name}</option>`
+                    );
+                });
+                $classDropdown.prop('disabled', false);
+            } else {
+                $classDropdown.html('<option value="">-- Tidak ada kelas untuk angkatan ini --</option>');
+                $classDropdown.prop('disabled', true);
+            }
+        } else {
+            // Tampilkan semua kelas jika tidak ada filter
+            $classDropdown.html('<option value="">-- Pilih Kelas --</option>');
+            allStudentClasses.forEach(function(studentClass) {
+                $classDropdown.append(
+                    `<option value="${studentClass.id}" data-year-id="${studentClass.year_id}">${studentClass.name}</option>`
+                );
+            });
+            $classDropdown.prop('disabled', false);
+        }
+
+        // Trigger change untuk update Select2
+        $classDropdown.trigger('change');
+    });
+
+    // Handler untuk dropdown Kelas (existing functionality)
+    $('#bulk_student_class_id').on('change', function() {
+        const classId = $(this).val();
+        const $courseDropdown = $('#course_id');
+
+        if (classId) {
+            $courseDropdown.prop('disabled', true)
+                .html('<option value="">-- Memuat mata kuliah... --</option>');
+
+            // AJAX call ke server untuk mendapatkan courses
+            $.ajax({
+                url: '{{ route("enrollments.courses-by-class") }}',
+                type: 'GET',
+                data: { student_class_id: classId },
+                success: function(response) {
+                    $courseDropdown.html('<option value="">-- Pilih Mata Kuliah --</option>');
+                    
+                    if (response.courses && response.courses.length > 0) {
+                        response.courses.forEach(function(course) {
+                            $courseDropdown.append(
+                                `<option value="${course.id}">${course.name} (${course.code})</option>`
+                            );
+                        });
+                        $courseDropdown.prop('disabled', false);
+                    } else {
+                        $courseDropdown.html('<option value="">-- Tidak ada mata kuliah --</option>');
+                    }
+                    $courseDropdown.trigger('change');
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr);
+                    $courseDropdown.html('<option value="">-- Error memuat data --</option>');
+                }
+            });
+        } else {
+            $courseDropdown.prop('disabled', true)
+                .html('<option value="">-- Pilih kelas terlebih dahulu --</option>')
+                .trigger('change');
+        }
+    });
+});
 </script>
 @endsection
