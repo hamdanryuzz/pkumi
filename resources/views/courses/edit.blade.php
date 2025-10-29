@@ -1,183 +1,244 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-8">
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Edit Mata Kuliah</h1>
-            <p class="text-gray-600 mt-1">Perbarui informasi mata kuliah: {{ $course->name }}</p>
-        </div>
-        <div class="flex space-x-2">
-            <a href="{{ route('courses.show', $course) }}" 
-               class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                <i class="fas fa-eye mr-2"></i>Lihat
-            </a>
-            <a href="{{ route('courses.index') }}" 
-               class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                <i class="fas fa-arrow-left mr-2"></i>Kembali
-            </a>
-        </div>
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <i class="fas fa-edit mr-2 text-yellow-600"></i>Edit Mata Kuliah
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+            Perbarui informasi mata kuliah: <span class="font-semibold">{{ $course->name }}</span>
+        </p>
     </div>
 
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{{ route('courses.index') }}" class="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400">
+                    <i class="fas fa-home mr-2"></i>Mata Kuliah
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500 dark:text-gray-400">Edit</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
     <!-- Form Card -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="mb-6">
-            <h2 class="text-lg font-semibold text-gray-900">Form Edit Mata Kuliah</h2>
-            <p class="text-sm text-gray-600 mt-1">Perbarui informasi mata kuliah yang sudah ada</p>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Informasi Mata Kuliah
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Perbarui informasi mata kuliah yang sudah ada
+            </p>
         </div>
 
-        <form method="POST" action="{{ route('courses.update', $course) }}">
+        @if ($errors->any())
+            <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+                <div class="flex items-start">
+                    <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400 mt-0.5 mr-3"></i>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-medium text-red-800 dark:text-red-300 mb-2">
+                            Terdapat beberapa kesalahan:
+                        </h3>
+                        <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-400 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <form action="{{ route('courses.update', $course->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            <!-- Course Code -->
-            <div class="mb-6">
-                <label for="code" class="block text-sm font-medium text-gray-700 mb-2">
-                    Kode Mata Kuliah <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       id="code" 
-                       name="code" 
-                       value="{{ old('code', $course->code) }}" 
-                       placeholder="Masukkan kode mata kuliah"
-                       class="w-full px-3 py-2 border {{ $errors->has('code') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                       required>
-                @error('code')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
-                <p class="mt-1 text-xs text-gray-500">Kode unik untuk mata kuliah ini</p>
+            <div class="space-y-6">
+                <!-- Kode Mata Kuliah -->
+                <div>
+                    <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Kode Mata Kuliah <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="code" 
+                           id="code" 
+                           value="{{ old('code', $course->code) }}"
+                           placeholder="Contoh: MK001"
+                           required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 @error('code') border-red-500 @enderror">
+                    @error('code')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-info-circle mr-1"></i>Kode unik untuk mata kuliah ini
+                    </p>
+                </div>
+
+                <!-- Nama Mata Kuliah -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Nama Mata Kuliah <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="name" 
+                           id="name" 
+                           value="{{ old('name', $course->name) }}"
+                           placeholder="Contoh: Pemrograman Web"
+                           required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 @error('name') border-red-500 @enderror">
+                    @error('name')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Filter Angkatan -->
+                <div>
+                    <label for="year_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-calendar-alt mr-1"></i>Filter Angkatan
+                    </label>
+                    <select id="year_filter" class="select2-year w-full">
+                        <option value="">-- Pilih Angkatan untuk Filter --</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year->id }}" 
+                                    {{ old('year_filter', $course->studentClass->year_id ?? '') == $year->id ? 'selected' : '' }}>
+                                {{ $year->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-info-circle mr-1"></i>Pilih angkatan untuk memfilter kelas
+                    </p>
+                </div>
+
+                <!-- Kelas -->
+                <div>
+                    <label for="student_class_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Kelas <span class="text-red-500">*</span>
+                    </label>
+                    <select name="student_class_id" 
+                            id="student_class_id" 
+                            required
+                            class="select2-class w-full @error('student_class_id') border-red-500 @enderror">
+                        <option value="">-- Pilih Kelas --</option>
+                        @foreach($studentClasses as $class)
+                            <option value="{{ $class->id }}" 
+                                    data-year-id="{{ $class->year_id }}"
+                                    {{ old('student_class_id', $course->student_class_id) == $class->id ? 'selected' : '' }}>
+                                {{ $class->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('student_class_id')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
-            <!-- Course Name -->
-            <div class="mb-6">
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                    Nama Mata Kuliah <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       id="name" 
-                       name="name" 
-                       value="{{ old('name', $course->name) }}" 
-                       placeholder="Masukkan nama mata kuliah"
-                       class="w-full px-3 py-2 border {{ $errors->has('name') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                       required>
-                @error('name')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Filter Angkatan -->
-            <div class="mb-4">
-                <label for="year_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Filter Angkatan
-                </label>
-                <select id="year_filter" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="">-- Pilih Angkatan --</option>
-                    @foreach($years as $year)
-                        <option value="{{ $year->id }}" 
-                                {{ old('year_filter', $course->studentClass->year_id ?? '') == $year->id ? 'selected' : '' }}>
-                            {{ $year->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Dropdown Kelas (Student Class) -->
-            <div class="mb-4">
-                <label for="student_class_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Kelas <span class="text-red-500">*</span>
-                </label>
-                <select name="student_class_id" 
-                        id="student_class_id" 
-                        required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="">-- Pilih Kelas --</option>
-                    @foreach($studentClasses as $class)
-                        <option value="{{ $class->id }}" 
-                                data-year="{{ $class->year_id }}"
-                                {{ old('student_class_id', $course->student_class_id) == $class->id ? 'selected' : '' }}>
-                            {{ $class->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('student_class_id')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Form Actions -->
-            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end space-x-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <a href="{{ route('courses.index') }}" 
-                   class="px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition duration-200">
-                    Batal
+                   class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-times mr-2"></i>Batal
                 </a>
                 <button type="submit" 
-                        class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition duration-200">
-                    <i class="fas fa-save mr-2"></i>Update Mata Kuliah
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center shadow-md hover:shadow-lg">
+                    <i class="fas fa-save mr-2"></i>Update
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Data Kelas dalam JSON untuk JavaScript -->
+<!-- JavaScript untuk Select2 dan Cascade Dropdown -->
 <script>
-    const studentClassesData = @json($studentClasses);
-    const currentYearId = {{ $course->studentClass->year_id ?? 'null' }};
-    const currentClassId = {{ old('student_class_id', $course->student_class_id) }};
-</script>
-
-<!-- JavaScript untuk Cascade Dropdown -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const yearFilter = document.getElementById('year_filter');
-    const studentClassSelect = document.getElementById('student_class_id');
-    
-    // Fungsi untuk filter dan populate dropdown kelas
-    function populateClasses(yearId, selectedClassId = null) {
-        studentClassSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-        
-        if (!yearId) {
-            return;
+$(document).ready(function() {
+    // Simpan semua data kelas
+    const allClassOptions = [];
+    $('#student_class_id option').each(function() {
+        if ($(this).val() !== '') {
+            allClassOptions.push({
+                id: $(this).val(),
+                text: $(this).text(),
+                yearId: $(this).data('year-id')
+            });
         }
-        
-        const filteredClasses = studentClassesData.filter(
-            studentClass => studentClass.year_id == yearId
+    });
+    
+    const currentYearId = {{ $course->studentClass->year_id ?? 'null' }};
+    const currentClassId = '{{ old('student_class_id', $course->student_class_id) }}';
+    
+    // Initialize Select2 untuk Filter Angkatan
+    $('#year_filter').select2({
+        placeholder: '-- Pilih Angkatan untuk Filter --',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Initialize Select2 untuk Kelas
+    $('#student_class_id').select2({
+        placeholder: '-- Pilih Kelas --',
+        allowClear: false,
+        width: '100%'
+    });
+    
+    // Fungsi untuk update options kelas berdasarkan angkatan
+    function updateClassOptions(yearId, selectedClassId = null) {
+        // Clear options
+        $('#student_class_id').empty().append(
+            $('<option>', { value: '', text: '-- Pilih Kelas --' })
         );
         
-        if (filteredClasses.length > 0) {
-            studentClassSelect.disabled = false;
-            filteredClasses.forEach(studentClass => {
-                const option = document.createElement('option');
-                option.value = studentClass.id;
-                option.textContent = studentClass.name;
-                if (selectedClassId && studentClass.id == selectedClassId) {
-                    option.selected = true;
+        let filteredOptions = allClassOptions;
+        
+        // Filter berdasarkan angkatan jika dipilih
+        if (yearId && yearId !== '' && yearId !== 'null') {
+            filteredOptions = allClassOptions.filter(option => option.yearId == yearId);
+        }
+        
+        if (filteredOptions.length > 0) {
+            filteredOptions.forEach(option => {
+                const newOption = $('<option>', {
+                    value: option.id,
+                    text: option.text,
+                    'data-year-id': option.yearId
+                });
+                
+                // Set selected jika ini adalah kelas yang dipilih
+                if (selectedClassId && option.id == selectedClassId) {
+                    newOption.prop('selected', true);
                 }
-                studentClassSelect.appendChild(option);
+                
+                $('#student_class_id').append(newOption);
             });
         } else {
-            studentClassSelect.innerHTML = '<option value="">-- Tidak ada kelas untuk angkatan ini --</option>';
+            $('#student_class_id').append(
+                $('<option>', { value: '', text: '-- Tidak ada kelas untuk angkatan ini --' })
+            );
         }
+        
+        // Trigger change untuk update Select2 display
+        $('#student_class_id').trigger('change');
     }
     
-    // Populate dropdown saat halaman load (untuk edit mode)
-    if (currentYearId) {
-        populateClasses(currentYearId, currentClassId);
+    // Initialize dengan data yang ada (untuk edit mode)
+    if (currentYearId && currentYearId !== 'null') {
+        updateClassOptions(currentYearId, currentClassId);
     }
     
     // Event listener untuk perubahan dropdown angkatan
-    yearFilter.addEventListener('change', function() {
-        const selectedYearId = this.value;
-        
-        if (selectedYearId === '') {
-            studentClassSelect.disabled = true;
-            studentClassSelect.innerHTML = '<option value="">-- Pilih angkatan terlebih dahulu --</option>';
-            return;
-        }
-        
-        populateClasses(selectedYearId);
+    $('#year_filter').on('change', function() {
+        const selectedYearId = $(this).val();
+        const currentSelectedClassId = $('#student_class_id').val();
+        updateClassOptions(selectedYearId, currentSelectedClassId);
     });
 });
 </script>

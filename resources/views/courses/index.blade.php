@@ -5,29 +5,11 @@
     <!-- Header Section -->
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            <i class="fas fa-book-open mr-2 text-blue-600"></i>Mata Kuliah
+            <i class="fas fa-book-open mr-2 text-blue-600"></i>Manage Mata Kuliah
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
             Kelola data mata kuliah sistem
         </p>
-    </div>
-
-    <!-- Stats Card -->
-    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 mb-6 text-white">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-blue-100 text-sm mb-1">Total Mata Kuliah</p>
-                <p class="text-3xl font-bold">{{ $courses->total() }}</p>
-                @if(request()->hasAny(['search', 'year_id', 'student_class_id']))
-                    <p class="text-blue-100 text-sm mt-2">
-                        ({{ $courses->count() }} ditampilkan setelah filter)
-                    </p>
-                @endif
-            </div>
-            <div class="bg-white/20 rounded-full p-4">
-                <i class="fas fa-book text-4xl"></i>
-            </div>
-        </div>
     </div>
 
     <!-- Filter Section -->
@@ -47,14 +29,14 @@
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                 </div>
 
-                <!-- Filter Angkatan (Year) -->
+                <!-- Filter Angkatan (Year) with Select2 -->
                 <div>
                     <label for="year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <i class="fas fa-calendar-alt mr-1"></i>Angkatan
                     </label>
                     <select name="year_id" 
                             id="year_id"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            class="select2-filter w-full">
                         <option value="">Semua Angkatan</option>
                         @foreach($years as $year)
                             <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
@@ -64,14 +46,14 @@
                     </select>
                 </div>
 
-                <!-- Filter Kelas (Student Class) -->
+                <!-- Filter Kelas (Student Class) with Select2 -->
                 <div>
                     <label for="student_class_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <i class="fas fa-users mr-1"></i>Kelas
                     </label>
                     <select name="student_class_id" 
                             id="student_class_id"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            class="select2-filter w-full">
                         <option value="">Semua Kelas</option>
                         @foreach($studentClasses as $class)
                             <option value="{{ $class->id }}" 
@@ -221,105 +203,84 @@
     </div>
 </div>
 
+<!-- JavaScript untuk Select2 dan Cascade Dropdown -->
 <script>
-    // ========== SELECT2 INITIALIZATION ==========
-    
-    /**
-     * Initialize Select2 for Year dropdown
-     */
-    $('.select2-year').select2({
-        placeholder: '-- Pilih Angkatan --',
-        allowClear: true,
-        width: '100%',
-        language: {
-            noResults: function() { return "Angkatan tidak ditemukan"; },
-            searching: function() { return "Mencari..."; }
-        }
-    });
-
-    /**
-     * Initialize Select2 for Class dropdown
-     */
-    $('.select2-class').select2({
-        placeholder: '-- Pilih Kelas --',
-        allowClear: true,
-        width: '100%',
-        language: {
-            noResults: function() { return "Kelas tidak ditemukan"; },
-            searching: function() { return "Mencari..."; }
-        }
-    });
-</script>
-
-<!-- JavaScript untuk Cascade Dropdown -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const yearFilter = document.getElementById('year_id');
-    const classFilter = document.getElementById('student_class_id');
-    
-    // Simpan semua option kelas dalam array
+$(document).ready(function() {
+    // Simpan semua data kelas
     const allClassOptions = [];
-    Array.from(classFilter.options).forEach(option => {
-        if (option.value !== '') { // Skip option "Semua Kelas"
+    $('#student_class_id option').each(function() {
+        if ($(this).val() !== '') {
             allClassOptions.push({
-                value: option.value,
-                text: option.text,
-                yearId: option.getAttribute('data-year-id'),
-                selected: option.selected
+                id: $(this).val(),
+                text: $(this).text(),
+                yearId: $(this).data('year-id')
             });
         }
     });
     
-    // Fungsi untuk update dropdown kelas berdasarkan angkatan
-    function updateClassDropdown() {
-        const selectedYearId = yearFilter.value;
-        const currentSelectedClassId = classFilter.value;
+    // Initialize Select2 untuk Angkatan
+    $('#year_id').select2({
+        placeholder: 'Pilih Angkatan...',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Initialize Select2 untuk Kelas
+    let classSelect2 = $('#student_class_id').select2({
+        placeholder: 'Pilih Kelas...',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Fungsi untuk update options kelas berdasarkan angkatan
+    function updateClassOptions(yearId) {
+        const currentValue = $('#student_class_id').val();
         
-        // Hapus semua option kecuali option pertama (Semua Kelas)
-        classFilter.innerHTML = '<option value="">Semua Kelas</option>';
+        // Clear dan rebuild options
+        $('#student_class_id').empty().append(
+            $('<option>', { value: '', text: 'Semua Kelas' })
+        );
         
-        // Jika tidak ada angkatan yang dipilih, tampilkan semua kelas
-        if (selectedYearId === '') {
-            allClassOptions.forEach(optionData => {
-                const option = new Option(optionData.text, optionData.value);
-                option.setAttribute('data-year-id', optionData.yearId);
-                if (optionData.value === currentSelectedClassId) {
-                    option.selected = true;
-                }
-                classFilter.add(option);
-            });
-        } else {
-            // Filter dan tampilkan hanya kelas yang sesuai dengan angkatan
-            const filteredClasses = allClassOptions.filter(
-                optionData => optionData.yearId === selectedYearId
-            );
-            
-            if (filteredClasses.length > 0) {
-                filteredClasses.forEach(optionData => {
-                    const option = new Option(optionData.text, optionData.value);
-                    option.setAttribute('data-year-id', optionData.yearId);
-                    if (optionData.value === currentSelectedClassId) {
-                        option.selected = true;
-                    }
-                    classFilter.add(option);
-                });
-            }
-            
-            // Reset pilihan kelas jika kelas yang dipilih tidak ada dalam filter
-            const availableClassIds = filteredClasses.map(c => c.value);
-            if (currentSelectedClassId && !availableClassIds.includes(currentSelectedClassId)) {
-                classFilter.value = '';
-            }
+        let filteredOptions = allClassOptions;
+        
+        // Filter berdasarkan angkatan jika dipilih
+        if (yearId && yearId !== '') {
+            filteredOptions = allClassOptions.filter(option => option.yearId == yearId);
         }
+        
+        // Tambahkan options yang sudah difilter
+        filteredOptions.forEach(option => {
+            const newOption = $('<option>', {
+                value: option.id,
+                text: option.text,
+                'data-year-id': option.yearId
+            });
+            $('#student_class_id').append(newOption);
+        });
+        
+        // Set kembali nilai yang dipilih jika masih ada
+        const availableIds = filteredOptions.map(o => o.id);
+        if (currentValue && availableIds.includes(currentValue)) {
+            $('#student_class_id').val(currentValue);
+        } else {
+            $('#student_class_id').val('');
+        }
+        
+        // Trigger change untuk update Select2 display
+        $('#student_class_id').trigger('change');
     }
     
     // Event listener untuk perubahan dropdown angkatan
-    yearFilter.addEventListener('change', function() {
-        updateClassDropdown();
+    $('#year_id').on('change', function() {
+        const selectedYearId = $(this).val();
+        updateClassOptions(selectedYearId);
     });
     
-    // Jalankan saat halaman load untuk maintain state
-    updateClassDropdown();
+    // Initialize dengan filter yang ada saat page load
+    const initialYearId = $('#year_id').val();
+    if (initialYearId) {
+        updateClassOptions(initialYearId);
+    }
 });
 </script>
 @endsection
