@@ -59,21 +59,31 @@
                 @enderror
             </div>
 
-            <!-- Student Class -->
-            <div class="mb-6">
-                <label for="student_class_id" class="block text-sm font-medium text-gray-700 mb-2">
+            <!-- Filter Angkatan -->
+            <div class="mb-4">
+                <label for="year_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Angkatan
+                </label>
+                <select id="year_filter" 
+                        class="select2-year w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">-- Pilih Angkatan --</option>
+                    @foreach($years as $year)
+                        <option value="{{ $year->id }}">{{ $year->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Dropdown Kelas (Student Class) -->
+            <div class="mb-4">
+                <label for="student_class_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Kelas <span class="text-red-500">*</span>
                 </label>
-                <select id="student_class_id" 
-                        name="student_class_id" 
-                        class="w-full px-3 py-2 border {{ $errors->has('student_class_id') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                        required>
-                    <option value="">Pilih Kelas</option>
-                    @foreach($studentClasses as $class)
-                        <option value="{{ $class->id }}" {{ old('student_class_id') == $class->id ? 'selected' : '' }}>
-                            {{ $class->name }} - {{ $class->year->name ?? 'Tahun tidak diketahui' }}
-                        </option>
-                    @endforeach
+                <select name="student_class_id" 
+                        id="student_class_id" 
+                        required
+                        class="select2-class w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        disabled>
+                    <option value="">-- Pilih angkatan terlebih dahulu --</option>
                 </select>
                 @error('student_class_id')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -94,4 +104,48 @@
         </form>
     </div>
 </div>
+
+<!-- Data Kelas dalam JSON untuk JavaScript -->
+<script>
+    const studentClassesData = @json($studentClasses);
+</script>
+
+<!-- JavaScript untuk Cascade Dropdown -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const yearFilter = document.getElementById('year_filter');
+    const studentClassSelect = document.getElementById('student_class_id');
+    
+    yearFilter.addEventListener('change', function() {
+        const selectedYearId = this.value;
+        
+        // Reset dropdown kelas
+        studentClassSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        
+        if (selectedYearId === '') {
+            studentClassSelect.disabled = true;
+            studentClassSelect.innerHTML = '<option value="">-- Pilih angkatan terlebih dahulu --</option>';
+            return;
+        }
+        
+        // Filter kelas berdasarkan angkatan yang dipilih
+        const filteredClasses = studentClassesData.filter(
+            studentClass => studentClass.year_id == selectedYearId
+        );
+        
+        if (filteredClasses.length > 0) {
+            studentClassSelect.disabled = false;
+            filteredClasses.forEach(studentClass => {
+                const option = document.createElement('option');
+                option.value = studentClass.id;
+                option.textContent = studentClass.name;
+                studentClassSelect.appendChild(option);
+            });
+        } else {
+            studentClassSelect.disabled = true;
+            studentClassSelect.innerHTML = '<option value="">-- Tidak ada kelas untuk angkatan ini --</option>';
+        }
+    });
+});
+</script>
 @endsection

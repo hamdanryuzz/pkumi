@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\StudentClass;
+use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -11,31 +12,44 @@ class CourseController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->input('search');
+        $yearFilter = $request->input('year_id');
+        $classFilter = $request->input('student_class_id');
+        
         $query = Course::with(['studentClass.year']);
         
-        // Filter berdasarkan student_class_id jika ada
-        if ($request->filled('student_class_id')) {
-            $query->where('student_class_id', $request->student_class_id);
-        }
-        
-        // Filter berdasarkan search (nama atau kode course)
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('code', 'like', '%' . $request->search . '%');
+        // Search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                ->orWhere('code', 'LIKE', '%' . $search . '%');
             });
         }
         
-        $courses = $query->orderBy('name')->paginate(10)->withQueryString();
+        // Year filter
+        if ($yearFilter) {
+            $query->whereHas('studentClass', function ($q) use ($yearFilter) {
+                $q->where('year_id', $yearFilter);
+            });
+        }
+        
+        // Class filter
+        if ($classFilter) {
+            $query->where('student_class_id', $classFilter);
+        }
+        
+        $courses = $query->latest()->paginate(10);
+        $years = Year::orderBy('name', 'desc')->get();
         $studentClasses = StudentClass::with('year')->orderBy('name')->get();
         
-        return view('courses.index', compact('courses', 'studentClasses'));
+        return view('courses.index', compact('courses', 'years', 'studentClasses'));
     }
 
     public function create()
     {
+        $years = Year::orderBy('name', 'desc')->get();
         $studentClasses = StudentClass::with('year')->get();
-        return view('courses.create', compact('studentClasses'));
+        return view('courses.create', compact('years', 'studentClasses'));
     }
 
     public function store(Request $request)
@@ -61,8 +75,10 @@ class CourseController extends Controller
 
     public function edit(Course $course)
     {
+        $course = Course::findOrFail($course->id);
+        $years = Year::orderBy('name', 'desc')->get();
         $studentClasses = StudentClass::with('year')->get();
-        return view('courses.edit', compact('course', 'studentClasses'));
+        return view('courses.edit', compact('course', 'years', 'studentClasses'));
     }
 
     public function update(Request $request, Course $course)

@@ -37,7 +37,7 @@ class StudentClassController extends Controller
             });
         }
         
-        // Terapkan filter tahun jika ada
+        // Terapkan filter angkatan jika ada
         if ($yearFilter) {
             $query->where('year_id', $yearFilter);
         }
