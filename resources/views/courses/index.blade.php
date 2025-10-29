@@ -12,6 +12,15 @@
         </p>
     </div>
 
+    <!-- Action Button -->
+    <div class="flex justify-end">
+        <a href="{{ route('courses.create') }}" 
+           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+            <i class="fas fa-plus-circle mr-2"></i>
+            Tambah Mata Kuliah
+        </a>
+    </div>
+
     <!-- Filter Section -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
         <form method="GET" action="{{ route('courses.index') }}" id="filterForm">
@@ -80,15 +89,6 @@
         </form>
     </div>
 
-    <!-- Action Button -->
-    <div class="mb-6">
-        <a href="{{ route('courses.create') }}" 
-           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
-            <i class="fas fa-plus-circle mr-2"></i>
-            Tambah Mata Kuliah
-        </a>
-    </div>
-
     <!-- Table Section -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         @if($courses->count() > 0)
@@ -98,9 +98,6 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 No
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Kode
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Nama Mata Kuliah
@@ -121,11 +118,6 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                                 {{ $courses->firstItem() + $index }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                    {{ $course->code }}
-                                </span>
                             </td>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                                 {{ $course->name }}
