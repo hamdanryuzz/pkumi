@@ -157,11 +157,11 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @php
-                                $totalEnrollments = $semester->enrollments->count();
-                                $activeEnrollments = $semester->enrollments->where('status', 'enrolled')->count();
+                                $totalClasses = $semester->enrollments->pluck('student_class_id')->unique()->count();
+                                $activeClasses = $semester->enrollments->where('status', 'enrolled')->pluck('student_class_id')->unique()->count();
                             @endphp
-                            <div class="text-sm text-gray-900 font-medium">{{ $activeEnrollments }} / {{ $totalEnrollments }}</div>
-                            <div class="text-xs text-gray-500">mahasiswa</div>
+                            <div class="text-sm text-gray-900 font-medium">{{ $activeClasses }} / {{ $totalClasses }}</div>
+                            <div class="text-xs text-gray-500">kelas</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex items-center space-x-2">
