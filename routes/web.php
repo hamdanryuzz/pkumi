@@ -52,6 +52,7 @@ Route::middleware('auth:web')->group(function () {
     // Grades Management
     Route::prefix('grades')->name('grades.')->group(function () {
         Route::get('/', [GradeController::class, 'index'])->name('index');
+        Route::get('/classes-by-year', [GradeController::class, 'getClassesByYear'])->name('classes-by-year');
         Route::get('/courses-by-class', [GradeController::class, 'getCoursesByClass'])->name('courses-by-class');
         Route::post('/', [GradeController::class, 'store'])->name('store');
         Route::put('/{grade}', [GradeController::class, 'update'])->name('update');

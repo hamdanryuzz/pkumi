@@ -9,6 +9,7 @@ use App\Models\GradeWeight;
 use App\Models\Semester;
 use App\Models\Enrollment;
 use App\Models\StudentClass;
+use App\Models\Year;
 use Illuminate\Http\Request;
 
 class GradeController extends Controller
@@ -20,11 +21,13 @@ class GradeController extends Controller
     {
         $courses = Course::all();
         $semesters = Semester::orderBy('start_date', 'desc')->get();
+        $years = Year::all();
         $studentClasses = StudentClass::with('year')->get(); // Tambahkan data kelas
         
         $selectedCourseId = $request->get('course_id');
         $selectedSemesterId = $request->get('semester_id');
-        $selectedClassId = $request->get('class_id'); // Tambahkan parameter kelas
+        $selectedYearId = $request->get('year_id');
+        $selectedClassId = $request->get('class_id');
         
         $students = collect();
         $grades = collect();
@@ -56,7 +59,7 @@ class GradeController extends Controller
         return view('grades.index', compact(
             'students', 'courses', 'semesters', 'studentClasses',
             'selectedCourseId', 'selectedSemesterId', 'selectedClassId',
-            'grades', 'weights'
+            'grades', 'weights', 'years', 'selectedYearId'
         ));
     }
 
@@ -271,5 +274,26 @@ class GradeController extends Controller
         $courses = $query->limit(10)->get();
         
         return response()->json($courses);
+    }
+
+    public function getClassesByYear(Request $request)
+    {
+        $yearId = $request->get('year_id');
+        $search = $request->get('q');
+        
+        if (!$yearId) {
+            return response()->json([]);
+        }
+        
+        $query = StudentClass::select('id', 'name')
+            ->where('year_id', $yearId);
+        
+        if ($search) {
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+        
+        $classes = $query->limit(10)->get();
+        
+        return response()->json($classes);
     }
 }

@@ -72,21 +72,38 @@
                         </select>
                     </div>
 
-                    <!-- Class Filter -->
+                    <!-- Filter Angkatan (Year) -->
                     <div>
-                        <label for="class_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-users mr-1 text-blue-600"></i>Kelas
-                            <span class="text-red-500">*</span>
+                        <label for="year_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt mr-2 text-indigo-600"></i>Angkatan
                         </label>
-                        <select name="class_id" id="class_id" 
-                                class="select2-class w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                required>
-                            <option value="">-- Pilih Kelas --</option>
-                            @foreach($studentClasses as $class)
-                                <option value="{{ $class->id }}" {{ $selectedClassId == $class->id ? 'selected' : '' }}>
-                                    {{ $class->full_name }}
+                        <select name="year_id" id="year_id" 
+                                class="select2-year w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <option value="">-- Pilih Angkatan --</option>
+                            @foreach($years as $year)
+                                <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
+                                    {{ $year->name }}
                                 </option>
                             @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Filter Kelas (Student Class) -->
+                    <div>
+                        <label for="class_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-users mr-2 text-indigo-600"></i>Kelas
+                        </label>
+                        <select name="class_id" id="class_id" 
+                                class="select2-class w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ !request('year_id') ? 'disabled' : '' }}>
+                            <option value="">-- Pilih Kelas --</option>
+                            @if(request('year_id'))
+                                @foreach($studentClasses->where('year_id', request('year_id')) as $class)
+                                    <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
+                                        {{ $class->name }}
+                                    </option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
 
@@ -586,6 +603,19 @@ $(document).ready(function() {
     });
 
     /**
+     * Initialize Select2 for Year dropdown
+     */
+    $('.select2-year').select2({
+        placeholder: '-- Pilih Angkatan --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Angkatan tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
+
+    /**
      * Initialize Select2 for Class dropdown
      */
     $('.select2-class').select2({
@@ -736,6 +766,103 @@ $(document).ready(function() {
     @endif
 
     console.log('Grade Management System - Ready');
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Select2 dengan AJAX untuk mata kuliah
+    $('#course_id').select2({
+        theme: 'default',
+        width: '100%',
+        placeholder: 'Cari mata kuliah...',
+        allowClear: true,
+        ajax: {
+            url: '{{ route("grades.courses-by-class") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    q: params.term,
+                    class_id: $('#class_id').val()
+                };
+            },
+            processResults: function(data) {
+                return {
+                    results: data.map(course => ({
+                        id: course.id,
+                        text: course.name + ' (' + course.code + ')'
+                    }))
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0
+    });
+
+    // Handle perubahan dropdown Angkatan
+    $('#year_id').on('change', function() {
+        const yearId = $(this).val();
+        const $classSelect = $('#class_id');
+        const $semesterSelect = $('#semester_id');
+        const $courseSelect = $('#course_id');
+        
+        // Reset dan disable dropdown kelas, semester, dan mata kuliah
+        $classSelect.val('').trigger('change').prop('disabled', !yearId);
+        $semesterSelect.val('').trigger('change').prop('disabled', true);
+        $courseSelect.val('').trigger('change').prop('disabled', true);
+        
+        if (yearId) {
+            // Load kelas berdasarkan angkatan via AJAX (optional)
+            // Atau bisa langsung filter dari data yang sudah ada
+            $.ajax({
+                url: '{{ route("grades.classes-by-year") }}',
+                type: 'GET',
+                data: { year_id: yearId },
+                success: function(classes) {
+                    $classSelect.empty().append('<option value="">-- Pilih Kelas --</option>');
+                    classes.forEach(function(cls) {
+                        $classSelect.append(new Option(cls.name, cls.id));
+                    });
+                    $classSelect.prop('disabled', false);
+                }
+            });
+        }
+    });
+
+    // Handle perubahan dropdown Kelas
+    $('#class_id').on('change', function() {
+        const classId = $(this).val();
+        const $semesterSelect = $('#semester_id');
+        const $courseSelect = $('#course_id');
+        
+        $semesterSelect.prop('disabled', !classId);
+        $courseSelect.val('').trigger('change').prop('disabled', true);
+        
+        if (!classId) {
+            $semesterSelect.val('').trigger('change');
+        }
+    });
+
+    // Handle perubahan dropdown Semester
+    $('#semester_id').on('change', function() {
+        const semesterId = $(this).val();
+        const classId = $('#class_id').val();
+        const $courseSelect = $('#course_id');
+        
+        $courseSelect.prop('disabled', !(semesterId && classId));
+        
+        if (!semesterId) {
+            $courseSelect.val('').trigger('change');
+        }
+    });
+
+    // Auto-submit form saat mata kuliah dipilih (optional)
+    $('#course_id').on('change', function() {
+        if ($(this).val()) {
+            $('#filterForm').submit();
+        }
+    });
 });
 </script>
 @endsection
