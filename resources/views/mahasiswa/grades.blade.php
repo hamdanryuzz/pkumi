@@ -154,22 +154,22 @@
                             
                             <div class="flex justify-between items-center bg-gray-50 rounded-lg p-3">
                                 <span class="font-poppins text-sm font-medium text-gray-600">Nilai Kehadiran</span>
-                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['attendance_score'] }}</span>
+                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['attendance_score'] ?? '-' }}</span>
                             </div>
 
                             <div class="flex justify-between items-center bg-gray-50 rounded-lg p-3">
                                 <span class="font-poppins text-sm font-medium text-gray-600">Nilai Tugas</span>
-                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['assignment_score'] }}</span>
+                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['assignment_score'] ?? '-' }}</span>
                             </div>
 
                             <div class="flex justify-between items-center bg-gray-50 rounded-lg p-3">
                                 <span class="font-poppins text-sm font-medium text-gray-600">Nilai UTS</span>
-                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['midterm_score'] }}</span>
+                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['midterm_score'] ?? '-' }}</span>
                             </div>
 
                             <div class="flex justify-between items-center bg-gray-50 rounded-lg p-3">
                                 <span class="font-poppins text-sm font-medium text-gray-600">Nilai UAS</span>
-                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['final_score'] }}</span>
+                                <span class="font-poppins text-sm sm:text-base font-bold text-gray-800">{{ $item['final_score'] ?? '-' }}</span>
                             </div>
 
                             <div class="flex justify-between items-center bg-blue-50 rounded-lg p-3 border border-blue-200">
