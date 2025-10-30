@@ -49,13 +49,16 @@ class StudentClassController extends Controller
         
         // Eksekusi query dengan pagination
         $studentClasses = $query
+            ->with('year')
             ->withCount('students') // Hitung jumlah siswa
             ->withCount([
                 'enrollments as unique_semesters_count' => function ($query) {
                     $query->select(\DB::raw('COUNT(DISTINCT semester_id)'));
                 }
             ])
-            ->latest()
+            ->orderByDesc(
+        Year::select('name')->whereColumn('years.id', 'student_classes.year_id')
+            )
             ->paginate(10);
         
         // Ambil semua tahun untuk dropdown filter
