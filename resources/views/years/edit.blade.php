@@ -87,28 +87,10 @@
                         @enderror
                     </div>
 
-                    <!-- Semester -->
-                    <div class="space-y-2">
-                        <label for="semester" class="block text-sm font-semibold text-gray-700">
-                            Semester
-                            <span class="text-red-500">*</span>
-                        </label>
-                        <select name="semester" id="semester" 
-                                class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('semester') border-red-300 bg-red-50 @enderror"
-                                required>
-                            <option value="">-- Pilih Semester --</option>
-                            <option value="Ganjil" {{ old('semester', $semester) == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
-                            <option value="Genap" {{ old('semester', $semester) == 'Genap' ? 'selected' : '' }}>Genap</option>
-                        </select>
-                        @error('semester')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                     <!-- Preview -->
                     <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                         <p class="text-sm font-semibold text-blue-800 mb-1">Preview Nama Angkatan:</p>
-                        <p class="text-lg font-bold text-blue-900" id="preview">Angkatan {{ $yearNumber }} {{ $semester }}</p>
+                        <p class="text-lg font-bold text-blue-900" id="preview">Angkatan {{ $yearNumber }}</p>
                     </div>
 
                     <!-- Action Buttons -->
@@ -137,17 +119,14 @@
     // Live preview nama angkatan
     document.addEventListener('DOMContentLoaded', function() {
         const yearNumberInput = document.getElementById('year_number');
-        const semesterSelect = document.getElementById('semester');
         const preview = document.getElementById('preview');
 
         function updatePreview() {
             const yearNumber = yearNumberInput.value.trim() || '-';
-            const semester = semesterSelect.value || '-';
-            preview.textContent = `Angkatan ${yearNumber} ${semester}`;
+            preview.textContent = `Angkatan ${yearNumber}`;
         }
 
         yearNumberInput.addEventListener('input', updatePreview);
-        semesterSelect.addEventListener('change', updatePreview);
     });
 </script>
 @endsection

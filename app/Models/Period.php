@@ -81,4 +81,11 @@ class Period extends Model
     {
         return $this->status === 'draft';
     }
+
+    public function getCleanNameAttribute(): string
+    {
+        $clean = preg_replace('/[^0-9\/-]+/', '', (string) $this->name);
+        $clean = preg_replace('/[\/-]{2,}/', '/', $clean);
+        return trim((string) $clean, " /-");
+    }
 }

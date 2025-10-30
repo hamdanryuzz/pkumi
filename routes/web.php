@@ -88,6 +88,7 @@ Route::middleware('auth:web')->group(function () {
     Route::resource('courses', CourseController::class);
 
     // Period Management
+    Route::post('/periods/bulk', [PeriodController::class, 'bulkStore'])->name('periods.bulk');
     Route::resource('periods', PeriodController::class);
 
     // Semester Management

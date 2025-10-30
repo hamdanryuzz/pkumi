@@ -27,6 +27,7 @@ class YearController extends Controller
                 return $query->where('period_id', $periodFilter);
             })
             ->latest()
+            ->orderBy('name', 'desc')
             ->get();
 
         return view('years.index', compact('years', 'search', 'periods', 'periodFilter'));
@@ -48,11 +49,10 @@ class YearController extends Controller
     {
         $request->validate([
             'year_number' => 'required|string',
-            'semester' => 'required|in:Ganjil,Genap',
             'period_id' => 'required|exists:periods,id',
         ]);
 
-        $name = 'Angkatan ' . $request->year_number . ' ' . $request->semester;
+        $name = 'Angkatan ' . $request->year_number;
 
         Year::create([
             'name' => $name,
