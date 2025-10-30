@@ -193,6 +193,7 @@
                         <div class="flex flex-col mt-2">
                             <p class="font-poppins text-base text-black/65">NIM : {{ $student->nim ?? 'N/A' }}</p>
                             <p class="font-poppins text-base text-black/65">Program Studi : {{ $student->studentClass->name ?? 'N/A' }}</p>
+                            <p class="font-poppins text-base text-black/65">Semester : {{ $student->unique_semesters_count ?? 'N/A' }}</p>
                         </div>
                     </div>
                 </div>

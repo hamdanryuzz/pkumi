@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class Student extends Authenticatable
 {
@@ -126,5 +127,14 @@ class Student extends Authenticatable
             return \Storage::url('students/' . $this->image);
         }
         return asset('images/default-avatar.png');
+    }
+
+    public function getUniqueSemestersCountAttribute()
+    {
+        // Hitung semester unik melalui enrollments yang terhubung ke student_class_id
+        return \DB::table('enrollments')
+            ->where('student_class_id', $this->student_class_id)
+            ->distinct('semester_id')
+            ->count('semester_id');
     }
 }
