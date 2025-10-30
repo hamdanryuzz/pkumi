@@ -34,7 +34,10 @@ class SemesterController extends Controller
             });
         }
         
-        $semesters = $query->latest()->paginate(10);
+        $semesters = $query->latest()
+            ->orderBy('name', 'desc')
+            ->paginate(10);
+
         $periods = Period::all();
         
         return view('semesters.index', compact('semesters', 'periods'));
