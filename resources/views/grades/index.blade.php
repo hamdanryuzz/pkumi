@@ -620,10 +620,6 @@ $(document).ready(function() {
             setTimeout(() => {
                 $finalGrade.removeClass('animate-pulse');
             }, 1000);
-        } else {
-            // If no scores filled, show dash
-            $(`#final-grade-${studentId}`).text('-').removeClass('text-indigo-600 font-bold');
-            $(`#letter-grade-${studentId}`).html('<span class="text-gray-400">-</span>');
         }
     }
 
