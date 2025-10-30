@@ -258,8 +258,8 @@
                                 <div>
                                     <strong>2 Angkatan:</strong>
                                     <ul class="ml-4 mt-1 space-y-0.5">
-                                        <li>• [Nama Tahun Ajaran] - Ganjil</li>
-                                        <li>• [Nama Tahun Ajaran] - Genap</li>
+                                        <li>• Angkatan [Nomor Angkatan]</li>
+                                        <li>• Angkatan [Nomor Angkatan]</li>
                                     </ul>
                                 </div>
                             </div>
