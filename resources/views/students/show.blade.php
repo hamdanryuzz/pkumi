@@ -204,6 +204,7 @@
                     </button>
                     <div x-show="open === 1" x-collapse class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                         <x-detail-item label="Jenis Kelamin" value="{{ ucfirst($student->gender ?? '-') }}" />
+                        <x-detail-item label="Tempat Lahir" value="{{ ucfirst($student->place_of_birth ?? '-') }}" />
                         <x-detail-item label="Tanggal Lahir" value="{{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d M Y') : '-' }}" />
                         <x-detail-item label="Pekerjaan" value="{{ $student->student_job ?? '-' }}" />
                         <x-detail-item label="Status Kawin" value="{{ $student->marital_status ?? '-' }}" />

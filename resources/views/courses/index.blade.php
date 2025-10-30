@@ -14,6 +14,15 @@
 
     <!-- Action Button -->
     <div class="flex justify-end">
+       <form action="{{ route('courses.import') }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
+            @csrf
+            <input type="file" name="file" accept=".xlsx,.xls,.csv" required
+                class="border rounded p-2 w-64">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                <i class="fas fa-file-import mr-2"></i> Import Excel
+            </button>
+        </form>
+
         <a href="{{ route('courses.create') }}" 
            class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
             <i class="fas fa-plus-circle mr-2"></i>

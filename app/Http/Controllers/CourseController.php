@@ -7,6 +7,7 @@ use App\Models\StudentClass;
 use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Imports\CoursesImport;
 
 class CourseController extends Controller
 {
@@ -113,4 +114,18 @@ class CourseController extends Controller
             ->route('courses.index')
             ->with('success', 'Course berhasil dihapus.');
     }
+
+    
+    public function import(Request $request)
+    {
+        $import = new CoursesImport;
+        $import->import($request->file('file'));
+
+        if ($import->getErrors()) {
+            return back()->with('import_errors', $import->getErrors());
+        }
+
+        return back()->with('success', 'Data mata kuliah berhasil diimport!');
+    }
+
 }

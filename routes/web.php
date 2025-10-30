@@ -86,6 +86,8 @@ Route::middleware('auth:web')->group(function () {
 
     // Course Management (rename ke plural 'courses' untuk konsistensi)
     Route::resource('courses', CourseController::class);
+    Route::get('/import', [CourseController::class, 'importView'])->name('courses.import.view');
+    Route::post('/import', [CourseController::class, 'import'])->name('courses.import');
 
     // Period Management
     Route::post('/periods/bulk', [PeriodController::class, 'bulkStore'])->name('periods.bulk');
