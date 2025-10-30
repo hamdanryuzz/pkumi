@@ -58,7 +58,12 @@ Route::middleware('auth:web')->group(function () {
         Route::put('/{grade}', [GradeController::class, 'update'])->name('update');
         Route::post('/bulk-update', [GradeController::class, 'bulkUpdate'])->name('bulk-update');
         Route::get('/{id}', [GradeController::class, 'show'])->name('show');
+
     });
+
+    Route::post('/grades/import', [GradeController::class, 'importGrades'])->name('grades.import');
+
+    
 
     // Grade Weights Management
     Route::get('grade-weights', [GradeWeightController::class, 'index'])->name('grade-weights.index');

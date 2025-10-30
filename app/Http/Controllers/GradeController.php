@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
-use App\Models\Course;
+use App\Models\Year;
 use App\Models\Grade;
-use App\Models\GradeWeight;
+use App\Models\Course;
+use App\Models\Student;
 use App\Models\Semester;
 use App\Models\Enrollment;
+use App\Models\GradeWeight;
+use App\Imports\GradeImport;
 use App\Models\StudentClass;
-use App\Models\Year;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GradeController extends Controller
 {
@@ -295,5 +297,21 @@ class GradeController extends Controller
         $classes = $query->limit(10)->get();
         
         return response()->json($classes);
+    }
+
+    public function importGrades(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        $import = new GradeImport;
+        Excel::import($import, $request->file('file'));
+
+        if ($import->getErrors()) {
+            return back()->with('import_errors', $import->getErrors());
+        }
+
+        return redirect()->back()->with('success', 'Data nilai berhasil diimport.');
     }
 }

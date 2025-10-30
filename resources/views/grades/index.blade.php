@@ -149,6 +149,46 @@
         </div>
     </div>
 
+    <!-- Import Section -->
+    <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="px-6 py-4 border-b border-gray-200 bg-green-50 flex justify-between items-center">
+            <h5 class="text-lg font-bold text-gray-800">
+                <i class="fas fa-file-import mr-2 text-green-600"></i>Import Nilai Mahasiswa
+            </h5>
+        
+        </div>
+
+        <div class="p-6">
+            @if(session('import_errors'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <strong class="font-bold">Beberapa data gagal diimport:</strong>
+                    <ul class="list-disc list-inside mt-2">
+                        @foreach(session('import_errors') as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('grades.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <input type="file" name="file" accept=".xlsx,.xls,.csv" 
+                        class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-2/3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        required>
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md shadow-sm transition duration-200">
+                        <i class="fas fa-upload mr-2"></i>Upload & Import
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">
+                    File harus berformat <strong>.xlsx</strong> atau <strong>.csv</strong> dan mengikuti template yang disediakan.
+                </p>
+            </form>
+        </div>
+    </div>
+
+
     <!-- Grades Display Section -->
     @if($selectedCourseId && $selectedSemesterId && $selectedClassId)
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
