@@ -66,7 +66,7 @@ class EnrollmentController extends Controller
      */
     public function create(Request $request)
     {
-        $semesters = Semester::orderBy('start_date', 'desc')->get();
+        $semesters = Semester::latest()->orderBy('name', 'desc')->get();
         $years = Year::orderBy('name', 'desc')->get();
         $studentClasses = StudentClass::orderBy('name')->get();
         

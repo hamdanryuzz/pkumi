@@ -22,7 +22,7 @@ class GradeController extends Controller
     public function index(Request $request)
     {
         $courses = Course::all();
-        $semesters = Semester::orderBy('start_date', 'desc')->get();
+        $semesters = Semester::latest()->orderBy('name', 'desc')->get();
         $years = Year::all();
         $studentClasses = StudentClass::with('year')->get(); // Tambahkan data kelas
         
