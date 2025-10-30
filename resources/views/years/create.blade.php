@@ -86,26 +86,7 @@
                         @error('year_number')
                         <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
-                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor angkatan (akan menjadi "Angkatan [nomor] [semester]")</p>
-                    </div>
-
-                    <!-- Semester -->
-                    <div class="space-y-2">
-                        <label for="semester" class="block text-sm font-semibold text-gray-700">
-                            Semester
-                            <span class="text-red-500">*</span>
-                        </label>
-                        <select name="semester" id="semester" 
-                                class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('semester') border-red-300 bg-red-50 @enderror"
-                                required>
-                            <option value="">-- Pilih Semester --</option>
-                            <option value="Ganjil" {{ old('semester') == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
-                            <option value="Genap" {{ old('semester') == 'Genap' ? 'selected' : '' }}>Genap</option>
-                        </select>
-                        @error('semester')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                        <p class="text-xs text-gray-500 mt-1">Pilih semester (Ganjil atau Genap)</p>
+                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor angkatan (akan menjadi "Angkatan [nomor]")</p>
                     </div>
 
                     <!-- Preview -->
@@ -143,8 +124,8 @@
                 <div>
                     <h3 class="font-semibold text-gray-900 mb-2">Informasi Penting</h3>
                     <ul class="text-sm text-gray-700 space-y-1">
-                        <li>• Nama angkatan akan dibuat otomatis dengan format: <strong>Angkatan [nomor] [semester]</strong></li>
-                        <li>• Contoh: Jika nomor = "1" dan semester = "Ganjil", maka nama = <strong>"Angkatan 1 Ganjil"</strong></li>
+                        <li>• Nama angkatan akan dibuat otomatis dengan format: <strong>Angkatan [nomor]</strong></li>
+                        <li>• Contoh: Jika nomor = "1", maka nama = <strong>"Angkatan 1"</strong></li>
                         <li>• Pastikan memilih tahun ajaran yang sesuai</li>
                     </ul>
                 </div>
@@ -157,17 +138,14 @@
     // Live preview nama angkatan
     document.addEventListener('DOMContentLoaded', function() {
         const yearNumberInput = document.getElementById('year_number');
-        const semesterSelect = document.getElementById('semester');
         const preview = document.getElementById('preview');
 
         function updatePreview() {
             const yearNumber = yearNumberInput.value.trim() || '-';
-            const semester = semesterSelect.value || '-';
-            preview.textContent = `Angkatan ${yearNumber} ${semester}`;
+            preview.textContent = `Angkatan ${yearNumber}`;
         }
 
         yearNumberInput.addEventListener('input', updatePreview);
-        semesterSelect.addEventListener('change', updatePreview);
     });
 </script>
 @endsection
