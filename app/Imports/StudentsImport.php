@@ -63,6 +63,7 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithVal
 
             // Field tambahan
             'gender' => $row['gender'] ?? null,
+            'place_of_birth' => $row['place_of_birth'] ?? null,
             'date_of_birth' => $row['date_of_birth'] ?? null,
             'student_job' => $row['student_job'] ?? null,
             'marital_status' => $row['marital_status'] ?? null,

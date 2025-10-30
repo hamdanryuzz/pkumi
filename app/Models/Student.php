@@ -26,6 +26,7 @@ class Student extends Authenticatable
 
         // 🔽 Field tambahan dari migration
         'gender',
+        'place_of_birth',
         'date_of_birth',
         'student_job',
         'marital_status',
