@@ -21,16 +21,15 @@ class ReportController extends Controller
         $semesters = Semester::orderBy('start_date', 'desc')->get();
         $years = Year::orderBy('name', 'asc')->get();
         $studentClasses = collect();
-        $courses = collect();
         $students = collect();
 
-        // Jika ada filter yang dipilih
-        if ($request->filled(['semester_id', 'year_id', 'student_class_id', 'course_id'])) {
-            $students = $this->fetchFilteredStudents($request); // Ubah ini
+        if ($request->filled(['semester_id', 'year_id', 'student_class_id'])) {
+            $students = $this->fetchFilteredStudents($request);
         }
 
-        return view('reports.index', compact('semesters', 'years', 'studentClasses', 'courses', 'students'));
+        return view('reports.index', compact('semesters', 'years', 'studentClasses', 'students'));
     }
+
 
     /**
      * API untuk mendapatkan student classes berdasarkan year
@@ -68,29 +67,32 @@ class ReportController extends Controller
             'semester_id' => 'required',
             'year_id' => 'required',
             'student_class_id' => 'required',
-            'course_id' => 'required',
         ]);
 
         $semesterId = $request->semester_id;
         $yearId = $request->year_id;
         $studentClassId = $request->student_class_id;
-        $courseId = $request->course_id;
 
-        // Ambil mahasiswa berdasarkan filter dengan grades mereka
         $students = Student::where('year_id', $yearId)
-            ->where('student_class_id', $studentClassId)
-            ->whereHas('grades', function($query) use ($courseId, $semesterId) {
-                $query->where('course_id', $courseId)
-                    ->where('semester_id', $semesterId);
-            })
-            ->with(['grades' => function($query) use ($courseId, $semesterId) {
-                $query->where('course_id', $courseId)
-                    ->where('semester_id', $semesterId);
-            }])
-            ->get();
+            ->where('student_class_id', $studentClassId);
+
+        // ✅ tambahkan filter search di dalam query sebelum get()
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $students->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('nim', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $students->with(['grades' => function ($query) use ($semesterId) {
+            $query->where('semester_id', $semesterId)
+                ->with('course:id,name,code');
+        }])->get();
 
         return response()->json($students);
     }
+
 
     /**
      * Helper untuk mendapatkan students (untuk internal use)
@@ -100,22 +102,18 @@ class ReportController extends Controller
         $semesterId = $request->semester_id;
         $yearId = $request->year_id;
         $studentClassId = $request->student_class_id;
-        $courseId = $request->course_id;
 
         $students = Student::where('year_id', $yearId)
             ->where('student_class_id', $studentClassId)
-            ->whereHas('grades', function($query) use ($courseId, $semesterId) {
-                $query->where('course_id', $courseId)
-                    ->where('semester_id', $semesterId);
-            })
-            ->with(['grades' => function($query) use ($courseId, $semesterId) {
-                $query->where('course_id', $courseId)
-                    ->where('semester_id', $semesterId);
+            ->with(['grades' => function($query) use ($semesterId) {
+                $query->where('semester_id', $semesterId)
+                    ->with('course:id,code,name');
             }])
             ->get();
 
         return $students;
     }
+
 
     /**
      * Generate PDF berdasarkan filter (list mahasiswa)
@@ -126,32 +124,26 @@ class ReportController extends Controller
             'semester_id' => 'required',
             'year_id' => 'required',
             'student_class_id' => 'required',
-            'course_id' => 'required',
         ]);
 
         $students = $this->fetchFilteredStudents($request);
-        
-        // Ambil data filter untuk ditampilkan di PDF
         $semester = Semester::find($request->semester_id);
         $year = Year::find($request->year_id);
         $studentClass = StudentClass::find($request->student_class_id);
-        $course = Course::find($request->course_id);
 
         $data = [
             'students' => $students,
             'semester' => $semester,
             'year' => $year,
             'studentClass' => $studentClass,
-            'course' => $course,
-            'title' => 'Laporan Nilai Mahasiswa'
+            'title' => 'Rekap KHS Mahasiswa',
         ];
 
-        $pdf = Pdf::loadView('reports.pdf-filter', $data);
-        $pdf->setPaper('A4', 'portrait');
-        
-        $filename = 'Laporan_Nilai_' . $course->code . '_' . $semester->name . '.pdf';
-        return $pdf->stream($filename);
+        $pdf = Pdf::loadView('reports.pdf-khs', $data)->setPaper('A4', 'portrait');
+        return $pdf->stream('KHS_' . $studentClass->name . '_' . $semester->name . '.pdf');
     }
+
+
 
     /**
      * Generate PDF detail nilai per mahasiswa
@@ -161,32 +153,30 @@ class ReportController extends Controller
         $request->validate([
             'student_id' => 'required',
             'semester_id' => 'required',
-            'course_id' => 'required',
         ]);
 
         $student = Student::with(['studentClass', 'year'])->findOrFail($request->student_id);
-        $semester = Semester::find($request->semester_id);
-        $course = Course::find($request->course_id);
+        $semester = Semester::findOrFail($request->semester_id);
 
-        // Ambil grade detail mahasiswa
-        $grade = Grade::where('student_id', $request->student_id)
+        $grades = Grade::where('student_id', $request->student_id)
             ->where('semester_id', $request->semester_id)
-            ->where('course_id', $request->course_id)
-            ->with(['course', 'semester'])
-            ->firstOrFail();
+            ->with('course')
+            ->get();
 
         $data = [
             'student' => $student,
-            'grade' => $grade,
             'semester' => $semester,
-            'course' => $course,
-            'title' => 'Rincian Nilai Mahasiswa'
+            'grades' => $grades,
+            'title' => 'Kartu Hasil Studi (KHS) - ' . $student->name,
         ];
 
-        $pdf = Pdf::loadView('reports.pdf-student', $data);
-        $pdf->setPaper('A4', 'portrait');
-        
-        $filename = 'Nilai_' . $student->nim . '_' . $course->code . '.pdf';
-        return $pdf->stream($filename);
+        $pdf = Pdf::loadView('reports.pdf-student', $data)
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('KHS_' . $student->nim . '_' . $semester->name . '.pdf');
     }
+
+
+
+
 }
