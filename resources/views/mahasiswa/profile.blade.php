@@ -187,17 +187,37 @@
 
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div class="flex items-center gap-6">
-            @if($student->image)
-                <img src="{{ asset('storage/students/' . $student->image) }}" 
-                     alt="User Avatar" 
-                     class="w-24 h-24 rounded-full object-cover flex-shrink-0">
-            @else
-                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-                    <span class="text-white text-2xl font-bold">
-                        {{ strtoupper(substr($student->name, 0, 2)) }}
-                    </span>
+            {{-- Avatar Container yang clickable saat edit mode --}}
+            <div id="avatar-container" 
+                class="relative w-24 h-24 rounded-full flex-shrink-0 overflow-hidden cursor-default transition-all duration-200"
+                style="background: #f0f0f0;">
+                
+                @if($student->image)
+                    <img id="avatar-image"
+                        src="{{ asset('storage/students/' . $student->image) }}" 
+                        alt="User Avatar" 
+                        class="w-full h-full object-cover">
+                @else
+                    <div id="avatar-placeholder"
+                        class="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <span class="text-white text-2xl font-bold">
+                            {{ strtoupper(substr($student->name, 0, 2)) }}
+                        </span>
+                    </div>
+                @endif
+                
+                {{-- Overlay untuk upload hint (muncul saat edit & hover) --}}
+                <div id="avatar-overlay" 
+                    class="absolute inset-0 bg-black/40 opacity-0 flex items-center justify-center transition-opacity duration-200 hidden">
+                    <div class="text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p class="text-white text-xs font-medium">Ubah Foto</p>
+                    </div>
                 </div>
-            @endif
+            </div>
+            
             <div>
                 <h2 class="text-xl font-medium text-black leading-tight">{{ $student->name ?? 'Nama Mahasiswa' }}</h2>
                 <p class="text-base font-normal text-black/50 leading-normal">{{ $student->nim ?? 'NIM Tidak Diketahui' }}</p>
@@ -205,15 +225,18 @@
         </div>
         
         {{-- TOMBOL EDIT/SIMPAN --}}
-        <button id="edit-button" type="button" class="bg-custom-blue text-white text-base font-normal px-8 py-2.5 rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto flex items-center justify-center gap-2">
+        <button id="edit-button" type="button" class="bg-blue-500 text-white text-base font-normal px-8 py-2.5 rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer">
             {{-- Konten tombol ini akan diubah oleh JS --}}
         </button>
     </div>
 
     {{-- Form menggunakan route update --}}
-    <form id="profile-form" class="mt-12" method="POST" action="{{ route('mahasiswa.profile.update') }}">
+    <form id="profile-form" class="mt-12" method="POST" action="{{ route('mahasiswa.profile.update') }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+
+        {{-- Hidden file input untuk upload image --}}
+        <input type="file" id="image-upload" name="image" accept="image/*" style="display: none;">
         
         {{-- Menampilkan Error Validasi --}}
         @if ($errors->any())
@@ -234,7 +257,7 @@
                 <input type="text" id="full-name" name="name"
                        value="{{ old('name', $student->name ?? '') }}"
                        class="input-field input-readonly bg-gray-50 border border-black/40 rounded-lg px-5 py-[14px] text-base text-black/80 placeholder:text-black/40 focus:outline-none"
-                       disabled readonly>
+                       readonly>
             </div>
             
             {{-- USERNAME (Readonly) --}}
@@ -243,7 +266,7 @@
                 <input type="text" id="username" name="username"
                        value="{{ old('username', $student->username ?? '') }}"
                        class="input-field input-readonly bg-gray-50 border border-black/40 rounded-lg px-5 py-[14px] text-base text-black/80 placeholder:text-black/40 focus:outline-none"
-                       disabled readonly>
+                        readonly>
             </div>
             
             {{-- PHONE (Editable) --}}
@@ -277,7 +300,7 @@
         
         {{-- TOMBOL SUBMIT FORM (Hidden by Default) --}}
         <div class="flex justify-end mt-12 hidden" id="form-actions">
-            <button type="submit" class="bg-custom-blue text-white text-base font-normal px-8 py-2.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+            <button type="submit" class="bg-blue-500 text-white text-base font-normal px-8 py-2.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
                 Save Changes
             </button>
         </div>
@@ -544,6 +567,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const passwordFields = document.getElementById('password-fields');
     const passwordConfirmFields = document.getElementById('password-confirm-fields');
 
+    // Avatar elements
+    const avatarContainer = document.getElementById('avatar-container');
+    const avatarOverlay = document.getElementById('avatar-overlay');
+    const imageUpload = document.getElementById('image-upload');
+    const avatarImage = document.getElementById('avatar-image');
+    const avatarPlaceholder = document.getElementById('avatar-placeholder');
+
+
     // Tentukan konten tombol berdasarkan state
     const editButtonContent = `
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
@@ -554,6 +585,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <span>Cancel</span>
     `;
 
+
     // Fungsi untuk update UI berdasarkan state
     function setEditState(isEditing) {
         if (isEditing) {
@@ -561,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function () {
             card.classList.add('form-editable');
             
             // 2. Ubah tombol Edit menjadi Cancel (merah)
-            editButton.innerHTML = cancelButtonContent;
+            editButton.innerHTML = editButtonContent;
             editButton.classList.add('bg-red-500', 'hover:bg-red-700');
             editButton.classList.remove('bg-custom-blue', 'hover:bg-blue-700');
 
@@ -574,6 +606,11 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordFields.classList.remove('hidden');
             passwordConfirmFields.classList.remove('hidden');
             formActions.classList.remove('hidden');
+
+            // 5. Buat avatar clickable dan tampilkan overlay
+            avatarContainer.classList.remove('cursor-default');
+            avatarContainer.classList.add('cursor-pointer', 'hover:opacity-80');
+            avatarOverlay.classList.remove('hidden');
 
         } else {
             // 1. Hapus class dari parent card
@@ -593,12 +630,19 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordFields.classList.add('hidden');
             passwordConfirmFields.classList.add('hidden');
             formActions.classList.add('hidden');
+
+            // 5. Avatar tidak clickable lagi
+            avatarContainer.classList.add('cursor-default');
+            avatarContainer.classList.remove('cursor-pointer', 'hover:opacity-80');
+            avatarOverlay.classList.add('hidden');
         }
     }
+
 
     // Inisialisasi: Cek apakah form sudah dalam mode edit (karena error validasi)
     let isEditing = card.classList.contains('form-editable');
     setEditState(isEditing); // Set UI awal berdasarkan state
+
 
     // Tambahkan listener utama ke tombol
     editButton.addEventListener('click', function(event) {
@@ -613,7 +657,76 @@ document.addEventListener('DOMContentLoaded', function () {
             setEditState(isEditing);
         }
     });
+
+
+    // === BARU: Handle Avatar Click untuk Upload ===
+    avatarContainer.addEventListener('click', function() {
+        // Hanya bisa diklik saat edit mode
+        if (isEditing) {
+            imageUpload.click();
+        }
+    });
+
+
+    // Handle file selection
+    imageUpload.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        
+        if (file) {
+            // Validasi tipe file
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Hanya file gambar (JPG, PNG, GIF, WebP) yang diizinkan');
+                return;
+            }
+
+            // Validasi ukuran (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file maksimal 2MB');
+                return;
+            }
+
+            // Preview image sebelum upload
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Hapus placeholder jika ada
+                if (avatarPlaceholder) {
+                    avatarPlaceholder.remove();
+                }
+
+                // Buat atau update img element
+                if (avatarImage) {
+                    avatarImage.src = e.target.result;
+                } else {
+                    const img = document.createElement('img');
+                    img.id = 'avatar-image';
+                    img.src = e.target.result;
+                    img.className = 'w-full h-full object-cover';
+                    avatarContainer.insertBefore(img, avatarOverlay);
+                }
+
+                // Show success feedback
+                console.log('File siap untuk di-upload');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+
+    // Handle hover effect pada avatar
+    avatarContainer.addEventListener('mouseenter', function() {
+        if (isEditing) {
+            avatarOverlay.style.opacity = '1';
+        }
+    });
+
+    avatarContainer.addEventListener('mouseleave', function() {
+        if (isEditing) {
+            avatarOverlay.style.opacity = '0';
+        }
+    });
 });
 </script>
+
 
 @endsection

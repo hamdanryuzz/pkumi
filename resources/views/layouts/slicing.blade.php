@@ -168,7 +168,7 @@
     <div class="flex min-h-screen">
 
         <aside id="sidebar" class="sidebar-desktop flex-shrink-0">
-            <button id="sidebar-toggle-desktop" aria-label="Toggle Sidebar" class="sidebar-toggle-button hidden lg:flex items-center justify-center w-8 h-8 rounded-full absolute top-1/2 -right-4 transform -translate-y-1/2 bg-blue-primary text-white shadow-md z-20 transition-transform duration-300">
+            <button id="sidebar-toggle-desktop" aria-label="Toggle Sidebar" class="sidebar-toggle-button hidden lg:flex items-center justify-center w-8 h-8 rounded-full absolute top-1/2 -right-4 transform -translate-y-1/2 bg-blue-primary text-white shadow-md z-20 transition-transform duration-300 cursor-pointer">
                 <i class="fas fa-chevron-left text-sm"></i>
             </button>
 
@@ -275,7 +275,7 @@
                     <div class="flex items-center space-x-2 md:space-x-5 flex-shrink-0 justify-end">
                         
                         <div class="relative">
-                            <button id="options-menu-button" aria-label="Show options menu" class="focus:outline-none p-2 rounded-full hover:bg-gray-200 transition-colors">
+                            <button id="options-menu-button" aria-label="Show options menu" class="focus:outline-none p-2 rounded-full hover:bg-gray-200 transition-colors cursor-pointer">
                                 <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
                             </button>
                             <div id="options-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 ring-1 ring-black ring-opacity-5 dropdown-menu" role="menu" aria-labelledby="options-menu-button">
@@ -287,7 +287,7 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
-                                            class="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            class="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                                         <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                                              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"

@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use App\Models\RubrikSubmission;
 use App\Models\KhazanahSubmission;
 use App\Models\Student; // Pastikan model Student di-import
+use Illuminate\Support\Facades\Storage;
 
 class StudentPageController extends Controller
 {
@@ -103,7 +104,7 @@ class StudentPageController extends Controller
     public function updateProfile(Request $request)
     {
         $student = Auth::guard('student')->user();
-
+        
         // Pastikan mahasiswa sudah login
         if (!$student) {
             return redirect()->route('login')->with('error', 'Silakan login untuk memperbarui profil.');
@@ -115,6 +116,7 @@ class StudentPageController extends Controller
             'username' => ['required', 'string', 'max:50', Rule::unique('students', 'username')->ignore($student->id)],
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // Max 2MB
             // Opsi untuk mengganti password
             'password' => 'nullable|string|min:6|confirmed',
         ]);
@@ -125,6 +127,18 @@ class StudentPageController extends Controller
             'phone' => $validated['phone'],
             'address' => $validated['address'],
         ];
+
+        // Proses upload image jika ada
+        if ($request->hasFile('image')) {
+            // Hapus image lama jika ada
+            if ($student->image && Storage::disk('public')->exists('students/' . $student->image)) {
+                Storage::disk('public')->delete('students/' . $student->image);
+            }
+
+            // Upload image baru
+            $imagePath = $request->file('image')->store('students', 'public');
+            $updateData['image'] = basename($imagePath); // Simpan hanya nama file
+        }
 
         // Update password jika diisi
         if ($request->filled('password')) {
