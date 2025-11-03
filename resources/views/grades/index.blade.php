@@ -669,6 +669,7 @@ $(document).ready(function() {
      */
     function initCourseSelect2() {
         const classId = $('#class_id').val();
+        const semesterId = $('#semester_id').val(); // TAMBAHAN: Ambil semester
         
         $('#course_id').select2({
             placeholder: '-- Pilih Mata Kuliah --',
@@ -686,44 +687,69 @@ $(document).ready(function() {
                 data: function (params) {
                     return {
                         q: params.term || '',
-                        class_id: classId
+                        class_id: classId,
+                        semester_id: semesterId // TAMBAHAN: Kirim semester
                     };
                 },
                 processResults: function (data) {
-                    if (!data || data.length === 0) {
+                    console.log('Select2 processResults - Raw data:', data);
+                    
+                    // PERBAIKAN: Akses data.courses, bukan data langsung
+                    let courses = [];
+                    
+                    if (data && data.courses && Array.isArray(data.courses)) {
+                        courses = data.courses;
+                    } else if (Array.isArray(data)) {
+                        courses = data;
+                    } else {
+                        console.error('Invalid data format:', data);
                         return { results: [] };
                     }
                     
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.code + ' - ' + item.name,
-                                id: item.id
-                            }
-                        })
-                    };
+                    console.log('Courses to process:', courses);
+                    
+                    if (courses.length === 0) {
+                        return { results: [] };
+                    }
+                    
+                    // Map courses ke format Select2
+                    const results = courses.map(function(item) {
+                        console.log('Processing item:', item);
+                        
+                        // PERBAIKAN: Validasi setiap property
+                        const id = item.id;
+                        const name = item.name || 'Unknown Course';
+                        const code = item.code || 'N/A';
+                        
+                        if (!id) {
+                            console.warn('Item without ID:', item);
+                            return null;
+                        }
+                        
+                        return {
+                            id: id,
+                            text: code + ' - ' + name
+                        };
+                    }).filter(item => item !== null); // Hapus item null
+                    
+                    console.log('Select2 results:', results);
+                    
+                    return { results: results };
                 },
                 error: function(xhr, status, error) {
-                    console.error('AJAX Error:', error);
+                    console.error('Select2 AJAX Error:', {
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
                 },
                 cache: true
             }
         });
     }
 
-    // ========== EVENT HANDLERS ==========
-    
-    /**
-     * Event listener for grade input changes
-     */
-    $('.grade-input').on('input change', function() {
-        const studentId = $(this).data('student-id');
-        updateGradeDisplay(studentId);
-    });
 
-    /**
-     * Event handler when class changes
-     */
+    // Event handler when class changes
     $('#class_id').on('change', function() {
         const classId = $(this).val();
         const $courseSelect = $('#course_id');
@@ -734,7 +760,7 @@ $(document).ready(function() {
         
         if (!classId) {
             $courseSelect.prop('disabled', true);
-            $courseHint.text('Pilih kelas terlebih dahulu');
+            if ($courseHint.length) $courseHint.text('Pilih kelas terlebih dahulu');
             
             if ($courseSelect.hasClass("select2-hidden-accessible")) {
                 $courseSelect.select2('destroy');
@@ -747,12 +773,29 @@ $(document).ready(function() {
             });
         } else {
             $courseSelect.prop('disabled', false);
-            $courseHint.text('Ketik untuk mencari mata kuliah');
+            if ($courseHint.length) $courseHint.text('Ketik untuk mencari mata kuliah');
             
             if ($courseSelect.hasClass("select2-hidden-accessible")) {
                 $courseSelect.select2('destroy');
             }
             
+            initCourseSelect2();
+        }
+    });
+
+    // TAMBAHAN: Event handler when semester changes
+    $('#semester_id').on('change', function() {
+        const classId = $('#class_id').val();
+        const $courseSelect = $('#course_id');
+        
+        // Reset course dropdown
+        $courseSelect.val(null).trigger('change');
+        
+        // Re-init Select2 jika kelas sudah dipilih
+        if (classId) {
+            if ($courseSelect.hasClass("select2-hidden-accessible")) {
+                $courseSelect.select2('destroy');
+            }
             initCourseSelect2();
         }
     });
@@ -807,98 +850,193 @@ $(document).ready(function() {
 
 <script>
 $(document).ready(function() {
-    // Initialize Select2 dengan AJAX untuk mata kuliah
-    $('#course_id').select2({
-        theme: 'default',
-        width: '100%',
-        placeholder: 'Cari mata kuliah...',
-        allowClear: true,
-        ajax: {
+    console.log('=== Grade Index Script Initialized ===');
+    
+    // Function untuk load courses dengan validasi lengkap
+    function loadCourses() {
+        const classId = $('#class_id').val();
+        const semesterId = $('#semester_id').val();
+        const $courseSelect = $('#course_id');
+        
+        console.log('Loading courses for:', { classId, semesterId });
+        
+        // Reset dropdown course
+        $courseSelect.empty().append('<option value="">Pilih Mata Kuliah</option>');
+        
+        // Jika kelas belum dipilih, disable course dropdown
+        if (!classId) {
+            $courseSelect.prop('disabled', true);
+            console.log('Class ID not selected, course dropdown disabled');
+            return;
+        }
+        
+        // Enable dan show loading
+        $courseSelect.prop('disabled', false);
+        $courseSelect.append('<option value="">Memuat mata kuliah...</option>');
+        
+        // AJAX call dengan parameter semester
+        $.ajax({
             url: '{{ route("grades.courses-by-class") }}',
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return {
-                    q: params.term,
-                    class_id: $('#class_id').val()
-                };
+            type: 'GET',
+            data: { 
+                class_id: classId,
+                semester_id: semesterId
             },
-            processResults: function(data) {
-                return {
-                    results: data.map(course => ({
-                        id: course.id,
-                        text: course.name + ' (' + course.code + ')'
-                    }))
-                };
+            dataType: 'json', // TAMBAHAN: Ensure response is parsed as JSON
+            success: function(response) {
+                console.log('=== AJAX Success ===');
+                console.log('Response:', response);
+                console.log('Response type:', typeof response);
+                
+                $courseSelect.empty().append('<option value="">Pilih Mata Kuliah</option>');
+                
+                // PERBAIKAN: Validasi response structure dengan benar
+                let courses = [];
+                
+                // Handle different response formats
+                if (response && response.courses) {
+                    courses = response.courses;
+                    console.log('Courses from response.courses:', courses.length);
+                } else if (Array.isArray(response)) {
+                    courses = response;
+                    console.log('Courses from direct array:', courses.length);
+                } else {
+                    console.error('Unknown response format:', response);
+                }
+                
+                if (courses.length > 0) {
+                    $.each(courses, function(index, course) {
+                        // PERBAIKAN: Validasi setiap property course
+                        const courseName = course.name || 'Unknown Course';
+                        const courseCode = course.code || 'N/A';
+                        const courseId = course.id;
+                        
+                        if (!courseId) {
+                            console.warn('Course without ID:', course);
+                            return; // Skip course tanpa ID
+                        }
+                        
+                        const optionText = `${courseName} (${courseCode})`;
+                        console.log(`Adding course: ${optionText}`);
+                        
+                        $courseSelect.append(new Option(optionText, courseId, false, false));
+                    });
+                    
+                    // Restore selected value jika ada
+                    const selectedCourseId = '{{ $selectedCourseId ?? "" }}';
+                    if (selectedCourseId) {
+                        $courseSelect.val(selectedCourseId).trigger('change');
+                        console.log('Restored selected course:', selectedCourseId);
+                    }
+                    
+                    console.log(`Total ${courses.length} courses loaded successfully`);
+                } else {
+                    $courseSelect.append('<option value="">Tidak ada mata kuliah tersedia</option>');
+                    console.warn('No courses available for this filter');
+                }
             },
-            cache: true
-        },
-        minimumInputLength: 0
+            error: function(xhr, status, error) {
+                console.error('=== AJAX Error ===');
+                console.error('Status:', status);
+                console.error('Error:', error);
+                console.error('Response:', xhr.responseText);
+                console.error('Status Code:', xhr.status);
+                
+                $courseSelect.empty().append('<option value="">Error memuat data</option>');
+                
+                let errorMessage = 'Gagal memuat mata kuliah.';
+                if (xhr.status === 404) {
+                    errorMessage += ' Route tidak ditemukan.';
+                } else if (xhr.status === 500) {
+                    errorMessage += ' Server error.';
+                } else if (xhr.status === 0) {
+                    errorMessage += ' Tidak ada koneksi ke server.';
+                }
+                
+                alert(errorMessage + ' Silakan refresh halaman atau hubungi admin.');
+            }
+        });
+    }
+    
+    // Trigger load courses saat kelas berubah
+    $('#class_id').on('change', function() {
+        console.log('Class changed event triggered');
+        loadCourses();
     });
-
-    // Handle perubahan dropdown Angkatan
+    
+    // Trigger load courses saat semester berubah
+    $('#semester_id').on('change', function() {
+        console.log('Semester changed event triggered');
+        const classId = $('#class_id').val();
+        if (classId) {
+            loadCourses();
+        } else {
+            console.log('Class not selected, skipping course load');
+        }
+    });
+    
+    // Load courses saat page load jika kelas sudah dipilih
+    @if($selectedClassId)
+        console.log('Initial load: Class already selected');
+        loadCourses();
+    @else
+        console.log('Initial load: No class selected');
+    @endif
+    
+    // Handle year change untuk filter kelas
     $('#year_id').on('change', function() {
         const yearId = $(this).val();
         const $classSelect = $('#class_id');
-        const $semesterSelect = $('#semester_id');
-        const $courseSelect = $('#course_id');
         
-        // Reset dan disable dropdown kelas, semester, dan mata kuliah
-        $classSelect.val('').trigger('change').prop('disabled', !yearId);
-        $semesterSelect.val('').trigger('change').prop('disabled', true);
-        $courseSelect.val('').trigger('change').prop('disabled', true);
+        console.log('Year changed:', yearId);
         
-        if (yearId) {
-            // Load kelas berdasarkan angkatan via AJAX (optional)
-            // Atau bisa langsung filter dari data yang sudah ada
-            $.ajax({
-                url: '{{ route("grades.classes-by-year") }}',
-                type: 'GET',
-                data: { year_id: yearId },
-                success: function(classes) {
-                    $classSelect.empty().append('<option value="">-- Pilih Kelas --</option>');
-                    classes.forEach(function(cls) {
-                        $classSelect.append(new Option(cls.name, cls.id));
-                    });
-                    $classSelect.prop('disabled', false);
+        if (!yearId) {
+            $classSelect.prop('disabled', false);
+            return;
+        }
+        
+        $classSelect.prop('disabled', true).empty().append('<option value="">Memuat...</option>');
+        
+        $.ajax({
+            url: '{{ route("grades.classes-by-year") }}',
+            type: 'GET',
+            data: { year_id: yearId },
+            dataType: 'json',
+            success: function(response) {
+                console.log('Classes loaded:', response);
+                
+                $classSelect.prop('disabled', false).empty().append('<option value="">Semua Kelas</option>');
+                
+                $.each(response, function(index, studentClass) {
+                    $classSelect.append(new Option(studentClass.name, studentClass.id, false, false));
+                });
+                
+                const selectedClassId = '{{ $selectedClassId ?? "" }}';
+                if (selectedClassId) {
+                    $classSelect.val(selectedClassId).trigger('change');
                 }
-            });
-        }
+            },
+            error: function(xhr) {
+                console.error('Error loading classes:', xhr);
+                $classSelect.prop('disabled', false).empty().append('<option value="">Error</option>');
+            }
+        });
     });
-
-    // Handle perubahan dropdown Kelas
-    $('#class_id').on('change', function() {
-        const classId = $(this).val();
-        const $semesterSelect = $('#semester_id');
-        const $courseSelect = $('#course_id');
+    
+    // Auto submit form saat course dipilih
+    // $('#course_id').on('change', function() {
+    //     const courseId = $(this).val();
+    //     const semesterId = $('#semester_id').val();
         
-        $semesterSelect.prop('disabled', !classId);
-        $courseSelect.val('').trigger('change').prop('disabled', true);
+    //     console.log('Course selected:', { courseId, semesterId });
         
-        if (!classId) {
-            $semesterSelect.val('').trigger('change');
-        }
-    });
-
-    // Handle perubahan dropdown Semester
-    $('#semester_id').on('change', function() {
-        const semesterId = $(this).val();
-        const classId = $('#class_id').val();
-        const $courseSelect = $('#course_id');
-        
-        $courseSelect.prop('disabled', !(semesterId && classId));
-        
-        if (!semesterId) {
-            $courseSelect.val('').trigger('change');
-        }
-    });
-
-    // Auto-submit form saat mata kuliah dipilih (optional)
-    $('#course_id').on('change', function() {
-        if ($(this).val()) {
-            $('#filterForm').submit();
-        }
-    });
+    //     if (courseId && semesterId) {
+    //         console.log('Auto-submitting form...');
+    //         $(this).closest('form').submit();
+    //     }
+    // });
+    
+    console.log('=== Script Initialization Complete ===');
 });
 </script>
 @endsection

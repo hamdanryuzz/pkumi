@@ -158,10 +158,7 @@
                         <!-- Student Class -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                                    {{ strtoupper(substr($enrollment->studentClass->name, 0, 2)) }}
-                                </div>
-                                <div class="ml-4">
+                                <div class="">
                                     <div class="text-sm font-semibold text-gray-900">{{ $enrollment->studentClass->name }}</div>
                                     <div class="text-xs text-gray-500">{{ $enrollment->studentClass->year->name ?? '-' }}</div>
                                 </div>

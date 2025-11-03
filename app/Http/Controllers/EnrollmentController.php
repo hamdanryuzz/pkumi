@@ -75,9 +75,8 @@ class EnrollmentController extends Controller
         
         // Jika ada student_class_id, load courses yang terkait
         if ($request->filled('student_class_id')) {
-            $courses = Course::where('student_class_id', $request->student_class_id)
-                ->orderBy('name')
-                ->get();
+            $studentClass = StudentClass::find($request->student_class_id);
+            $courses = $studentClass ? $studentClass->courses()->orderBy('name')->get() : collect();
         }
         
         // Pre-select values
@@ -355,17 +354,61 @@ class EnrollmentController extends Controller
 
     public function getCoursesByClass(Request $request)
     {
-        $request->validate([
-            'student_class_id' => 'required|exists:student_classes,id'
-        ]);
+        $classId = $request->get('class_id') ?? $request->get('student_class_id');
+        $search = $request->get('q');
         
-        $courses = Course::where('student_class_id', $request->student_class_id)
-            ->orderBy('name')
-            ->get(['id', 'name', 'code', 'sks']);
+        if (!$classId) {
+            return response()->json([
+                'courses' => [],
+                'count' => 0,
+                'message' => 'class_id tidak ditemukan'
+            ]);
+        }
+        
+        $studentClass = StudentClass::find($classId);
+        
+        if (!$studentClass) {
+            return response()->json([
+                'courses' => [],
+                'count' => 0,
+                'message' => 'Kelas tidak ditemukan'
+            ]);
+        }
+        
+        // PERBAIKAN: Filter courses yang benar-benar terhubung ke kelas ini saja
+        $query = $studentClass->courses()
+            ->select('courses.id', 'courses.name', 'courses.code', 'courses.sks');
+        
+        // TAMBAHAN: Validasi pattern jika ada
+        $query->where(function($q) use ($studentClass) {
+            $q->where(function($subq) use ($studentClass) {
+                // Jika course punya pattern, cek apakah match dengan nama kelas
+                $subq->whereRaw('courses.class_pattern IS NULL')
+                    ->orWhereRaw('? LIKE CONCAT(courses.class_pattern, " %")', [$studentClass->name])
+                    ->orWhere('courses.class_pattern', '=', $studentClass->name);
+            });
+        });
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('courses.name', 'LIKE', "%{$search}%")
+                ->orWhere('courses.code', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $courses = $query->orderBy('courses.name')->get();
+        
+        \Log::info('Courses filtered for class', [
+            'class_id' => $classId,
+            'class_name' => $studentClass->name,
+            'count' => $courses->count(),
+            'courses' => $courses->pluck('name')->toArray()
+        ]);
         
         return response()->json([
             'courses' => $courses,
-            'count' => $courses->count()
+            'count' => $courses->count(),
+            'message' => 'success'
         ]);
     }
 

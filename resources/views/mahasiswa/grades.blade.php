@@ -120,7 +120,7 @@
                     'B+', 'B', 'B-' => 'bg-blue-grade',
                     'C+', 'C', 'C-' => 'bg-yellow-grade',
                     'D', 'E'        => 'bg-red-grade',
-                    default         => 'bg-gray-400 text-white',
+                    default         => 'bg-gray-600 text-white',
                 };
             @endphp
             

@@ -21,21 +21,42 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
-        $courses = Course::all();
-        $semesters = Semester::latest()->orderBy('name', 'desc')->get();
-        $years = Year::all();
-        $studentClasses = StudentClass::with('year')->get(); // Tambahkan data kelas
-        
-        $selectedCourseId = $request->get('course_id');
+        // PERBAIKAN: Ambil courses berdasarkan kelas dan semester yang dipilih
         $selectedSemesterId = $request->get('semester_id');
-        $selectedYearId = $request->get('year_id');
         $selectedClassId = $request->get('class_id');
+        $selectedCourseId = $request->get('course_id');
+        $selectedYearId = $request->get('year_id');
         
+        // Data untuk dropdown
+        $semesters = Semester::orderBy('name', 'desc')->get();
+        $years = Year::all();
+        $studentClasses = StudentClass::with('year')->get();
+        
+        // Query courses berdasarkan filter
+        $coursesQuery = Course::query();
+        
+        // Filter courses berdasarkan kelas dan semester
+        if ($selectedClassId && $selectedSemesterId) {
+            $coursesQuery->whereHas('enrollments', function($q) use ($selectedClassId, $selectedSemesterId) {
+                $q->where('student_class_id', $selectedClassId)
+                ->where('semester_id', $selectedSemesterId)
+                ->where('status', 'enrolled');
+            });
+        } elseif ($selectedClassId) {
+            // Jika hanya kelas yang dipilih, ambil courses yang terhubung dengan kelas
+            $coursesQuery->whereHas('studentClasses', function($q) use ($selectedClassId) {
+                $q->where('student_classes.id', $selectedClassId);
+            });
+        }
+        
+        $courses = $coursesQuery->orderBy('name')->get();
+        
+        // Initialize empty collections
         $students = collect();
         $grades = collect();
         
+        // Load students dan grades jika course dan semester sudah dipilih
         if ($selectedCourseId && $selectedSemesterId) {
-            // Query dengan filter kelas jika dipilih
             $studentsQuery = Student::with(['studentClass'])
                 ->whereHas('studentClass.enrollments', function ($q) use ($selectedCourseId, $selectedSemesterId) {
                     $q->where('course_id', $selectedCourseId)
@@ -43,7 +64,7 @@ class GradeController extends Controller
                     ->where('status', 'enrolled');
                 });
             
-            // Tambahkan filter kelas jika dipilih
+            // Filter berdasarkan kelas jika dipilih
             if ($selectedClassId) {
                 $studentsQuery->where('student_class_id', $selectedClassId);
             }
@@ -255,27 +276,86 @@ class GradeController extends Controller
 
     public function getCoursesByClass(Request $request)
     {
-        $classId = $request->get('class_id');
-        $search = $request->get('q');
-        
-        // Validasi class_id
-        if (!$classId) {
-            return response()->json([]);
+        try {
+            $classId = $request->get('class_id');
+            $semesterId = $request->get('semester_id');
+            $search = $request->get('q');
+            
+            \Log::info('getCoursesByClass - Start', [
+                'class_id' => $classId,
+                'semester_id' => $semesterId,
+                'search' => $search
+            ]);
+            
+            if (!$classId) {
+                return response()->json([
+                    'courses' => [],
+                    'count' => 0
+                ]);
+            }
+            
+            // PERBAIKAN: Query langsung dengan DB facade untuk memastikan data lengkap
+            $query = \DB::table('courses')
+                ->select('courses.id', 'courses.name', 'courses.code', 'courses.sks')
+                ->join('course_student_class', 'courses.id', '=', 'course_student_class.course_id')
+                ->where('course_student_class.student_class_id', '=', $classId);
+            
+            // Filter berdasarkan semester jika ada
+            if ($semesterId) {
+                $query->join('enrollments', function($join) use ($semesterId, $classId) {
+                    $join->on('courses.id', '=', 'enrollments.course_id')
+                        ->where('enrollments.semester_id', '=', $semesterId)
+                        ->where('enrollments.student_class_id', '=', $classId)
+                        ->where('enrollments.status', '=', 'enrolled');
+                });
+            }
+            
+            // Search filter
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('courses.name', 'LIKE', "%{$search}%")
+                    ->orWhere('courses.code', 'LIKE', "%{$search}%");
+                });
+            }
+            
+            $courses = $query
+                ->distinct()
+                ->orderBy('courses.name')
+                ->limit(50)
+                ->get();
+            
+            // Convert ke array of objects dengan property yang jelas
+            $coursesArray = $courses->map(function($course) {
+                return [
+                    'id' => (int)$course->id,
+                    'name' => $course->name ?? 'Unknown Course',
+                    'code' => $course->code ?? 'N/A',
+                    'sks' => (int)($course->sks ?? 0)
+                ];
+            })->values()->toArray();
+            
+            \Log::info('getCoursesByClass - Result', [
+                'count' => count($coursesArray),
+                'courses' => $coursesArray
+            ]);
+            
+            return response()->json([
+                'courses' => $coursesArray,
+                'count' => count($coursesArray)
+            ], 200, [], JSON_UNESCAPED_UNICODE);
+            
+        } catch (\Exception $e) {
+            \Log::error('getCoursesByClass - Error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'courses' => [],
+                'count' => 0,
+                'error' => 'Internal server error'
+            ], 500);
         }
-        
-        $query = Course::select('id', 'name', 'code')
-            ->where('student_class_id', $classId);
-        
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('code', 'LIKE', "%{$search}%");
-            });
-        }
-        
-        $courses = $query->limit(10)->get();
-        
-        return response()->json($courses);
     }
 
     public function getClassesByYear(Request $request)

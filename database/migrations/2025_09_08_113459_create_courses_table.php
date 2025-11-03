@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code')->unique();
-            $table->foreignId('student_class_id')->constrained('student_classes')->onDelete('cascade');
+            $table->string('class_pattern')->nullable(); // Contoh: "S2 PKU", "S3 PKU"
             $table->integer('sks')->nullable();
             $table->timestamps();
         });

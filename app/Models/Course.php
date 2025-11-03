@@ -9,7 +9,7 @@ class Course extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'code', 'student_class_id', 'sks'];
+    protected $fillable = ['name', 'code', 'class_pattern', 'sks'];
 
     public function grades()
     {
@@ -46,9 +46,47 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    public function studentClasses()
+    {
+        return $this->belongsToMany(StudentClass::class, 'course_student_class');
+    }
+
+    /**
+     * Helper: Get first student class (untuk kompatibilitas)
+     * Jika perlu akses singular
+     */
     public function studentClass()
     {
-        return $this->belongsTo(StudentClass::class, 'student_class_id');
+        return $this->studentClasses()->first();
+    }
+
+    // Helper method untuk auto-assign berdasarkan pattern
+    public function assignToClassesByPattern()
+    {
+        if (empty($this->class_pattern)) {
+            return;
+        }
+        
+        // PERBAIKAN: Tambahkan spasi atau boundary untuk exact match
+        // Contoh: "S2 PKU " akan match "S2 PKU A", "S2 PKU B", tapi TIDAK match "S2 PKUP"
+        $pattern = trim($this->class_pattern);
+        
+        // Cari kelas yang namanya cocok dengan pattern
+        // Gunakan space sebagai boundary
+        $classes = StudentClass::where(function($query) use ($pattern) {
+            $query->where('name', 'LIKE', $pattern . ' %')  // "S2 PKU A"
+                ->orWhere('name', '=', $pattern);          // "S2 PKU" exact
+        })->get();
+        
+        \Log::info('Auto-assign by pattern', [
+            'pattern' => $pattern,
+            'found_classes' => $classes->pluck('name')->toArray()
+        ]);
+        
+        foreach ($classes as $class) {
+            // Attach jika belum terhubung
+            $this->studentClasses()->syncWithoutDetaching([$class->id]);
+        }
     }
     
     /**

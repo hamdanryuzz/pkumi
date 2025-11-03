@@ -29,7 +29,7 @@ class StudentClass extends Model
 
     public function courses()
     {
-        return $this->hasMany(Course::class, 'student_class_id');
+        return $this->belongsToMany(Course::class, 'course_student_class');
     }
 
     public function getFullNameAttribute()

@@ -319,8 +319,10 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-3">
                                 Pilih Mata Kuliah <span class="text-red-500">*</span>
                             </label>
+                            
+                            <!-- Courses Container -->
                             <div id="bulk_courses_container" 
-                                 class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 min-h-[320px] max-h-[450px] overflow-y-auto">
+                                class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 min-h-[320px] max-h-[450px] overflow-y-auto">
                                 <div class="flex items-center justify-center h-full text-gray-400">
                                     <div class="text-center">
                                         <svg class="w-20 h-20 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,8 +344,8 @@
                                     </div>
                                     <span class="ml-3 text-sm font-semibold text-gray-700">Mata kuliah terpilih</span>
                                 </div>
-                                <span id="bulk_selected_count" 
-                                      class="inline-flex items-center justify-center min-w-[48px] h-10 px-4 bg-gradient-to-r from-green-600 to-green-600 text-white text-lg font-bold rounded-full shadow-md">0</span>
+                                <span id="badge_count" 
+                                    class="inline-flex items-center justify-center min-w-[48px] h-10 px-4 bg-gradient-to-r from-green-600 to-green-600 text-white text-lg font-bold rounded-full shadow-md">0</span>
                             </div>
                         </div>
 
@@ -353,12 +355,14 @@
                                class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">
                                 Batal
                             </a>
-                            <button type="submit" id="bulkSubmitBtn" disabled
-                                    class="px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none disabled:shadow-md">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="submit" 
+                                    id="bulkSubmitBtn"
+                                    disabled
+                                    class="w-full px-6 py-3 bg-gray-400 text-white font-semibold rounded-lg cursor-not-allowed transition-all duration-200">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
-                                Daftarkan Semua Mata Kuliah
+                                Daftarkan <span id="button_count">0</span> Mata Kuliah
                             </button>
                         </div>
                     </form>
@@ -507,55 +511,75 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Single enrollment handler
-function handleStudentClassChange(studentClassId) {
-    console.log('Single enrollment - Class changed:', studentClassId);
+function handleBulkClassChange(studentClassId) {
+    console.log('Bulk enrollment - Class changed:', studentClassId);
+    const container = document.getElementById('bulk_courses_container');
     
-    // Reset Select2
-    $('#course_id').empty().trigger('change');
+    // Reset search box
+    resetCourseSearch();
     
     if (!studentClassId) {
-        $('#course_id').append(new Option('Pilih kelas terlebih dahulu...', '', false, false)).trigger('change');
-        $('#course_id').prop('disabled', true);
+        container.innerHTML = `
+            <div class="flex items-center justify-center h-full text-gray-400">
+                <div class="text-center">
+                    <svg class="w-20 h-20 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <p class="text-base font-medium text-gray-600">Pilih kelas terlebih dahulu</p>
+                    <p class="text-sm text-gray-500 mt-2">Daftar mata kuliah akan muncul di sini</p>
+                </div>
+            </div>
+        `;
+        updateBulkCount();
         return;
     }
     
-    $('#course_id').append(new Option('Memuat mata kuliah...', '', false, false)).trigger('change');
-    $('#course_id').prop('disabled', true);
+    container.innerHTML = '<div class="text-center py-16"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div><p class="text-gray-600 mt-4 font-medium">Memuat mata kuliah...</p></div>';
     
-    fetch(`${API_URL}?student_class_id=${studentClassId}`, {
+    fetch(`${API_URL}?class_id=${studentClassId}`, {  // PERBAIKAN: Ganti student_class_id menjadi class_id
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        console.log('Courses loaded:', data.courses.length);
+        console.log('Response data:', data);  // Debug response
         
-        // Clear and repopulate Select2
+        // Clear Select2
         $('#course_id').empty();
         $('#course_id').append(new Option('-- Pilih Mata Kuliah --', '', false, false));
         
-        if (data.courses && data.courses.length > 0) {
+        // PERBAIKAN: Validasi response dengan benar
+        if (data && data.courses && Array.isArray(data.courses) && data.courses.length > 0) {
+            console.log('Courses loaded:', data.courses.length);
+            
             data.courses.forEach(course => {
-                const optionText = `${course.name} (${course.code}) - ${course.sks} SKS`;
+                const optionText = `${course.name} (${course.code})${course.sks ? ' - ' + course.sks + ' SKS' : ''}`;
                 $('#course_id').append(new Option(optionText, course.id, false, false));
             });
             $('#course_id').prop('disabled', false);
         } else {
-            $('#course_id').append(new Option('Tidak ada mata kuliah', '', false, false));
+            console.warn('No courses found for this class');
+            $('#course_id').append(new Option('Tidak ada mata kuliah untuk kelas ini', '', false, false));
             $('#course_id').prop('disabled', true);
         }
         
         $('#course_id').trigger('change');
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error loading courses:', error);
         $('#course_id').empty();
         $('#course_id').append(new Option('Error memuat data', '', false, false));
         $('#course_id').prop('disabled', true);
         $('#course_id').trigger('change');
-        alert('Gagal memuat mata kuliah: ' + error.message);
+        
+        alert('Gagal memuat mata kuliah. Silakan coba lagi atau refresh halaman.\nError: ' + error.message);
     });
 }
 
@@ -582,19 +606,42 @@ function handleBulkClassChange(studentClassId) {
     
     container.innerHTML = '<div class="text-center py-16"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div><p class="text-gray-600 mt-4 font-medium">Memuat mata kuliah...</p></div>';
     
-    fetch(`${API_URL}?student_class_id=${studentClassId}`, {
+    fetch(`${API_URL}?class_id=${studentClassId}`, {  // PERBAIKAN: Ganti student_class_id menjadi class_id
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        console.log('Bulk courses loaded:', data.courses.length);
-        renderBulkCourses(data.courses);
+        console.log('Bulk response data:', data);  // Debug response
+        
+        // PERBAIKAN: Validasi response dengan benar
+        if (data && data.courses && Array.isArray(data.courses)) {
+            console.log('Bulk courses loaded:', data.courses.length);
+            renderBulkCourses(data.courses);
+        } else {
+            // Jika tidak ada courses, tampilkan pesan kosong
+            container.innerHTML = `
+                <div class="flex items-center justify-center h-full text-gray-400">
+                    <div class="text-center">
+                        <svg class="w-20 h-20 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <p class="text-base font-medium text-gray-600">Tidak ada mata kuliah</p>
+                        <p class="text-sm text-gray-500 mt-2">Kelas ini belum memiliki mata kuliah terhubung</p>
+                    </div>
+                </div>
+            `;
+        }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error loading bulk courses:', error);
         container.innerHTML = `
             <div class="text-center py-16 text-red-600">
                 <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -602,23 +649,135 @@ function handleBulkClassChange(studentClassId) {
                 </svg>
                 <p class="font-semibold text-lg">Gagal memuat data</p>
                 <p class="text-sm mt-2">${error.message}</p>
+                <button onclick="handleBulkClassChange(${studentClassId})" 
+                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Coba Lagi
+                </button>
             </div>
         `;
     });
 }
 
+// Toggle all courses checkbox
+function toggleAllCourses(checkbox) {
+    console.log('Toggle all called, checked:', checkbox.checked);
+    
+    const courseCheckboxes = document.querySelectorAll('.bulk-course-checkbox:not(:disabled)');
+    
+    if (courseCheckboxes.length === 0) {
+        console.warn('⚠ No course checkboxes found');
+        return;
+    }
+    
+    courseCheckboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+    
+    console.log(`✓ Toggled ${courseCheckboxes.length} checkboxes to: ${checkbox.checked}`);
+    
+    // Update dengan delay
+    setTimeout(() => updateBulkCount(), 50);
+}
+
+// Update bulk enrollment counter dan button state
+function updateBulkCount() {
+    requestAnimationFrame(() => {
+        const checkedBoxes = document.querySelectorAll('.bulk-course-checkbox:checked');
+        const totalBoxes = document.querySelectorAll('.bulk-course-checkbox');
+        const count = checkedBoxes.length;
+        
+        console.log('=== UPDATE BULK COUNT ===');
+        console.log('Checked boxes:', count);
+        console.log('Total boxes:', totalBoxes.length);
+        
+        // 1. Update counter di header courses (yang di dalam container)
+        const headerCounter = document.getElementById('bulk_selected_count');
+        if (headerCounter) {
+            headerCounter.textContent = count;
+            console.log('✓ Header counter updated to:', count);
+        }
+        
+        // 2. Update badge counter (hijau di bawah)
+        const badgeCounter = document.getElementById('badge_count');
+        if (badgeCounter) {
+            badgeCounter.textContent = count;
+            badgeCounter.style.transform = count > 0 ? 'scale(1.1)' : 'scale(1)';
+            console.log('✓ Badge counter updated to:', count);
+        } else {
+            console.error('✗ Badge counter NOT FOUND!');
+        }
+        
+        // 3. Update button counter
+        const buttonCounter = document.getElementById('button_count');
+        if (buttonCounter) {
+            buttonCounter.textContent = count;
+            console.log('✓ Button counter updated to:', count);
+        } else {
+            console.error('✗ Button counter NOT FOUND!');
+        }
+        
+        // Update submit button state
+        const submitBtn = document.getElementById('bulkSubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = count === 0;
+            
+            if (count === 0) {
+                submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            } else {
+                submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+            
+            console.log('✓ Button state updated');
+        }
+        
+        // Update "Select All" checkbox state
+        const selectAllCheckbox = document.getElementById('selectAllCourses');
+        if (selectAllCheckbox && totalBoxes.length > 0) {
+            const allChecked = count === totalBoxes.length;
+            const someChecked = count > 0 && count < totalBoxes.length;
+            
+            selectAllCheckbox.checked = allChecked;
+            selectAllCheckbox.indeterminate = someChecked;
+            
+            console.log('✓ Select all checkbox updated');
+        }
+        
+        console.log('=== END UPDATE ===\n');
+    });
+}
+
+// Helper function untuk reset bulk selection
+function resetBulkSelection() {
+    console.log('Reset bulk selection called');
+    
+    document.querySelectorAll('.bulk-course-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    const selectAllCheckbox = document.getElementById('selectAllCourses');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    }
+    
+    setTimeout(() => updateBulkCount(), 50);
+}
+
+// Enhanced renderBulkCourses dengan checkbox yang benar
 function renderBulkCourses(courses) {
     const container = document.getElementById('bulk_courses_container');
     
     if (!courses || courses.length === 0) {
         container.innerHTML = `
             <div class="flex items-center justify-center h-full text-gray-400">
-                <div class="text-center">
+                <div class="text-center py-12">
                     <svg class="w-20 h-20 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                     <p class="text-base font-medium text-gray-600">Tidak ada mata kuliah</p>
-                    <p class="text-sm text-gray-500 mt-2">Kelas ini belum memiliki mata kuliah</p>
+                    <p class="text-sm text-gray-500 mt-2">Kelas ini belum memiliki mata kuliah terhubung</p>
                 </div>
             </div>
         `;
@@ -626,55 +785,87 @@ function renderBulkCourses(courses) {
         return;
     }
     
+    console.log('Rendering', courses.length, 'courses...');
+    
     let html = `
-        <div class="mb-4 pb-4 border-b-2 border-gray-300">
-            <label class="flex items-center cursor-pointer hover:bg-white p-4 rounded-lg transition-all group">
-                <input type="checkbox" id="select_all_courses" 
-                       class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-2 focus:ring-green-500" 
-                       onchange="toggleAllCourses(this)">
-                <span class="ml-3 text-base font-bold text-gray-800 group-hover:text-green-700">Pilih Semua Mata Kuliah</span>
-            </label>
+        <!-- Search Box -->
+        <div class="mb-4 sticky top-0 bg-white z-20 pb-2 border-b">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" 
+                       id="course_search" 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" 
+                       placeholder="Cari mata kuliah...">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <span id="search_result_count" class="text-sm text-gray-500 hidden"></span>
+                </div>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Ketik untuk mencari berdasarkan kode atau nama</p>
         </div>
-        <div class="space-y-3">
+
+        <!-- Select All Courses -->
+        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between sticky top-24 z-10">
+            <label class="flex items-center cursor-pointer hover:text-blue-700 transition">
+                <input type="checkbox" 
+                       id="selectAllCourses"
+                       class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                       onclick="toggleAllCourses(this)">
+                <span class="ml-3 font-semibold text-gray-800">Pilih Semua</span>
+            </label>
+            <div class="text-sm font-medium">
+                <span id="bulk_selected_count" class="bulk-counter-value font-bold text-blue-600 text-lg">0</span>
+                <span class="text-gray-600"> / <span class="bulk-total-count">${courses.length}</span> dipilih</span>
+            </div>
+        </div>
+
+        <!-- Courses List -->
+        <div id="courses_list" class="space-y-2">
     `;
     
     courses.forEach((course, index) => {
+        const uniqueId = `course_${course.id}_${index}`;
+        
+        // PENTING: Escape HTML dan pastikan data clean
+        const courseName = (course.name || '').toLowerCase().replace(/"/g, '&quot;');
+        const courseCode = (course.code || '').toLowerCase().replace(/"/g, '&quot;');
+        
         html += `
-            <div class="border-2 border-gray-200 rounded-xl hover:border-green-400 hover:bg-green-50 hover:shadow-md transition-all duration-200">
-                <label class="flex items-start p-4 cursor-pointer">
-                    <input type="checkbox" name="course_ids[]" value="${course.id}" 
-                           class="course-checkbox w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-2 focus:ring-green-500 mt-1 flex-shrink-0" 
-                           onchange="updateBulkCount()">
-                    <div class="ml-4 flex-1">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <p class="font-bold text-gray-900 text-base">${course.name}</p>
-                                <p class="text-sm text-gray-600 mt-1 font-medium">${course.code}</p>
-                            </div>
-                            <span class="ml-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border border-blue-200">
-                                ${course.sks} SKS
-                            </span>
-                        </div>
+            <label for="${uniqueId}" 
+                class="course-item flex items-center p-4 bg-gray-50 hover:bg-blue-50 rounded-lg border border-gray-200 hover:border-blue-300 cursor-pointer transition-all duration-150 group"
+                data-course-name="${courseName}"
+                data-course-code="${courseCode}">
+                <input type="checkbox" 
+                    id="${uniqueId}"
+                    name="course_ids[]" 
+                    value="${course.id}" 
+                    class="bulk-course-checkbox w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
+                    onclick="updateBulkCount()">
+                <div class="ml-3 flex-grow">
+                    <div class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                        ${course.name}
                     </div>
-                </label>
-            </div>
+                    <div class="text-sm text-gray-600 mt-1">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">
+                            ${course.code}
+                        </span>
+                        ${course.sks ? `<span class="ml-2 text-gray-500">${course.sks} SKS</span>` : ''}
+                    </div>
+                </div>
+            </label>
         `;
     });
     
-    html += '</div>';
+    html += `</div>`;
+    
     container.innerHTML = html;
-    updateBulkCount();
-}
-
-function toggleAllCourses(checkbox) {
-    document.querySelectorAll('.course-checkbox').forEach(cb => cb.checked = checkbox.checked);
-    updateBulkCount();
-}
-
-function updateBulkCount() {
-    const count = document.querySelectorAll('.course-checkbox:checked').length;
-    document.getElementById('bulk_selected_count').textContent = count;
-    document.getElementById('bulkSubmitBtn').disabled = count === 0;
+    console.log('✓ Courses rendered');
+    
+    setupSearchFunctionality();
+    setTimeout(() => updateBulkCount(), 50);
 }
 
 console.log('=== SCRIPT READY ===');
@@ -856,5 +1047,110 @@ $(document).ready(function() {
         }
     });
 });
+</script>
+
+<script>
+// ========== COURSE SEARCH FUNCTIONALITY ==========
+
+/**
+ * Setup search functionality
+ */
+function setupSearchFunctionality() {
+    const $searchInput = $('#course_search');
+    
+    if ($searchInput.length === 0) {
+        console.error('❌ Search input not found');
+        return;
+    }
+    
+    console.log('✓ Setting up search functionality');
+    
+    // Clear previous listeners
+    $searchInput.off('input keydown');
+    
+    // Real-time filter
+    $searchInput.on('input', function() {
+        const searchQuery = $(this).val().toLowerCase().trim();
+        let visibleCount = 0;
+        let totalCount = 0;
+        
+        // Cari semua .course-item
+        $('label.course-item').each(function() {
+            const $label = $(this);
+            
+            // PERBAIKAN: Gunakan .attr() atau ambil dari HTML langsung
+            const courseName = ($label.attr('data-course-name') || '').toLowerCase();
+            const courseCode = ($label.attr('data-course-code') || '').toLowerCase();
+            
+            totalCount++;
+            
+            // DEBUG: Log jika ada yang kosong
+            if (!courseName && !courseCode) {
+                console.warn('⚠ Empty data attributes on:', $label.html().substring(0, 50));
+            }
+            
+            // PENTING: Cek apakah string sebelum .includes()
+            const matches = !searchQuery || 
+                           (typeof courseName === 'string' && courseName.includes(searchQuery)) || 
+                           (typeof courseCode === 'string' && courseCode.includes(searchQuery));
+            
+            if (matches) {
+                $label.show();
+                visibleCount++;
+            } else {
+                $label.hide();
+            }
+        });
+        
+        console.log(`✓ Search: "${searchQuery}" → ${visibleCount} / ${totalCount} visible`);
+        
+        // Update counter
+        const $counter = $('#search_result_count');
+        if (searchQuery) {
+            $counter.text(`${visibleCount} / ${totalCount}`).removeClass('hidden');
+        } else {
+            $counter.addClass('hidden');
+        }
+        
+        // No results message
+        const hasVisible = visibleCount > 0;
+        const $container = $('#bulk_courses_container');
+        
+        if (!hasVisible && totalCount > 0) {
+            if ($container.find('#no_search_results').length === 0) {
+                $container.append(`
+                    <div id="no_search_results" class="text-center py-8 mt-4">
+                        <p class="text-gray-500 font-medium">Tidak ada hasil untuk: "${searchQuery}"</p>
+                    </div>
+                `);
+            }
+        } else {
+            $container.find('#no_search_results').remove();
+        }
+    });
+    
+    // ESC to clear
+    $searchInput.on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            console.log('✓ ESC pressed - clearing search');
+            $(this).val('').trigger('input');
+        }
+    });
+    
+    console.log('✓ Search functionality ready - WITH TYPE CHECKING');
+}
+
+/**
+ * Reset search box
+ */
+function resetCourseSearch() {
+    $('#course_search').val('').prop('disabled', true);
+    $('#search_result_count').addClass('hidden');
+    $('#bulk_courses_container').find('#no_search_results').remove();
+    console.log('✓ Course search reset');
+}
+
+console.log('✓ All search scripts loaded - CLEAN & WORKING');
+
 </script>
 @endsection

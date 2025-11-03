@@ -178,7 +178,7 @@ class StudentController extends Controller
         $semesterFilter = $request->get('semester_id');
         
         // Ambil semua semester untuk dropdown filter
-        $semesters = Semester::all();
+        $semesters = Semester::orderBy('name', 'desc')->get();
         
         // Base query untuk enrollments mahasiswa dengan relasi course dan semester
         $enrollmentQuery = Enrollment::where('student_class_id', $student->student_class_id)

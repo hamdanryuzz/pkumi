@@ -17,7 +17,7 @@ class CourseController extends Controller
         $yearFilter = $request->input('year_id');
         $classFilter = $request->input('student_class_id');
         
-        $query = Course::with(['studentClass.year']);
+        $query = Course::with(['studentClasses.year']);
         
         // Search filter
         if ($search) {
@@ -29,14 +29,16 @@ class CourseController extends Controller
         
         // Year filter
         if ($yearFilter) {
-            $query->whereHas('studentClass', function ($q) use ($yearFilter) {
+            $query->whereHas('studentClasses', function ($q) use ($yearFilter) {
                 $q->where('year_id', $yearFilter);
             });
         }
         
         // Class filter
         if ($classFilter) {
-            $query->where('student_class_id', $classFilter);
+            $query->whereHas('studentClasses', function ($q) use ($classFilter) {
+                $q->where('student_classes.id', $classFilter);
+            });
         }
         
         $courses = $query->latest()->paginate(10);
@@ -56,21 +58,38 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:255', 'unique:courses,code'],
-            'student_class_id' => ['required', 'exists:student_classes,id']
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:255|unique:courses',
+            'class_pattern' => 'nullable|in:S2 PKU,S2 PKUP,S3 PKU',
+            'student_class_ids' => 'nullable|array', // Terima multiple IDs
+            'student_class_ids.*' => 'exists:student_classes,id',
+            'sks' => 'nullable|integer',
         ]);
 
-        Course::create($validated);
+        $course = Course::create([
+            'name' => $validated['name'],
+            'code' => $validated['code'],
+            'class_pattern' => $validated['class_pattern'] ?? null,
+            'sks' => $validated['sks'] ?? null,
+        ]);
+
+        // Hubungkan dengan kelas yang dipilih
+        if (!empty($validated['student_class_ids'])) {
+            $course->studentClasses()->sync($validated['student_class_ids']);
+        }
         
-        return redirect()
-            ->route('courses.index')
-            ->with('success', 'Course berhasil dibuat.');
+        // Atau gunakan auto-assign berdasarkan pattern
+        elseif (!empty($validated['class_pattern'])) {
+            $course->assignToClassesByPattern();
+        }
+
+        return redirect()->route('courses.index')
+            ->with('success', 'Mata kuliah berhasil ditambahkan');
     }
 
     public function show(Course $course)
     {
-        $course->load('studentClass.year');
+        $course->load('studentClasses');
         return view('courses.show', compact('course'));
     }
 
@@ -85,19 +104,30 @@ class CourseController extends Controller
     public function update(Request $request, Course $course)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'code' => [
-                'required', 'string', 'max:255',
-                Rule::unique('courses', 'code')->ignore($course->id),
-            ],
-            'student_class_id' => ['required', 'exists:student_classes,id']
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:255|unique:courses,code,' . $course->id,
+            'class_pattern' => 'nullable|in:S2 PKU,S2 PKUP,S3 PKU',
+            'student_class_ids' => 'nullable|array',
+            'student_class_ids.*' => 'exists:student_classes,id',
+            'sks' => 'nullable|integer',
         ]);
 
-        $course->update($validated);
-        
-        return redirect()
-            ->route('courses.index')
-            ->with('success', 'Course berhasil diperbarui.');
+        $course->update([
+            'name' => $validated['name'],
+            'code' => $validated['code'],
+            'class_pattern' => $validated['class_pattern'] ?? null,
+            'sks' => $validated['sks'] ?? null,
+        ]);
+
+        // Update relasi
+        if (!empty($validated['student_class_ids'])) {
+            $course->studentClasses()->sync($validated['student_class_ids']);
+        } elseif (!empty($validated['class_pattern'])) {
+            $course->assignToClassesByPattern();
+        }
+
+        return redirect()->route('courses.index')
+            ->with('success', 'Mata kuliah berhasil diperbarui');
     }
 
     public function destroy(Course $course)

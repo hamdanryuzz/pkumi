@@ -143,15 +143,15 @@ class StudentClassController extends Controller
         $search = $request->input('search');
         $semesterFilter = $request->input('semester_id');
 
-        // Query untuk mata kuliah dengan relasi
-        $coursesQuery = Course::where('student_class_id', $id)
+        // PERBAIKAN: Gunakan relasi many-to-many, BUKAN query where student_class_id
+        $coursesQuery = $studentClass->courses() // Gunakan relasi courses dari StudentClass
             ->with(['semesters']);
 
         // Terapkan search jika ada
         if ($search) {
             $coursesQuery->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', '%' . $search . '%')
-                ->orWhere('code', 'LIKE', '%' . $search . '%');
+                $q->where('courses.name', 'LIKE', '%' . $search . '%')
+                ->orWhere('courses.code', 'LIKE', '%' . $search . '%');
             });
         }
 
@@ -169,7 +169,7 @@ class StudentClassController extends Controller
         $semesters = Semester::orderBy('name')->get();
 
         // Ambil unique semesters untuk ditampilkan
-        $uniqueSemesters = $studentClass->unique_semesters;
+        $uniqueSemesters = $studentClass->uniqueSemesters;
 
         return view('student_classes.show', compact('studentClass', 'courses', 'semesters', 'semesterFilter', 'search', 'uniqueSemesters'));
     }

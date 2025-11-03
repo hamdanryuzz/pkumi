@@ -279,7 +279,7 @@
                 <h3 class="text-lg font-semibold text-gray-900">Riwayat Nilai Akademik</h3>
                 <!-- Filter Section -->
                 <form method="GET" action="{{ route('students.show', $student) }}" class="flex gap-2">
-                    <select name="semester_filter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                    <select name="semester_filter" class="select2-semester px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Semua Semester</option>
                         @foreach($semesters as $sem)
                             <option value="{{ $sem->id }}" {{ request('semester_filter') == $sem->id ? 'selected' : '' }}>
@@ -495,4 +495,22 @@
         </div>
     </div>
 </div>
+
+<script>
+        // ========== SELECT2 INITIALIZATION ==========
+    
+    /**
+     * Initialize Select2 for Semester dropdown
+     */
+    $('.select2-semester').select2({
+        placeholder: '-- Pilih Semester --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return "Semester tidak ditemukan"; },
+            searching: function() { return "Mencari..."; }
+        }
+    });
+
+</script>
 @endsection
