@@ -64,29 +64,57 @@ class Course extends Model
     public function assignToClassesByPattern()
     {
         if (empty($this->class_pattern)) {
+            \Log::info("Course {$this->name} has no pattern set");
+            // Jika pattern kosong, hapus semua koneksi
+            $this->studentClasses()->detach();
             return;
         }
         
-        // PERBAIKAN: Tambahkan spasi atau boundary untuk exact match
-        // Contoh: "S2 PKU " akan match "S2 PKU A", "S2 PKU B", tapi TIDAK match "S2 PKUP"
         $pattern = trim($this->class_pattern);
         
-        // Cari kelas yang namanya cocok dengan pattern
-        // Gunakan space sebagai boundary
-        $classes = StudentClass::where(function($query) use ($pattern) {
-            $query->where('name', 'LIKE', $pattern . ' %')  // "S2 PKU A"
-                ->orWhere('name', '=', $pattern);          // "S2 PKU" exact
+        // Cari kelas dengan precise matching
+        $matchingClasses = \App\Models\StudentClass::where(function($query) use ($pattern) {
+            // Pattern "S2 PKU" akan match "S2 PKU A", "S2 PKU B" (pattern + space)
+            $query->where('name', 'LIKE', $pattern . ' %')
+                  ->orWhere('name', '=', $pattern);  // Exact match
         })->get();
         
-        \Log::info('Auto-assign by pattern', [
+        \Log::info('Pattern matching assignment', [
+            'course' => $this->name,
             'pattern' => $pattern,
-            'found_classes' => $classes->pluck('name')->toArray()
+            'found_classes' => $matchingClasses->pluck('name')->toArray(),
+            'count' => $matchingClasses->count()
         ]);
-        
-        foreach ($classes as $class) {
-            // Attach jika belum terhubung
-            $this->studentClasses()->syncWithoutDetaching([$class->id]);
+
+        // sync():
+        // 1. Hapus koneksi lama yang tidak match
+        // 2. Tambah koneksi baru yang match
+        // 3. Keep koneksi yang sudah ada dan masih match
+        if ($matchingClasses->isNotEmpty()) {
+            $this->studentClasses()->sync($matchingClasses->pluck('id'));
+            \Log::info("✓ Course {$this->name} synced to {$matchingClasses->count()} classes");
+        } else {
+            // Jika tidak ada match, hapus semua koneksi
+            $this->studentClasses()->detach();
+            \Log::warning("⚠ Course {$this->name} has no matching classes for pattern: {$pattern}");
         }
+    }
+
+    /**
+     * Get matching student classes berdasarkan current pattern
+     */
+    public function getMatchingClasses()
+    {
+        if (!$this->class_pattern) {
+            return collect();
+        }
+
+        $pattern = trim($this->class_pattern);
+        
+        return \App\Models\StudentClass::where(function($query) use ($pattern) {
+            $query->where('name', 'LIKE', $pattern . ' %')
+                  ->orWhere('name', '=', $pattern);
+        })->get();
     }
     
     /**

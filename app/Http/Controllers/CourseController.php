@@ -105,29 +105,20 @@ class CourseController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:255|unique:courses,code,' . $course->id,
-            'class_pattern' => 'nullable|in:S2 PKU,S2 PKUP,S3 PKU',
-            'student_class_ids' => 'nullable|array',
-            'student_class_ids.*' => 'exists:student_classes,id',
-            'sks' => 'nullable|integer',
+            'code' => "required|string|unique:courses,code,{$course->id}|max:50",
+            'sks' => 'required|integer|min:1|max:6',
+            'class_pattern' => 'nullable|string|max:100',
         ]);
 
-        $course->update([
-            'name' => $validated['name'],
-            'code' => $validated['code'],
-            'class_pattern' => $validated['class_pattern'] ?? null,
-            'sks' => $validated['sks'] ?? null,
-        ]);
+        // Update course data
+        $course->update($validated);
 
-        // Update relasi
-        if (!empty($validated['student_class_ids'])) {
-            $course->studentClasses()->sync($validated['student_class_ids']);
-        } elseif (!empty($validated['class_pattern'])) {
-            $course->assignToClassesByPattern();
-        }
+        // PENTING: Re-assign dengan pattern baru
+        // Ini akan replace koneksi lama dengan yang baru
+        $course->assignToClassesByPattern();
 
-        return redirect()->route('courses.index')
-            ->with('success', 'Mata kuliah berhasil diperbarui');
+        return redirect()->route('courses.index', $course)
+            ->with('success', "Course updated and synced to {$course->studentClasses()->count()} classes");
     }
 
     public function destroy(Course $course)
