@@ -52,7 +52,7 @@ class EnrollmentController extends Controller
         });
     }
 
-        $enrollments = $query->orderBy('created_at', 'desc')->paginate(15);
+        $enrollments = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         // Get filter options
         $semesters = Semester::orderBy('start_date', 'desc')->get();

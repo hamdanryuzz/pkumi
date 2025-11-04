@@ -59,7 +59,8 @@ class StudentClassController extends Controller
             ->orderByDesc(
         Year::select('name')->whereColumn('years.id', 'student_classes.year_id')
             )
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
         
         // Ambil semua tahun untuk dropdown filter
         $years = Year::orderBy('name', 'desc')->get();

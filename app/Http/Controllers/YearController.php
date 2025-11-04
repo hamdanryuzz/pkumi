@@ -27,8 +27,10 @@ class YearController extends Controller
                 return $query->where('period_id', $periodFilter);
             })
             ->latest()
-            ->orderBy('name', 'desc')
-            ->get();
+            ->orderByRaw("CAST(REGEXP_SUBSTR(name, '[0-9]+') AS UNSIGNED) DESC")
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('years.index', compact('years', 'search', 'periods', 'periodFilter'));
     }

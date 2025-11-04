@@ -258,19 +258,8 @@
         <!-- Pagination -->
         @if($studentClasses->hasPages())
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-sm text-gray-700">
-                    Menampilkan 
-                    <span class="font-semibold">{{ $studentClasses->firstItem() }}</span>
-                    sampai 
-                    <span class="font-semibold">{{ $studentClasses->lastItem() }}</span>
-                    dari 
-                    <span class="font-semibold">{{ $studentClasses->total() }}</span>
-                    hasil
-                </div>
-                <div>
-                    {{ $studentClasses->links() }}
-                </div>
+            <div>
+                {{ $studentClasses->links() }}
             </div>
         </div>
         @endif
