@@ -623,6 +623,13 @@ $(document).ready(function() {
         }
     }
 
+    // ========== EVENT LISTENERS ==========  ← TAMBAHKAN DI SINI
+    $(document).on('input change keyup', '.grade-input', function() {
+        const studentId = $(this).data('student-id');
+        console.log('Grade input changed for student:', studentId);
+        updateGradeDisplay(studentId);
+    });
+
     // ========== SELECT2 INITIALIZATION ==========
     
     /**
@@ -1022,19 +1029,6 @@ $(document).ready(function() {
             }
         });
     });
-    
-    // Auto submit form saat course dipilih
-    // $('#course_id').on('change', function() {
-    //     const courseId = $(this).val();
-    //     const semesterId = $('#semester_id').val();
-        
-    //     console.log('Course selected:', { courseId, semesterId });
-        
-    //     if (courseId && semesterId) {
-    //         console.log('Auto-submitting form...');
-    //         $(this).closest('form').submit();
-    //     }
-    // });
     
     console.log('=== Script Initialization Complete ===');
 });
