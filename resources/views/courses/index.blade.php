@@ -94,7 +94,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Angkatan</label>
                     <select name="year_id" 
-                            id="yearSelect"
+                            id="year_id"
                             class="select2-filter w-full"
                             onchange="filterClasses()">
                         <option value="">Semua Angkatan</option>
@@ -110,7 +110,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
                     <select name="student_class_id" 
-                            id="classSelect"
+                            id="student_class_id"
                             class="select2-filter w-full">
                         <option value="">Semua Kelas</option>
                         @foreach($studentClasses as $class)
@@ -352,6 +352,37 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) {
             toggleModal('importModal');
         }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Event listener untuk mengupdate dropdown kelas saat year berubah
+    $('#year_id').on('change', function() {
+        const yearId = $(this).val();
+        const classSelect = $('#student_class_id');
+        
+        if (!yearId) {
+            classSelect.html('<option value="">Pilih Kelas</option>').trigger('change');
+            return;
+        }
+        
+        // Fetch data kelas berdasarkan tahun
+        $.ajax({
+            url: '{{ route("courses.classes-by-year") }}',
+            type: 'GET',
+            data: { year_id: yearId },
+            success: function(data) {
+                classSelect.html('<option value="">Pilih Kelas</option>');
+                $.each(data, function(index, item) {
+                    classSelect.append(`<option value="${item.id}">${item.name}</option>`);
+                });
+                classSelect.trigger('change');
+            },
+            error: function(error) {
+                console.error('Error:', error);
+            }
+        });
     });
 });
 </script>

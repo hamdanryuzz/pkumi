@@ -149,5 +149,18 @@ class CourseController extends Controller
         return back()->with('success', 'Data mata kuliah berhasil diimport!');
     }
     
-
+    public function getClassesByYear(Request $request)
+{
+    $yearId = $request->input('year_id');
+    
+    if (!$yearId) {
+        return response()->json([]);
+    }
+    
+    $studentClasses = StudentClass::where('year_id', $yearId)
+        ->orderBy('name')
+        ->get(['id', 'name']);
+    
+    return response()->json($studentClasses);
+}
 }

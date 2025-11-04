@@ -93,6 +93,9 @@ Route::middleware('auth:web')->group(function () {
     Route::resource('courses', CourseController::class);
     Route::get('/import', [CourseController::class, 'importView'])->name('courses.import.view');
     Route::post('/import', [CourseController::class, 'import'])->name('courses.import');
+    Route::get('/classes-by-year', [CourseController::class, 'getClassesByYear'])
+    ->name('courses.classes-by-year');
+
 
     // Period Management
     Route::post('/periods/bulk', [PeriodController::class, 'bulkStore'])->name('periods.bulk');
