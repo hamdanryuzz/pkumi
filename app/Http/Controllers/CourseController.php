@@ -107,7 +107,7 @@ class CourseController extends Controller
             'name' => 'required|string|max:255',
             'code' => "required|string|unique:courses,code,{$course->id}|max:50",
             'sks' => 'required|integer|min:1|max:6',
-            'class_pattern' => 'nullable|string|max:100',
+            'class_pattern' => 'nullable|in:S2 PKU,S2 PKUP,S3 PKU',
         ]);
 
         // Update course data
@@ -148,5 +148,6 @@ class CourseController extends Controller
 
         return back()->with('success', 'Data mata kuliah berhasil diimport!');
     }
+    
 
 }

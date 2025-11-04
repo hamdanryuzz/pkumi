@@ -20,34 +20,42 @@ class CoursesImport implements ToModel, WithHeadingRow, SkipsOnFailure, WithVali
 
     public function model(array $row)
     {
-        // Lewati baris kosong
-        if (empty($row['name']) || empty($row['code'])) {
-            return null;
-        }
-
-        // Ambil kelas berdasarkan nama (kolom 'kelas' di Excel)
-        $class = StudentClass::where('name', trim($row['kelas'] ?? ''))->first();
-
-        // Jika kelas tidak ditemukan, catat error
-        if (!$class) {
-            $this->errors[] = "Baris kode {$row['code']}: Kelas '{$row['kelas']}' tidak ditemukan di database.";
-            return null;
-        }
-
-        return new Course([
+        // Buat course dulu
+        $course = Course::create([
             'name' => $row['name'],
             'code' => $row['code'],
             'sks' => $row['sks'] ?? null,
-            'student_class_id' => $class->id,
+            'class_pattern' => $row['class_pattern'] ?? null,
         ]);
+
+        // Auto-assign ke student classes berdasarkan pattern
+        if (!empty($course->class_pattern)) {
+            $course->assignToClassesByPattern();
+            
+            // Log jika tidak ada kelas yang match
+            if ($course->studentClasses()->count() == 0) {
+                $this->errors[] = "Baris kode {$row['code']}: Pattern '{$course->class_pattern}' tidak menemukan kelas yang cocok.";
+            }
+        }
+
+        return $course;
     }
 
     public function rules(): array
     {
         return [
             'name' => 'required',
-            'code' => 'required',
-            'kelas' => 'required',
+            'code' => 'required|unique:courses,code',
+            'class_pattern' => 'nullable|in:S2 PKU,S2 PKUP,S3 PKU',
+            'sks' => 'nullable|integer|min:1|max:6',
+        ];
+    }
+
+    public function customValidationMessages()
+    {
+        return [
+            'code.unique' => 'Kode mata kuliah :input sudah ada di database.',
+            'class_pattern.in' => 'Pattern kelas harus salah satu dari: S2 PKU, S2 PKUP, S3 PKU',
         ];
     }
 

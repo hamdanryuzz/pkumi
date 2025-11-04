@@ -8,7 +8,18 @@
             <h1 class="text-2xl font-bold text-gray-800">Mata Kuliah</h1>
             <p class="text-gray-600 mt-1">Kelola data mata kuliah sistem</p>
         </div>
-        <div class="mt-4 md:mt-0">
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <!-- Button Import -->
+            <button type="button" 
+                    onclick="toggleModal('importModal')"
+                    class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition duration-150">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                Import Excel
+            </button>
+            
+            <!-- Button Tambah -->
             <a href="{{ route('courses.create') }}" 
                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition duration-150">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,27 +53,50 @@
     </div>
     @endif
 
+    @if(session('import_errors'))
+    <div class="mb-4 bg-red-50 border-l-4 border-red-500 rounded-lg p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Kesalahan saat import:</h3>
+                <ul class="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
+                    @foreach(session('import_errors') as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Filter Card -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div class="p-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800">Filter & Pencarian</h2>
         </div>
         <div class="p-4">
-            <form method="GET" action="{{ route('courses.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <form method="GET" action="{{ route('courses.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="filterForm">
                 <!-- Search -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Cari Mata Kuliah</label>
                     <input type="text" 
-                           name="search" 
-                           value="{{ request('search') }}"
-                           placeholder="Nama atau kode mata kuliah..."
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        name="search" 
+                        value="{{ request('search') }}"
+                        placeholder="Nama atau kode mata kuliah..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
                 <!-- Year Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Angkatan</label>
-                    <select name="year_id" class="select2-filter w-full">
+                    <select name="year_id" 
+                            id="yearSelect"
+                            class="select2-filter w-full"
+                            onchange="filterClasses()">
                         <option value="">Semua Angkatan</option>
                         @foreach($years as $year)
                             <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
@@ -75,10 +109,14 @@
                 <!-- Class Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
-                    <select name="student_class_id" class="select2-filter w-full">
+                    <select name="student_class_id" 
+                            id="classSelect"
+                            class="select2-filter w-full">
                         <option value="">Semua Kelas</option>
                         @foreach($studentClasses as $class)
-                            <option value="{{ $class->id }}" {{ request('student_class_id') == $class->id ? 'selected' : '' }}>
+                            <option value="{{ $class->id }}" 
+                                    data-year-id="{{ $class->year->id ?? '' }}"
+                                    {{ request('student_class_id') == $class->id ? 'selected' : '' }}>
                                 {{ $class->name }} - {{ $class->year->name ?? '' }}
                             </option>
                         @endforeach
@@ -95,7 +133,7 @@
                         Filter
                     </button>
                     <a href="{{ route('courses.index') }}" 
-                       class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition duration-150">
+                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition duration-150">
                         Reset
                     </a>
                 </div>
@@ -229,8 +267,76 @@
     </div>
 </div>
 
+<!-- Import Modal -->
+<div id="importModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Import Mata Kuliah</h3>
+                <button onclick="toggleModal('importModal')" 
+                        class="text-gray-400 hover:text-gray-500 transition">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form action="{{ route('courses.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                
+                <!-- File Input -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        File Excel (.xlsx, .xls, .csv)
+                    </label>
+                    <input type="file" 
+                           name="file" 
+                           accept=".xlsx,.xls,.csv" 
+                           required
+                           class="block w-full text-sm text-gray-500 
+                                  file:mr-4 file:py-2 file:px-4 
+                                  file:rounded-lg file:border-0 
+                                  file:text-sm file:font-semibold 
+                                  file:bg-blue-50 file:text-blue-700 
+                                  hover:file:bg-blue-100 
+                                  cursor-pointer">
+                </div>
+
+                <!-- Info Box -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4">
+                    <p class="text-xs text-blue-700">
+                        <strong class="block mb-1">Format Excel:</strong>
+                        <span class="block">Header: name, code, sks, class_pattern</span>
+                        <span class="block">Pattern: S2 PKU, S2 PKUP, atau S3 PKU</span>
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-2">
+                    <button type="submit" 
+                            class="flex-1 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                        Import
+                    </button>
+                    <button type="button" 
+                            onclick="toggleModal('importModal')"
+                            class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
-$(document).ready(function() {
+function toggleModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.toggle('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
     // Initialize Select2
     $('.select2-filter').select2({
         theme: 'default',
@@ -239,6 +345,13 @@ $(document).ready(function() {
         },
         allowClear: true,
         width: '100%'
+    });
+
+    // Close modal on outside click
+    document.getElementById('importModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            toggleModal('importModal');
+        }
     });
 });
 </script>
