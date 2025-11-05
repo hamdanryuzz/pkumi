@@ -420,6 +420,16 @@ document.addEventListener('DOMContentLoaded', function() {
         previewNim.innerHTML = '<em>Pilih tahun dan kelas</em>';
         
         if (yearId) {
+            // Fetch period data untuk preview NIM
+            fetch(`{{ url('/api/year-period') }}/${yearId}`)
+                .then(response => response.json())
+                .then(periodData => {
+                    // Simpan period data untuk preview NIM
+                    yearSelect.dataset.periodName = periodData.period_name || periodData.year_name;
+                    yearSelect.dataset.yearName = periodData.year_name;
+                });
+            
+            // Fetch student classes
             fetch(`{{ url('/api/student-classes') }}/${yearId}`)
                 .then(response => {
                     if (!response.ok) {
@@ -456,11 +466,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // Class change handler for NIM preview
     classSelect.addEventListener('change', function() {
         if (generationMode.value === 'auto' && yearSelect.value && this.value) {
-            // Simple preview logic - actual generation happens server-side
-            const yearText = yearSelect.options[yearSelect.selectedIndex].text;
-            const yearCode = yearText.slice(-2); // ambil 2 digit terakhir tahun
-            const classCode = String(this.value).padStart(2, '0');
-            const preview = `${yearCode}${classCode}XXX`;
+            // Ambil period name dari dataset
+            const periodName = yearSelect.dataset.periodName || '';
+            const yearName = yearSelect.dataset.yearName || '';
+            const classText = this.options[this.selectedIndex].text;
+            
+            // Ekstrak tahun dari period name (ambil 2 digit terakhir)
+            const yearMatch = periodName.match(/(\d{4})/);
+            const yearCode = yearMatch ? yearMatch[1].substr(-2) : 'YY';
+            
+            // Tentukan kode angkatan dari year name (ganjil=1, genap=2)
+            const angkatanMatch = yearName.match(/(\d+)/);
+            const angkatanNum = angkatanMatch ? parseInt(angkatanMatch[1]) : 0;
+            const angkatanCode = (angkatanNum % 2 === 0) ? '2' : '1';
+            
+            // Tentukan kode prodi dari nama kelas
+            let prodiCode = '00';
+            const upperClassName = classText.toUpperCase();
+            
+            if (/S2\s*PKU\s*[ABC]?$/i.test(upperClassName)) {
+                prodiCode = '01'; // S2 PKU A/B/C
+            } else if (/S2\s*PKUP/i.test(upperClassName)) {
+                prodiCode = '02'; // S2 PKUP
+            } else if (/S3\s*PKU/i.test(upperClassName)) {
+                prodiCode = '03'; // S3 PKU
+            }
+            
+            const preview = `${yearCode}${angkatanCode}${prodiCode}XXXX`;
             previewNim.innerHTML = `<code class="bg-green-50 px-2 py-1 rounded text-green-700">${preview}</code>`;
         } else {
             previewNim.innerHTML = '<em>Pilih tahun dan kelas</em>';

@@ -378,34 +378,77 @@ class StudentController extends Controller
     private function generateNIM($yearId, $studentClassId)
     {
         try {
-            $year = Year::find($yearId);
+            $year = Year::with('period')->find($yearId);
             $studentClass = StudentClass::find($studentClassId);
             
             if (!$year || !$studentClass) {
                 throw new \Exception('Year or StudentClass not found');
             }
             
-            $yearCode = substr($year->name, -2);
-            $classCode = str_pad($studentClass->id, 2, '0', STR_PAD_LEFT);
+            // 1. Ambil 2 digit terakhir dari period->name (Tahun Ajaran)
+            // Mendukung format: "Tahun Ajaran 2025", "Tahun Ajaran 2025/2026", "Tahun Ajaran 2025-2026"
+            $periodName = $year->period ? $year->period->name : $year->name;
+            preg_match('/(\d{4})/', $periodName, $matches);
+            $yearCode = isset($matches[1]) ? substr($matches[1], -2) : date('y');
             
-            $lastStudent = Student::where('year_id', $yearId)
-                                 ->where('student_class_id', $studentClassId)
-                                 ->orderBy('nim', 'desc')
-                                 ->first();
+            // 2. Tentukan kode angkatan dari year->name (ganjil=1, genap=2)
+            // Ekstrak angka dari nama angkatan (misal: "Angkatan 3" -> 3)
+            preg_match('/(\d+)/', $year->name, $angkatanMatches);
+            $angkatanNumber = isset($angkatanMatches[1]) ? (int)$angkatanMatches[1] : 0;
+            $angkatanCode = ($angkatanNumber % 2 === 0) ? '2' : '1'; // Genap=2, Ganjil=1
             
-            $sequential = 1;
-            if ($lastStudent && strlen($lastStudent->nim) >= 3) {
-                $lastSequential = (int)substr($lastStudent->nim, -3);
-                $sequential = $lastSequential + 1;
+            // 3. Tentukan kode program studi berdasarkan nama kelas
+            $className = strtoupper($studentClass->name);
+            $prodiCode = '00'; // default
+            
+            if (preg_match('/S2\s*PKU\s*[ABC]?$/i', $className)) {
+                // S2 PKU A, S2 PKU B, S2 PKU C, atau hanya S2 PKU
+                $prodiCode = '01';
+            } elseif (preg_match('/S2\s*PKUP/i', $className)) {
+                // S2 PKUP
+                $prodiCode = '02';
+            } elseif (preg_match('/S3\s*PKU/i', $className)) {
+                // S3 PKU
+                $prodiCode = '03';
             }
             
-            $sequentialCode = str_pad($sequential, 3, '0', STR_PAD_LEFT);
+            // 4. Generate nomor urut 3 digit (001, 002, ...)
+            $lastStudent = Student::where('year_id', $yearId)
+                                ->where('student_class_id', $studentClassId)
+                                ->orderBy('nim', 'desc')
+                                ->first();
             
-            return $yearCode . $classCode . $sequentialCode;
+            $sequential = 1;
+            if ($lastStudent && strlen($lastStudent->nim) >= 9) {
+                // Ambil 4 digit terakhir dari NIM sebelumnya
+                $lastSequential = (int)substr($lastStudent->nim, -4);
+                $sequential = $lastSequential + 1;
+            }
+
+            $sequentialCode = str_pad($sequential, 4, '0', STR_PAD_LEFT);
+            
+            // Format: Period YY + Year Angkatan + Prodi + Urut
+            // Contoh: 25 (dari Period) + 1 (dari Year ganjil) + 1 (S2 PKU) + 001 = 25101001
+            return $yearCode . $angkatanCode . $prodiCode . $sequentialCode;
             
         } catch (\Exception $e) {
             \Log::error('Error generating NIM: ' . $e->getMessage());
-            return date('y') . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
+            return date('y') . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
         }
+    }
+
+    // API untuk mendapatkan periode dari year yang dipilih
+    public function getYearPeriod($yearId)
+    {
+        $year = Year::with('period')->find($yearId);
+        
+        if (!$year) {
+            return response()->json(['error' => 'Year not found'], 404);
+        }
+        
+        return response()->json([
+            'year_name' => $year->name,
+            'period_name' => $year->period ? $year->period->name : null
+        ]);
     }
 }
