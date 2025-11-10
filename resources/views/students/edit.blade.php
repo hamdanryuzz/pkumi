@@ -272,6 +272,195 @@
                 </div>
             </div>
 
+            <!-- Alamat -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                    <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Jalan -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jalan</label>
+                        <input type="text" name="street" value="{{ old('street', $student->street) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- RT/RW -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">RT/RW</label>
+                        <input type="text" name="rt_rw" value="{{ old('rt_rw', $student->rt_rw) }}"
+                            placeholder="001/002"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Kelurahan -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kelurahan/Desa</label>
+                        <input type="text" name="village" value="{{ old('village', $student->village) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Kecamatan -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kecamatan</label>
+                        <input type="text" name="district" value="{{ old('district', $student->district) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Kota/Kabupaten -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kota/Kabupaten</label>
+                        <input type="text" name="city" value="{{ old('city', $student->city) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Provinsi -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Provinsi</label>
+                        <input type="text" name="province" value="{{ old('province', $student->province) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Akademik Tambahan -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                    <i class="fas fa-university mr-2 text-indigo-600"></i>Data Akademik Lainnya
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Program -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Program</label>
+                        <input type="text" name="program" value="{{ old('program', $student->program) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Tahun Masuk -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Masuk</label>
+                        <input type="text" name="admission_year" value="{{ old('admission_year', $student->admission_year) }}"
+                            placeholder="2025"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Semester Awal -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Semester Awal</label>
+                        <input type="text" name="first_semester" value="{{ old('first_semester', $student->first_semester) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Universitas Asal -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Universitas Asal</label>
+                        <input type="text" name="origin_of_university" value="{{ old('origin_of_university', $student->origin_of_university) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Program Studi Awal -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Program Studi Awal</label>
+                        <input type="text" name="initial_study_program" value="{{ old('initial_study_program', $student->initial_study_program) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Tahun Lulus -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Lulus S1</label>
+                        <input type="text" name="graduation_year" value="{{ old('graduation_year', $student->graduation_year) }}"
+                            placeholder="2024"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- IPK S1 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">IPK S1</label>
+                        <input type="number" name="gpa" value="{{ old('gpa', $student->gpa) }}" step="0.01" min="0" max="4"
+                            placeholder="3.50"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Pekerjaan Mahasiswa -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan</label>
+                        <input type="text" name="student_job" value="{{ old('student_job', $student->student_job) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Orang Tua -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                    <i class="fas fa-users mr-2 text-purple-600"></i>Data Orang Tua
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Data Ayah -->
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-gray-700">Data Ayah</h3>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ayah</label>
+                            <input type="text" name="father_name" value="{{ old('father_name', $student->father_name) }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pendidikan Terakhir Ayah</label>
+                            <input type="text" name="father_last_education" value="{{ old('father_last_education', $student->father_last_education) }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ayah</label>
+                            <input type="text" name="father_job" value="{{ old('father_job', $student->father_job) }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Data Ibu -->
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-gray-700">Data Ibu</h3>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ibu</label>
+                            <input type="text" name="mother_name" value="{{ old('mother_name', $student->mother_name) }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pendidikan Terakhir Ibu</label>
+                            <input type="text" name="mother_last_education" value="{{ old('mother_last_education', $student->mother_last_education) }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ibu</label>
+                            <input type="text" name="mother_job" value="{{ old('mother_job', $student->mother_job) }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keterangan Tambahan -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                    <i class="fas fa-file-alt mr-2 text-orange-600"></i>Keterangan
+                </h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                    <textarea name="description" rows="4"
+                        placeholder="Catatan tambahan tentang mahasiswa..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('description', $student->description) }}</textarea>
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-gray-200 bg-white">
                 <a href="{{ route('students.index') }}" 

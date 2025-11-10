@@ -252,17 +252,42 @@ class StudentController extends Controller
         $request->validate([
             'nim' => 'required|unique:students,nim,' . $student->id,
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:students,email,' . $student->id,
-            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
-            'phone' => 'nullable|string',
-            'address' => 'nullable|string',
             'username' => 'required|unique:students,username,' . $student->id,
+            'email' => 'nullable|email|unique:students,email,' . $student->id,
+            'phone' => 'nullable|string|max:20',
             'student_class_id' => 'required|exists:student_classes,id',
             'year_id' => 'required|exists:years,id',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:active,inactive,lulus',
+            'gender' => 'nullable|in:Laki-Laki,Perempuan',
+            'place_of_birth' => 'nullable|string|max:255',
+            'date_of_birth' => 'nullable|date',
+            'student_job' => 'nullable|string|max:255',
+            'marital_status' => 'nullable|in:Belum Kawin,Kawin',
+            'program' => 'nullable|string|max:255',
+            'admission_year' => 'nullable|string|max:4',
+            'first_semester' => 'nullable|string|max:255',
+            'origin_of_university' => 'nullable|string|max:255',
+            'initial_study_program' => 'nullable|string|max:255',
+            'graduation_year' => 'nullable|string|max:4',
+            'gpa' => 'nullable|numeric|min:0|max:4',
+            'father_name' => 'nullable|string|max:255',
+            'father_last_education' => 'nullable|string|max:255',
+            'father_job' => 'nullable|string|max:255',
+            'mother_name' => 'nullable|string|max:255',
+            'mother_last_education' => 'nullable|string|max:255',
+            'mother_job' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'street' => 'nullable|string|max:255',
+            'rt_rw' => 'nullable|string|max:20',
+            'village' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
-        $updateData = $request->except(['password']);
+        $updateData = $request->except(['password', '_token', '_method']);
 
         // Handle Image Upload
         if ($request->hasFile('image')) {
@@ -274,22 +299,19 @@ class StudentController extends Controller
             // Upload image baru
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            
-            // Gunakan Storage facade dengan disk 'public'
             \Storage::disk('public')->putFileAs('students', $image, $imageName);
-            
             $updateData['image'] = $imageName;
         }
-        
+
         // Only update password if provided
         if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password); // Menggunakan Hash::make()
+            $updateData['password'] = Hash::make($request->password);
         }
 
         $student->update($updateData);
 
         return redirect()->route('students.index')
-            ->with('success', 'Data student berhasil diperbarui.');
+            ->with('success', 'Data mahasiswa berhasil diperbarui.');
     }
 
     public function destroy(Student $student)
